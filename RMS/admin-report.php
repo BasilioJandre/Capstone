@@ -1,0 +1,328 @@
+<?php
+include('database/php/conn.php');
+include('database/php/session.php');
+
+// Checks if Logged In
+if ($sess != TRUE)
+{
+	session_unset();
+    session_destroy();
+    header("Location: register.php");
+    exit;
+}
+
+// Checks for User type
+if ($role != 'Admin')
+{
+	session_unset();
+    session_destroy();
+    header("Location: register.php");
+    exit;
+}
+
+
+$reportlist = '';
+$reportmodal = '';
+
+$getreport = mysqli_query($conn, "SELECT * FROM `requests`");
+
+while($reports = mysqli_fetch_assoc($getreport))
+{
+	$req_no = $reports['Requisition_No'];
+	$req_desc = $reports['Request_Type'];
+	$req_dept = $reports['Department'];
+	$req_status = $reports['Status'];
+	
+	$reportlist .= '
+	
+	<td>'.$req_no.'</td>
+	<td>'.$req_desc.'</td>
+	<td>'.$req_dept.'</td>
+	<td>'.$req_status.'</td>
+	<td>
+	<button class="btn btn-primary" data-toggle="modal" data-target="#viewModal'.$req_no.'"><i class="fas fa-eye"></i> View</button>
+	</td>
+	
+	';
+	
+	$reportmodal .='
+	
+	<div class="modal fade" id="viewModal'.$req_no.'" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewModalLabel">View Request Details</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Request Number: '.$req_no.'</p>
+                    <p>Request Description: '.$req_desc.'</p>
+                    <p>Department: '.$req_dept.'</p>
+                    <p>Status: '.$req_status.'</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="button" onclick="window.print()">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+	
+	';
+}
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Requisition Management System</title>
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link href="css/admin-dash-2.min.css" rel="stylesheet">
+</head>
+<body id="page-top">
+    <div id="wrapper">
+        <ul class="navbar-nav bg-gradient-dark sidebar sidebar-dark accordion" id="accordionSidebar">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center">
+                <div class="sidebar-brand-icon">
+                    <img src="img/pcc logo.png" alt="Logo" style="max-width: 80%; height: auto;">
+                </div>
+                <div class="sidebar-brand-text mx-3">Requisition Management System</div>
+            </a>
+            <hr class="sidebar-divider my-0">
+            <li class="nav-item">
+                <a class="nav-link" href="admin-dash.php">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <hr class="sidebar-divider">
+            <li class="nav-item">
+                <a class="nav-link" href="admin-manage.php">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Manage User</span>
+                </a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="admin-report.php">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>Report</span>
+                </a>
+            </li>
+            <hr class="sidebar-divider d-none d-md-block">
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+        </ul>
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    <form class="form-inline">
+                        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                    </form>
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item dropdown no-arrow d-sm-none">
+                            <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-search fa-fw"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in" aria-labelledby="searchDropdown">
+                                <form class="form-inline mr-auto w-100 navbar-search">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-primary" type="button">
+                                                <i class="fas fa-search fa-sm"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo $name;?></span>
+                                <img class="img-profile rounded-circle" src="img/undraw_profile.svg">
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#editProfileModal">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Profile
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Logout
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+                <div class="container-fluid">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">REPORT</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>REQUEST NO.</th>
+                                            <th>REQUEST DESCRIPTION</th>
+                                            <th>DEPARTMENT</th>
+                                            <th>STATUS</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <?php echo $reportlist; ?>
+                                        </tr>
+                                        <!-- Add more rows as needed -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+    <div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="profileEditForm">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" value="<?php echo $name; ?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" value="<?php echo $email; ?>">
+                        </div>
+                        <div class="form-group">
+                        <label for="department">Department</label>
+                            <select class="form-control" id="department" name="department">
+                            <option value="" disabled selected>Select Department</option>
+                            <option value="hr">Early Childhood Program</option>
+                            <option value="marketing">Elementary Department</option>
+                            <option value="finance">Junior High School Dept.</option>
+                            <option value="finance">Senior High School Dept.</option>
+                            <option value="finance">College Department</option>
+                            <option value="finance">Graduate Studies</option>
+                            <option value="manager">GSU</option>
+                            <option value="developer">PPA</option>
+                            <option value="designer">Budget and Financing</option>
+                            <option value="designer">ICTC</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="role">Role</label>
+                            <select class="form-control" id="role" name="role">
+                            <option value="" disabled selected>Select Role in Institution</option>
+                                 <option value="designer">School Administration</option>
+                                 <option value="designer">Dean's Team</option>
+                                 <option value="finance">Teaching Personnel</option>
+                                 <option value="finance">Non-Teaching Personnel</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileImage">Profile Image</label>
+                            <input type="file" class="form-control-file" id="profileImage" name="profileImage" accept="image/*">
+                        </div>
+                        <div class="form-group">
+                            <img id="previewImage" src="img/undraw_profile.svg" alt="Profile Image" class="img-fluid rounded-circle" style="max-width: 100px;">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="button" id="saveProfileButton">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <?php echo $reportmodal; ?>
+	
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-footer">
+                    <a class="btn btn-primary" href="register.php">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="js/admin-dash-2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("#profileImage").change(function() {
+                readURL(this);
+            });
+
+            function readURL(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#previewImage').attr('src', e.target.result);
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $("#saveProfileButton").click(function() {
+                var name = $("#name").val();
+                var email = $("#email").val();
+                var department = $("#department").val();
+                var role = $("#role").val();
+                $.ajax({
+                    url: "save_profile.php",
+                    type: "POST",
+                    data: {
+                        name: name,
+                        email: email,
+                        department: department,
+                        role: role
+                    },
+                    success: function(response) {
+                        if (response === "success") {
+                            alert("Profile updated successfully.");
+                            $('#editProfileModal').modal('hide');
+                        } else {
+                            alert("Error updating profile. Please try again later.");
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
