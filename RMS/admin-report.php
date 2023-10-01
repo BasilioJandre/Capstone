@@ -74,6 +74,86 @@ while($reports = mysqli_fetch_assoc($getreport))
 	';
 }
 
+// Update Profile
+if(isset($_POST['save_btn']))
+{
+	$tempname = $_FILES['profileImage']['tmp_name'];
+	
+	if(!empty($tempname))
+	{
+		$image_content = addslashes(file_get_contents($tempname));
+		$check = mysqli_query($conn, "SELECT * FROM `image` WHERE `User_ID` = '$user_id'");
+		$count = mysqli_num_rows($check);
+		
+		if($count <= 0)
+		{
+			$insert = mysqli_query($conn, "INSERT INTO `image` (`User_ID` , `User_Picture` ) VALUES ('$user_id' , '$image_content')");
+		}
+		
+		if($count > 0)
+		{
+			$update = mysqli_query($conn, "UPDATE `image` SET `User_Picture` = '$image_content' WHERE `User_ID` = '$user_id'");
+		}
+	}
+	
+	$new_name = $_POST['name'];
+	$new_email = $_POST['email'];
+	$new_dept = $_POST['dept'];
+	$new_role = $_POST['role'];
+	
+	$specchars = '"%\'*;<>?^`{|}~/\\#=&';
+	$pat = preg_quote($specchars, '/');
+	
+	if(!preg_match('/['.$pat.']/',$_POST['email']))
+	{
+		
+		if (!preg_match('/['.$pat.']/',$_POST['name']))
+		{
+			$update_user = mysqli_query($conn, "UPDATE `users` SET `Full_Name` = '$new_name' , `Email` = '$new_email' , `Department` = '$new_dept' , `Role` = '$new_role' WHERE `User_ID` = '$user_id'");
+			
+			if($update_user)
+			{
+				$_SESSION['name'] = $new_name;
+				$_SESSION['email'] = $new_email;
+				$_SESSION['dept'] = $new_dept;
+				$_SESSION['role'] = $new_role;
+				
+				Header("Refresh:0");
+			}
+		}
+		
+		else
+		{
+		$error = '
+		<script type="text/javascript">
+		event.preventDefault();
+		form.onsubmit = function showError()
+		{
+			var error = confirm("Invalid Characters on Name");
+		}
+		</script>
+		';
+		}
+	}
+	
+	else
+	{
+		$error = '
+		<script type="text/javascript">
+		form.onsubmit = function showError()
+		{
+			event.preventDefault();
+			var error = confirm("Invalid Characters on Email");
+		}
+		</script>
+		';
+	}
+}
+
+//Takes User's Profile Picture
+$retrieve_image = mysqli_query($conn, "SELECT `User_Picture` FROM `image` WHERE `User_ID` = '$user_id'");
+$user_picture = mysqli_fetch_assoc($retrieve_image);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -150,8 +230,8 @@ while($reports = mysqli_fetch_assoc($getreport))
                         </li>
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo $name;?></span>
-                                <img class="img-profile rounded-circle" src="img/undraw_profile.svg">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo $name; ?> <br> <?php echo $role; ?></span>
+                                <img class="img-profile rounded-circle" src="data:image/jpg;charset=utf8;base64,<?php echo base64_encode($user_picture['User_Picture']); ?>">
                             </a>
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
                                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#editProfileModal">
@@ -205,7 +285,7 @@ while($reports = mysqli_fetch_assoc($getreport))
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="profileEditForm">
+                    <form action='admin-dash.php' method="POST" enctype="multipart/form-data" id="profileEditForm">
                         <div class="form-group">
                             <label for="name">Name</label>
                             <input type="text" class="form-control" id="name" name="name" value="<?php echo $name; ?>">
@@ -215,42 +295,43 @@ while($reports = mysqli_fetch_assoc($getreport))
                             <input type="email" class="form-control" id="email" name="email" value="<?php echo $email; ?>">
                         </div>
                         <div class="form-group">
-                        <label for="department">Department</label>
-                            <select class="form-control" id="department" name="department">
-                            <option value="" disabled selected>Select Department</option>
-                            <option value="hr">Early Childhood Program</option>
-                            <option value="marketing">Elementary Department</option>
-                            <option value="finance">Junior High School Dept.</option>
-                            <option value="finance">Senior High School Dept.</option>
-                            <option value="finance">College Department</option>
-                            <option value="finance">Graduate Studies</option>
-                            <option value="manager">GSU</option>
-                            <option value="developer">PPA</option>
-                            <option value="designer">Budget and Financing</option>
-                            <option value="designer">ICTC</option>
+                            <label for="department">Department</label>
+                            <select class="form-control" id="department" name="dept">
+								<option value="" disabled>Select Department</option>
+								<option value="Early Childhood Program" <?php if ($dept == 'Early Childhood Program'){echo 'selected="selected"';}?>>Early Childhood Program</option>
+								<option value="Elementary Department" <?php if ($dept == 'Elementary Department'){echo 'selected="selected"';}?>>Elementary Department</option>
+								<option value="Junior High School" <?php if ($dept == 'Junior High School'){echo 'selected="selected"';}?>>Junior High School Dept.</option>
+								<option value="Senior High School" <?php if ($dept == 'Senior High School'){echo 'selected="selected"';}?>>Senior High School Dept.</option>
+								<option value="College Department" <?php if ($dept == 'College Department'){echo 'selected="selected"';}?>>College Department</option>
+								<option value="Graduate Studies" <?php if ($dept == 'Graduate Studies'){echo 'selected="selected"';}?>>Graduate Studies</option>
+								<option value="GSU" <?php if ($dept == 'GSU'){echo 'selected="selected"';}?>>GSU</option>
+								<option value="PPA" <?php if ($dept == 'PPA'){echo 'selected="selected"';}?>>PPA</option>
+								<option value="Accounts" <?php if ($dept == 'Accounts'){echo 'selected="selected"';}?>>Budget and Financing</option>
+								<option value="ICTC" <?php if ($dept == 'ICTC'){echo 'selected="selected"';}?>>ICTC</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="role">Role</label>
                             <select class="form-control" id="role" name="role">
-                            <option value="" disabled selected>Select Role in Institution</option>
-                                 <option value="designer">School Administration</option>
-                                 <option value="designer">Dean's Team</option>
-                                 <option value="finance">Teaching Personnel</option>
-                                 <option value="finance">Non-Teaching Personnel</option>
+								<option value="" disabled>Select Role in Institution</option>
+                                <option value="School Administration" <?php if ($role == 'School Administration'){echo 'selected="selected"';}?>>School Administration</option>
+                                <option value="Dean's Team" <?php if ($role == "Dean's Team"){echo 'selected="selected"';}?>>Dean's Team</option>
+                                <option value="Teaching Personnel" <?php if ($role == 'Teaching Personnel'){echo 'selected="selected"';}?>>Teaching Personnel</option>
+                                <option value="Non-Teaching Personnel" <?php if ($role == 'Non-Teaching Personnel'){echo 'selected="selected"';}?>>Non-Teaching Personnel</option>
+								<option value="Admin" <?php if ($role == 'Admin'){echo 'selected="selected"';}?>>Administrator</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="profileImage">Profile Image</label>
-                            <input type="file" class="form-control-file" id="profileImage" name="profileImage" accept="image/*">
+                            <input type="file" class="form-control-file" id="profileImage" name="profileImage" value=""/>
                         </div>
                         <div class="form-group">
-                            <img id="previewImage" src="img/undraw_profile.svg" alt="Profile Image" class="img-fluid rounded-circle" style="max-width: 100px;">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" type="button" id="saveProfileButton">Save</button>
+                            <img id="previewImage" src="data:image/jpg;charset=utf8;base64,<?php echo base64_encode($user_picture['User_Picture']); ?>" alt="Profile Image" class="img-fluid rounded-circle" style="max-width: 100px;">
+                        </div> 
+					</div>
+					
+                    <button class="btn btn-primary" type="submit" id="saveProfileButton" name="save_btn">Save</button>
+					</form>
                 </div>
             </div>
         </div>

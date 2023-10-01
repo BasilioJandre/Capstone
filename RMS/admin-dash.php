@@ -36,7 +36,7 @@ $t_request_count = mysqli_num_rows($t_request_check);
 $c_request_check = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Status` = 'Approved' OR `Status` = 'Denied'");	
 $c_request_count = mysqli_num_rows($c_request_check);
 
-// Profile Pic Function
+// Update Profile
 if(isset($_POST['save_btn']))
 {
 	$tempname = $_FILES['profileImage']['tmp_name'];
@@ -63,20 +63,56 @@ if(isset($_POST['save_btn']))
 	$new_dept = $_POST['dept'];
 	$new_role = $_POST['role'];
 	
-	$update_user = mysqli_query($conn, "UPDATE `users` SET `Full_Name` = '$new_name' , `Email` = '$new_email' , `Department` = '$new_dept' , `Role` = '$new_role' WHERE `User_ID` = '$user_id'");
+	$specchars = '"%\'*;<>?^`{|}~/\\#=&';
+	$pat = preg_quote($specchars, '/');
 	
-	if($update_user)
+	if(!preg_match('/['.$pat.']/',$_POST['email']))
 	{
-		$_SESSION['name'] = $new_name;
-		$_SESSION['email'] = $new_email;
-		$_SESSION['dept'] = $new_dept;
-		$_SESSION['role'] = $new_role;
 		
-		Header("Refresh:0");
+		if (!preg_match('/['.$pat.']/',$_POST['name']))
+		{
+			$update_user = mysqli_query($conn, "UPDATE `users` SET `Full_Name` = '$new_name' , `Email` = '$new_email' , `Department` = '$new_dept' , `Role` = '$new_role' WHERE `User_ID` = '$user_id'");
+			
+			if($update_user)
+			{
+				$_SESSION['name'] = $new_name;
+				$_SESSION['email'] = $new_email;
+				$_SESSION['dept'] = $new_dept;
+				$_SESSION['role'] = $new_role;
+				
+				Header("Refresh:0");
+			}
+		}
+		
+		else
+		{
+		$error = '
+		<script type="text/javascript">
+		event.preventDefault();
+		form.onsubmit = function showError()
+		{
+			var error = confirm("Invalid Characters on Name");
+		}
+		</script>
+		';
+		}
 	}
 	
+	else
+	{
+		$error = '
+		<script type="text/javascript">
+		form.onsubmit = function showError()
+		{
+			event.preventDefault();
+			var error = confirm("Invalid Characters on Email");
+		}
+		</script>
+		';
+	}
 }
 
+//Takes User's Profile Picture
 $retrieve_image = mysqli_query($conn, "SELECT `User_Picture` FROM `image` WHERE `User_ID` = '$user_id'");
 $user_picture = mysqli_fetch_assoc($retrieve_image);
 
@@ -324,6 +360,7 @@ $user_picture = mysqli_fetch_assoc($retrieve_image);
             </div>
         </div>
     </div>
+	<?php echo $error; ?>
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
