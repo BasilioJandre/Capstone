@@ -153,7 +153,8 @@ if(isset($_POST['save_btn']))
 //Takes User's Profile Picture
 $retrieve_image = mysqli_query($conn, "SELECT `User_Picture` FROM `image` WHERE `User_ID` = '$user_id'");
 $user_picture = mysqli_fetch_assoc($retrieve_image);
-
+$count_image = mysqli_query($conn, "SELECT * FROM `image` WHERE `User_ID` = '$user_id'");
+$check_picture = mysqli_num_rows($count_image);
 ?>
 <!DOCTYPE html>
 <html lang="en">
