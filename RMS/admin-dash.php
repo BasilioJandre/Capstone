@@ -115,6 +115,8 @@ if(isset($_POST['save_btn']))
 //Takes User's Profile Picture
 $retrieve_image = mysqli_query($conn, "SELECT `User_Picture` FROM `image` WHERE `User_ID` = '$user_id'");
 $user_picture = mysqli_fetch_assoc($retrieve_image);
+$count_image = mysqli_query($conn, "SELECT * FROM `image` WHERE `User_ID` = '$user_id'");
+$check_picture = mysqli_num_rows($count_image);
 
 ?>
 <!DOCTYPE html>
@@ -191,7 +193,7 @@ $user_picture = mysqli_fetch_assoc($retrieve_image);
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo $name; ?> <br> <?php echo $role; ?></span>
-                                <img class="img-profile rounded-circle" src="data:image/jpg;charset=utf8;base64,<?php echo base64_encode($user_picture['User_Picture']); ?>">
+                                <img class="img-profile rounded-circle" src="<?php if($check_picture > 0){echo 'data:image/jpg;charset=utf8;base64,'; echo base64_encode($user_picture['User_Picture']);} else {echo 'img/undraw_profile.svg';} ?>">
                             </a>
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
                                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#editProfileModal">
@@ -332,7 +334,7 @@ $user_picture = mysqli_fetch_assoc($retrieve_image);
                             <input type="file" class="form-control-file" id="profileImage" name="profileImage" value=""/>
                         </div>
                         <div class="form-group">
-                            <img id="previewImage" src="data:image/jpg;charset=utf8;base64,<?php echo base64_encode($user_picture['User_Picture']); ?>" alt="Profile Image" class="img-fluid rounded-circle" style="max-width: 100px;">
+                            <img id="previewImage" src="<?php if($check_picture > 0){echo 'data:image/jpg;charset=utf8;base64,'; echo base64_encode($user_picture['User_Picture']);} else {echo 'img/undraw_profile.svg';} ?>" alt="Profile Image" class="img-fluid rounded-circle" style="max-width: 100px;">
                         </div> 
 					</div>
 					
