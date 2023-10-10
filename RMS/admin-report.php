@@ -29,15 +29,23 @@ $getreport = mysqli_query($conn, "SELECT * FROM `requests`");
 while($reports = mysqli_fetch_assoc($getreport))
 {
 	$req_no = $reports['Requisition_No'];
-	$req_desc = $reports['Request_Type'];
+	$req_date = $reports['Date_Requested'];
+	$req_need = $reports['Date_Needed'];
+	$req_name = $reports['User_Name'];
+	$req_id = $reports['User_ID'];
+	$req_desc = $reports['Description'];
+	$req_type = $reports['Request_Type'];
+	$service = $reports['Product/Service'];
 	$req_dept = $reports['Department'];
 	$req_status = $reports['Status'];
+	$req_notes = $reports['Additional_Notes'];
 	
 	$reportlist .= '
 	
 	<td>'.$req_no.'</td>
-	<td>'.$req_desc.'</td>
+	<td>'.$req_name.' ('.$req_id.')</td>
 	<td>'.$req_dept.'</td>
+	<td>'.$req_desc.'</td>
 	<td>'.$req_status.'</td>
 	<td>
 	<button class="btn btn-primary" data-toggle="modal" data-target="#viewModal'.$req_no.'"><i class="fas fa-eye"></i> View</button>
@@ -58,8 +66,13 @@ while($reports = mysqli_fetch_assoc($getreport))
                 </div>
                 <div class="modal-body">
                     <p>Request Number: '.$req_no.'</p>
-                    <p>Request Description: '.$req_desc.'</p>
-                    <p>Department: '.$req_dept.'</p>
+					<p>Date: '.$req_date.'</p>
+					<p>Requestor: '.$req_name.' ('.$req_id.')</p>
+					<p>Department: '.$req_dept.'</p>
+					<p>Request: '.$req_type.' ('.$service.')</p>
+                    <p>Description: '.$req_desc.'</p>
+					<p>Date Needed: '.$req_need.'</p>
+					<p>Notes: '.$req_notes.'</p>
                     <p>Status: '.$req_status.'</p>
                 </div>
                 <div class="modal-footer">
@@ -259,8 +272,9 @@ $check_picture = mysqli_num_rows($count_image);
                                     <thead>
                                         <tr>
                                             <th>REQUEST NO.</th>
+											<th>REQUESTOR</th>
+											<th>DEPARTMENT</th>
                                             <th>REQUEST DESCRIPTION</th>
-                                            <th>DEPARTMENT</th>
                                             <th>STATUS</th>
                                             <th></th>
                                         </tr>
