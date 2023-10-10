@@ -87,12 +87,26 @@ $user_picture = mysqli_fetch_assoc($retrieve_image);
 $count_image = mysqli_query($conn, "SELECT * FROM `image` WHERE `User_ID` = '$user_id'");
 $check_picture = mysqli_num_rows($count_image);
 
+if($dept == 'ICTC')
+{
+	$GetReq = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Product/Service` = 'Equipment'");
+}
+
+if($dept == 'GSU')
+{
+	$GetReq = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Product/Service` = 'Furniture/Appliance'");
+}
+
+if($dept == 'Accounts')
+{
+	$GetReq = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Request_Type` = 'Purchase'");
+}
+
+if()
 
 $ReqList = '';
 $ReqView = '';
 $ReqDel = '';
-
-$GetReq = mysqli_query($conn, "SELECT * FROM `requests`");
 
 while($Req = mysqli_fetch_assoc($GetReq))
 {
@@ -100,7 +114,8 @@ while($Req = mysqli_fetch_assoc($GetReq))
 	$ReqName = $Req['User_Name'];
 	$ReqDept = $Req['Department'];
 	$ReqType = $Req['Request_Type'];
-	$ReqDesc = $Req['Product/Service'];
+	$ReqServ = $Req['Product/Service'];
+	$ReqDesc = $Req['Description'];
 	$ReqDate = $Req['Date_Requested'];
 	$NeedDate = $Req['Date_Needed'];
 	$Status = $Req['Status'];
@@ -111,7 +126,7 @@ while($Req = mysqli_fetch_assoc($GetReq))
 	<td>'.$ReqNo.'</td>
 	<td>'.$ReqName.'</td>
 	<td>'.$ReqDept.'</td>
-	<td>'.$ReqType.'</td>
+	<td>'.$ReqType.' ('.$ReqServ.')</td>
 	<td>'.$ReqDesc.'</td>
 	<td>'.$ReqDate.'</td>
 	<td>'.$NeedDate.'</td>
@@ -142,7 +157,7 @@ while($Req = mysqli_fetch_assoc($GetReq))
                     <p>Request No.: '.$ReqNo.'</p>
                     <p>Requestor: '.$ReqName.'</p>
                     <p>Department: '.$ReqDept.'</p>
-                    <p>Type of Request: '.$ReqType.'</p>
+                    <p>Type of Request: '.$ReqType.' ('.$ReqServ.')</p>
                     <p>Description: '.$ReqDesc.'</p>
                     <p>Request Date: '.$ReqDate.'</p>
                     <p>Date Needed: '.$NeedDate.'</p>
@@ -385,7 +400,6 @@ while($Req = mysqli_fetch_assoc($GetReq))
 								<option value="College Department" <?php if ($dept == 'College Department'){echo 'selected="selected"';}?>>College Department</option>
 								<option value="Graduate Studies" <?php if ($dept == 'Graduate Studies'){echo 'selected="selected"';}?>>Graduate Studies</option>
 								<option value="GSU" <?php if ($dept == 'GSU'){echo 'selected="selected"';}?>>GSU</option>
-								<option value="PPA" <?php if ($dept == 'PPA'){echo 'selected="selected"';}?>>PPA</option>
 								<option value="Accounts" <?php if ($dept == 'Accounts'){echo 'selected="selected"';}?>>Budget and Financing</option>
 								<option value="ICTC" <?php if ($dept == 'ICTC'){echo 'selected="selected"';}?>>ICTC</option>
                             </select>
