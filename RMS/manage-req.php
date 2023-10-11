@@ -87,6 +87,7 @@ $user_picture = mysqli_fetch_assoc($retrieve_image);
 $count_image = mysqli_query($conn, "SELECT * FROM `image` WHERE `User_ID` = '$user_id'");
 $check_picture = mysqli_num_rows($count_image);
 
+$GetReq = mysqli_query($conn, "SELECT * FROM `requests`");;
 if($dept == 'ICTC')
 {
 	$GetReq = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Product/Service` = 'Equipment'");
@@ -102,7 +103,6 @@ if($dept == 'Accounts')
 	$GetReq = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Request_Type` = 'Purchase'");
 }
 
-if()
 
 $ReqList = '';
 $ReqView = '';
@@ -112,6 +112,7 @@ while($Req = mysqli_fetch_assoc($GetReq))
 {
 	$ReqNo = $Req['Requisition_No'];
 	$ReqName = $Req['User_Name'];
+	$ReqID = $Req['User_ID'];
 	$ReqDept = $Req['Department'];
 	$ReqType = $Req['Request_Type'];
 	$ReqServ = $Req['Product/Service'];
@@ -119,12 +120,13 @@ while($Req = mysqli_fetch_assoc($GetReq))
 	$ReqDate = $Req['Date_Requested'];
 	$NeedDate = $Req['Date_Needed'];
 	$Status = $Req['Status'];
+	$AddNotes = $Req['Additional_Notes'];
 	
 	$ReqList .= '
 	
 	<tr>
 	<td>'.$ReqNo.'</td>
-	<td>'.$ReqName.'</td>
+	<td>'.$ReqName.' ('.$ReqID.')</td>
 	<td>'.$ReqDept.'</td>
 	<td>'.$ReqType.' ('.$ReqServ.')</td>
 	<td>'.$ReqDesc.'</td>
@@ -139,58 +141,120 @@ while($Req = mysqli_fetch_assoc($GetReq))
 	
 	';
 	
-	$ReqView .= '
-	
-	<div class="modal fade" id="viewModal'.$ReqNo.'" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel" aria-hidden="true">
-	<form>
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="viewModalLabel">View Request</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <!-- Add your view content here -->
-                    <p>Request Details:</p>
-                    <p>Request No.: '.$ReqNo.'</p>
-                    <p>Requestor: '.$ReqName.'</p>
-                    <p>Department: '.$ReqDept.'</p>
-                    <p>Type of Request: '.$ReqType.' ('.$ReqServ.')</p>
-                    <p>Description: '.$ReqDesc.'</p>
-                    <p>Request Date: '.$ReqDate.'</p>
-                    <p>Date Needed: '.$NeedDate.'</p>
-                    <p>Status: '.$Status.'</p>
+	if($dept == 'Accounts')
+	{
+		$ReqView .= '
+		
+		<div class="modal fade" id="viewModal'.$ReqNo.'" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel" aria-hidden="true">
+		<form action="manage-req.php" method="POST">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="viewModalLabel">View Request</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<!-- Add your view content here -->
+						<p>Request Details:</p>
+						<p>Request No.: '.$ReqNo.'</p>
+						<p>Requestor: '.$ReqName.'</p>
+						<p>Department: '.$ReqDept.'</p>
+						<p>Type of Request: '.$ReqType.' ('.$ReqServ.')</p>
+						<p>Description: '.$ReqDesc.'</p>
+						<p>Request Date: '.$ReqDate.'</p>
+						<p>Date Needed: '.$NeedDate.'</p>
+						<p>Status: '.$Status.'</p>
 
-                    <!-- Add a dropdown menu to select the request status -->
-                    <div class="form-group">
-                        <label for="requestStatus">Request Status:</label>
-                        <select class="form-control" id="requestStatus">
-                            <option value="approve">Select Status</option>
-                            <option value="approve">Approve</option>
-                            <option value="decline">Decline</option>
-                            <option value="pending">Pending</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="requestStatus">Remarks:</label>
-                    <div class="fixed-input-box">
-                    <input type="text" placeholder="Please enter your comment...">
-                    </div>
-                    </div>
+						<!-- Add a dropdown menu to select the request status -->
+						<div class="form-group">
+							<label for="requestStatus">Request Status:</label>
+							<select class="form-control" id="requestStatus" name="status">
+								<option value="approve">Select Status</option>
+								<option value="Approve">Approve</option>
+								<option value="Decline">Decline</option>
+								<option value="Pending">Pending</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="requestStatus">Remarks:</label>
+						<div class="fixed-input-box">
+						<textarea rows="7" cols="49" name="note_area">'.$AddNotes.'</textarea>
+						<input type="hidden" value="'.$ReqNo.'" name="up_req_id">
+						</div>
+						</div>
 
-                    <!-- Add more request details as needed -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary save-status">Save Status</button>
-                </div>
-            </div>
-        </div>
-	</form>
-    </div>
+						<!-- Add more request details as needed -->
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-primary save-status" name="save_status">Save Status</button>
+					</div>
+				</div>
+			</div>
+		</form>
+		</div>
+		
+		';
+	}
 	
-	';
+	if($dept == 'ICTC' || 'GSU')
+	{
+		$ReqView .= '
+		
+		<div class="modal fade" id="viewModal'.$ReqNo.'" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel" aria-hidden="true">
+		<form action="manage-req.php" method="POST">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="viewModalLabel">View Request</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<!-- Add your view content here -->
+						<p>Request Details:</p>
+						<p>Request No.: '.$ReqNo.'</p>
+						<p>Requestor: '.$ReqName.'</p>
+						<p>Department: '.$ReqDept.'</p>
+						<p>Type of Request: '.$ReqType.' ('.$ReqServ.')</p>
+						<p>Description: '.$ReqDesc.'</p>
+						<p>Request Date: '.$ReqDate.'</p>
+						<p>Date Needed: '.$NeedDate.'</p>
+						<p>Status: '.$Status.'</p>
+
+						<!-- Add a dropdown menu to select the request status -->
+						<div class="form-group">
+							<label for="requestStatus">Request Status:</label>
+							<select class="form-control" id="requestStatus" name="status">
+								<option value="approve">Select Status</option>
+								<option value="Approve">Approve</option>
+								<option value="Decline">Decline</option>
+								<option value="Pending">Pending</option>
+								<option value="Requires Purchase">Requires Purchase</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="requestStatus">Remarks:</label>
+						<div class="fixed-input-box">
+						<textarea rows="7" cols="49" name="note_area">'.$AddNotes.'</textarea>
+						<input type="hidden" value="'.$ReqNo.'" name="up_req_id">
+						</div>
+						</div>
+
+						<!-- Add more request details as needed -->
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-primary save-status" name="save_status">Save Status</button>
+					</div>
+				</div>
+			</div>
+		</form>
+		</div>
+		
+		';
+	}
 	
 	$ReqDel .= '
 	
@@ -211,7 +275,7 @@ while($Req = mysqli_fetch_assoc($GetReq))
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-danger delete-confirm">Delete</button>
-					<input type="hidden" value="'.$ReqNo.'" name="del_user_id">
+					<input type="hidden" value="'.$ReqNo.'" name="del_req_id">
                 </div>
 				</form>
             </div>
@@ -221,6 +285,19 @@ while($Req = mysqli_fetch_assoc($GetReq))
 	';
 }
 
+if(isset($_POST['save_status']))
+{
+	$UpReq = $_POST['up_req_id'];
+	$AddNotes = $_POST['note_area'];
+	$Status = $_POST['status'];
+	
+	$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = '$Status' WHERE `Requisition_No` = $UpReq");
+	
+	if($update_req)
+	{
+		Header("Refresh:0");
+	}
+}
 
 ?>
 <!DOCTYPE html>
