@@ -42,6 +42,7 @@ while($reports = mysqli_fetch_assoc($getreport))
 	
 	$reportlist .= '
 	
+	<tr>
 	<td>'.$req_no.'</td>
 	<td>'.$req_name.' ('.$req_id.')</td>
 	<td>'.$req_dept.'</td>
@@ -50,6 +51,7 @@ while($reports = mysqli_fetch_assoc($getreport))
 	<td>
 	<button class="btn btn-primary" data-toggle="modal" data-target="#viewModal'.$req_no.'"><i class="fas fa-eye"></i> View</button>
 	</td>
+	</tr>
 	
 	';
 	
@@ -280,9 +282,7 @@ $check_picture = mysqli_num_rows($count_image);
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
                                             <?php echo $reportlist; ?>
-                                        </tr>
                                         <!-- Add more rows as needed -->
                                     </tbody>
                                 </table>
