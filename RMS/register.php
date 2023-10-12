@@ -191,7 +191,7 @@ if($conn)
 								$_SESSION['role'] = $role;
 								$_SESSION['sess'] = TRUE;
 								
-								if($role == 'Department Head')
+								if($role == 'Department Head' || $role == 'Academic Head')
 								{
 									header('Location: head-dash.php');
 									exit();

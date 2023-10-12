@@ -119,58 +119,45 @@ if(isset($_POST['save_btn']))
 	
 	$new_name = $_POST['name'];
 	$new_email = $_POST['email'];
-	$new_dept = $_POST['dept'];
-	$new_role = $_POST['role'];
 	
 	$specchars = '"%\'*;<>?^`{|}~/\\#=&';
 	$pat = preg_quote($specchars, '/');
 	
+	$check_email = mysqli_query($conn, "SELECT * FROM `users` WHERE `Email` = '$new_email'");
+	$count_email = mysqli_num_rows($check_email);
+	
+	if($count_email == 0)
+	{
+	$new_email = $email;
+	}
 	if(!preg_match('/['.$pat.']/',$_POST['email']))
 	{
 		
 		if (!preg_match('/['.$pat.']/',$_POST['name']))
 		{
-			$update_user = mysqli_query($conn, "UPDATE `users` SET `Full_Name` = '$new_name' , `Email` = '$new_email' , `Department` = '$new_dept' , `Role` = '$new_role' WHERE `User_ID` = '$user_id'");
-			
+		$update_user = mysqli_query($conn, "UPDATE `users` SET `Full_Name` = '$new_name' , `Email` = '$new_email' WHERE `User_ID` = '$user_id'");
+				
 			if($update_user)
 			{
 				$_SESSION['name'] = $new_name;
 				$_SESSION['email'] = $new_email;
-				$_SESSION['dept'] = $new_dept;
-				$_SESSION['role'] = $new_role;
-				
+					
 				Header("Refresh:0");
+			
+			}
+			
+			else
+			{
+			
 			}
 		}
-		
+	
 		else
 		{
-		$error = '
-		<script type="text/javascript">
-		event.preventDefault();
-		form.onsubmit = function showError()
-		{
-			var error = confirm("Invalid Characters on Name");
+
 		}
-		</script>
-		';
-		}
-	}
-	
-	else
-	{
-		$error = '
-		<script type="text/javascript">
-		form.onsubmit = function showError()
-		{
-			event.preventDefault();
-			var error = confirm("Invalid Characters on Email");
-		}
-		</script>
-		';
 	}
 }
-
 //Takes User's Profile Picture
 $retrieve_image = mysqli_query($conn, "SELECT `User_Picture` FROM `image` WHERE `User_ID` = '$user_id'");
 $user_picture = mysqli_fetch_assoc($retrieve_image);
@@ -312,7 +299,7 @@ $check_picture = mysqli_num_rows($count_image);
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action='admin-dash.php' method="POST" enctype="multipart/form-data" id="profileEditForm">
+                    <form action='admin-manage.php' method="POST" enctype="multipart/form-data" id="profileEditForm">
                         <div class="form-group">
                             <label for="name">Name</label>
                             <input type="text" class="form-control" id="name" name="name" value="<?php echo $name; ?>">
@@ -323,7 +310,7 @@ $check_picture = mysqli_num_rows($count_image);
                         </div>
                         <div class="form-group">
                             <label for="department">Department</label>
-                            <select class="form-control" id="department" name="dept">
+                            <select class="form-control" id="department" name="dept" disabled="disabled">
 								<option value="" disabled>Select Department</option>
 								<option value="Early Childhood Program" <?php if ($dept == 'Early Childhood Program'){echo 'selected="selected"';}?>>Early Childhood Program</option>
 								<option value="Elementary Department" <?php if ($dept == 'Elementary Department'){echo 'selected="selected"';}?>>Elementary Department</option>
@@ -339,7 +326,7 @@ $check_picture = mysqli_num_rows($count_image);
                         </div>
                         <div class="form-group">
                             <label for="role">Role</label>
-                            <select class="form-control" id="role" name="role">
+                            <select class="form-control" id="role" name="role" disabled="disabled">
 								<option value="" disabled>Select Role in Institution</option>
                                 <option value="School Administration" <?php if ($role == 'School Administration'){echo 'selected="selected"';}?>>School Administration</option>
                                 <option value="Dean's Team" <?php if ($role == "Dean's Team"){echo 'selected="selected"';}?>>Dean's Team</option>
