@@ -2,7 +2,6 @@
 include('database/php/conn.php');
 include('database/php/session.php');
 
-$dept = $_SESSION['dept'];
 
 // Checks if Logged In
 if ($sess != TRUE)
@@ -14,7 +13,11 @@ if ($sess != TRUE)
 }
 
 // Checks for User type
-if ($role != 'Department Head')
+if ($role == 'Department Head' || $role == 'Academic Head')
+{
+//Do Nothing
+}
+else
 {
 	session_unset();
     session_destroy();
@@ -46,39 +49,43 @@ if(isset($_POST['save_btn']))
 	
 	$new_name = $_POST['name'];
 	$new_email = $_POST['email'];
-	$new_dept = $_POST['dept'];
-	$new_role = $_POST['role'];
 	
 	$specchars = '"%\'*;<>?^`{|}~/\\#=&';
 	$pat = preg_quote($specchars, '/');
 	
+	$check_email = mysqli_query($conn, "SELECT * FROM `users` WHERE `Email` = '$new_email'");
+	$count_email = mysqli_num_rows($check_email);
+	
+	if($count_email == 0)
+	{
+	$new_email = $email;
+	}
 	if(!preg_match('/['.$pat.']/',$_POST['email']))
 	{
 		
 		if (!preg_match('/['.$pat.']/',$_POST['name']))
 		{
-			$update_user = mysqli_query($conn, "UPDATE `users` SET `Full_Name` = '$new_name' , `Email` = '$new_email' , `Department` = '$new_dept' , `Role` = '$new_role' WHERE `User_ID` = '$user_id'");
-			
+		$update_user = mysqli_query($conn, "UPDATE `users` SET `Full_Name` = '$new_name' , `Email` = '$new_email' WHERE `User_ID` = '$user_id'");
+				
 			if($update_user)
 			{
 				$_SESSION['name'] = $new_name;
 				$_SESSION['email'] = $new_email;
-				$_SESSION['dept'] = $new_dept;
-				$_SESSION['role'] = $new_role;
-				
+					
 				Header("Refresh:0");
+			
+			}
+			
+			else
+			{
+			
 			}
 		}
-		
+	
 		else
 		{
-		
-		}
-	}
-	
-	else
-	{
 
+		}
 	}
 }
 //Takes User's Profile Picture
@@ -95,12 +102,17 @@ if($dept == 'ICTC')
 
 if($dept == 'GSU')
 {
-	$GetReq = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Product/Service` = 'Furniture/Appliance'");
+	$GetReq = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Product/Service` = 'Furnishing/Appliance'");
 }
 
 if($dept == 'Accounts')
 {
 	$GetReq = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Request_Type` = 'Purchase'");
+}
+
+if($role == 'Academic Head')
+{
+	$GetReq = mysqli_query($conn, "SELECT * FROM `requests`");
 }
 
 
@@ -468,7 +480,7 @@ if(isset($_POST['save_status']))
                         </div>
                         <div class="form-group">
                             <label for="department">Department</label>
-                            <select class="form-control" id="department" name="dept">
+                            <select class="form-control" id="department" name="dept" disabled="disabled">
 								<option value="" disabled>Select Department</option>
 								<option value="Early Childhood Program" <?php if ($dept == 'Early Childhood Program'){echo 'selected="selected"';}?>>Early Childhood Program</option>
 								<option value="Elementary Department" <?php if ($dept == 'Elementary Department'){echo 'selected="selected"';}?>>Elementary Department</option>
@@ -483,7 +495,7 @@ if(isset($_POST['save_status']))
                         </div>
                         <div class="form-group">
                             <label for="role">Role</label>
-                            <select class="form-control" id="role" name="role">
+                            <select class="form-control" id="role" name="role" disabled="disabled">
 								<option value="" disabled>Select Role in Institution</option>
                                 <option value="Department Head" <?php if ($role == 'Department Head'){echo 'selected="selected"';}?>>Department Head</option>
                                 <option value="Dean's Team" <?php if ($role == "Dean's Team"){echo 'selected="selected"';}?>>Dean's Team</option>
