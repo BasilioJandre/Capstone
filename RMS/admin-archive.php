@@ -21,78 +21,69 @@ if ($role != 'Admin')
 }
 
 
-$userlist = '';
-$deletelist = '';
+$reportlist = '';
+$reportmodal = '';
 
-$getuser = mysqli_query($conn, "SELECT * FROM `users`");
+$getreport = mysqli_query($conn, "SELECT * FROM `archive`");
 
-while($users = mysqli_fetch_assoc($getuser))
+while($reports = mysqli_fetch_assoc($getreport))
 {
-	$id = $users['User_ID'];
-	$fullname = $users['Full_Name'];
-	$user_email = $users['Email'];
-	$user_dept = $users['Department'];
-	$user_role = $users['Role'];
+	$req_no = $reports['Requisition_No'];
+	$req_date = $reports['Date_Requested'];
+	$req_need = $reports['Date_Needed'];
+	$req_name = $reports['User_Name'];
+	$req_id = $reports['User_ID'];
+	$req_desc = $reports['Description'];
+	$req_type = $reports['Request_Type'];
+	$service = $reports['Product/Service'];
+	$req_dept = $reports['Department'];
+	$req_notes = $reports['Additional_Notes'];
 	
-	$deleteno = 'deleteModal'.$id;
-	$deletename = 'delete'.$id;
-
-	//List all users
-	$userlist .= '
+	$reportlist .= '
 	
 	<tr>
-	<td>'.$id.'</td>
-	<td>'.$fullname.'</td>
-	<td>'.$user_email.'</td>
-	<td>'.$user_dept.'</td>
-	<td>'.$user_role.'</td>
+	<td>'.$req_no.'</td>
+	<td>'.$req_name.' ('.$req_id.')</td>
+	<td>'.$req_dept.'</td>
+	<td>'.$req_desc.'</td>
+	<td>oop</td>
 	<td>
-	<button type="" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal'.$id.'" name=""><i class="fas fa-trash"></i></button>
+	<button class="btn btn-primary" data-toggle="modal" data-target="#viewModal'.$req_no.'"><i class="fas fa-eye"></i> View</button>
 	</td>
 	</tr>
+	
 	';
 	
-	//Create modal for each user
-	$deletelist.='
-	
-	<div class="modal fade" id="deleteModal'.$id.'" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-	<form action="admin-manage.php" method="POST">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Delete User</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <!-- Add your delete confirmation message here -->
-                    <p>Are you sure you want to delete this user?</p>
-                </div>
-                <div class="modal-footer">
-				
-                    <button type="submit" class="btn btn-danger" name="deleteuser">Delete</button>
-					<input type="hidden" value="'.$id.'" name="del_user_id">
-                
+	$reportmodal .='
+		<div class="modal fade" id="viewModal'.$req_no.'" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="viewModalLabel">View Request Details</h5>
+						<button class="close" type="button" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<p>Request Number: '.$req_no.'</p>
+						<p>Date: '.$req_date.'</p>
+						<p>Requestor: '.$req_name.' ('.$req_id.')</p>
+						<p>Department: '.$req_dept.'</p>
+						<p>Request: '.$req_type.' ('.$service.')</p>
+						<p>Description: '.$req_desc.'</p>
+						<p>Date Needed: '.$req_need.'</p>
+						<p>Notes: '.$req_notes.'</p>
+						<p>Status: Archived </p>
+					</div>
+					<div class="modal-footer">
+						<button class="btn btn-primary" type="button" onclick="window.print()">
+							<i class="fas fa-print"></i> Print
+						</button>
+					</div>
 				</div>
-            </div>
-        </div>
-	</form>
-    </div>
-	
+			</div>
+		</div>
 	';
-	
-}
-
-//Delete Function
-if(isset($_POST["deleteuser"]))
-{
-	$del_user_id = $_POST['del_user_id'];
-	$query = mysqli_query($conn, "DELETE FROM `users` WHERE `User_ID` = '$del_user_id'");
-	if($query)
-	{
-		header('Refresh:0');
-	}
 }
 
 // Update Profile
@@ -194,7 +185,7 @@ $check_picture = mysqli_num_rows($count_image);
                 </a>
             </li>
             <hr class="sidebar-divider">
-            <li class="nav-item active">
+            <li class="nav-item">
                 <a class="nav-link" href="admin-manage.php">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Manage User</span>
@@ -206,7 +197,7 @@ $check_picture = mysqli_num_rows($count_image);
                     <span>Report</span>
                 </a>
             </li>
-			<li class="nav-item">
+			<li class="nav-item active">
                 <a class="nav-link" href="admin-archive.php">
                     <i class="fas fa-fw fa-chart-area"></i>
                     <span>Archive</span>
@@ -246,7 +237,7 @@ $check_picture = mysqli_num_rows($count_image);
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo $name; ?> <br> <?php echo $role; ?></span>
-                                <img class="img-profile rounded-circle" src="<?php if($check_picture > 0){echo 'data:image/jpg;charset=utf8;base64,'; echo base64_encode($user_picture['User_Picture']);} else {echo 'img/undraw_profile.svg';} ?>">
+                                <img class="img-profile rounded-circle" src="data:image/jpg;charset=utf8;base64,<?php echo base64_encode($user_picture['User_Picture']); ?>">
                             </a>
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
                                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#editProfileModal">
@@ -265,37 +256,31 @@ $check_picture = mysqli_num_rows($count_image);
                 <div class="container-fluid">
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">MANAGE USER</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">REPORT</h6>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>USER ID</th>
-                                            <th>FULL NAME</th>
-                                            <th>EMAIL ADDRESS</th>
-                                            <th>DEPARTMENT</th>
-                                            <th>ROLE</th>
-                                            <th>ACTION</th>
+                                            <th>REQUEST NO.</th>
+											<th>REQUESTOR</th>
+											<th>DEPARTMENT</th>
+                                            <th>REQUEST DESCRIPTION</th>
+                                            <th>STATUS</th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                          <?php echo $userlist;?>
-                                        </tr>
+                                            <?php echo $reportlist; ?>
+                                        <!-- Add more rows as needed -->
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Profile Modal -->
-  <div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+
+    <div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -305,7 +290,7 @@ $check_picture = mysqli_num_rows($count_image);
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action='admin-manage.php' method="POST" enctype="multipart/form-data" id="profileEditForm">
+                    <form action='admin-report.php' method="POST" enctype="multipart/form-data" id="profileEditForm">
                         <div class="form-group">
                             <label for="name">Name</label>
                             <input type="text" class="form-control" id="name" name="name" value="<?php echo $name; ?>">
@@ -346,7 +331,7 @@ $check_picture = mysqli_num_rows($count_image);
                             <input type="file" class="form-control-file" id="profileImage" name="profileImage" value=""/>
                         </div>
                         <div class="form-group">
-                            <img id="previewImage" src="<?php if($check_picture > 0){echo 'data:image/jpg;charset=utf8;base64,'; echo base64_encode($user_picture['User_Picture']);} else {echo 'img/undraw_profile.svg';} ?>" alt="Profile Image" class="img-fluid rounded-circle" style="max-width: 100px;">
+                            <img id="previewImage" src="data:image/jpg;charset=utf8;base64,<?php echo base64_encode($user_picture['User_Picture']); ?>" alt="Profile Image" class="img-fluid rounded-circle" style="max-width: 100px;">
                         </div> 
 					</div>
 					
@@ -357,16 +342,8 @@ $check_picture = mysqli_num_rows($count_image);
         </div>
     </div>
 	
-	
-    <!-- Delete Confirmation Modal -->
-	
-    <?php echo $deletelist; ?>
+    <?php echo $reportmodal; ?>
 
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
-    
-    <!-- Logout Modal -->
     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -433,5 +410,6 @@ $check_picture = mysqli_num_rows($count_image);
             });
         });
     </script>
+
 </body>
 </html>

@@ -56,36 +56,34 @@ while($reports = mysqli_fetch_assoc($getreport))
 	';
 	
 	$reportmodal .='
-	
-	<div class="modal fade" id="viewModal'.$req_no.'" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="viewModalLabel">View Request Details</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>Request Number: '.$req_no.'</p>
-					<p>Date: '.$req_date.'</p>
-					<p>Requestor: '.$req_name.' ('.$req_id.')</p>
-					<p>Department: '.$req_dept.'</p>
-					<p>Request: '.$req_type.' ('.$service.')</p>
-                    <p>Description: '.$req_desc.'</p>
-					<p>Date Needed: '.$req_need.'</p>
-					<p>Notes: '.$req_notes.'</p>
-                    <p>Status: '.$req_status.'</p>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" type="button" onclick="window.print()">
-                        <i class="fas fa-print"></i> Print
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-	
+		<div class="modal fade" id="viewModal'.$req_no.'" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="viewModalLabel">View Request Details</h5>
+						<button class="close" type="button" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<p>Request Number: '.$req_no.'</p>
+						<p>Date: '.$req_date.'</p>
+						<p>Requestor: '.$req_name.' ('.$req_id.')</p>
+						<p>Department: '.$req_dept.'</p>
+						<p>Request: '.$req_type.' ('.$service.')</p>
+						<p>Description: '.$req_desc.'</p>
+						<p>Date Needed: '.$req_need.'</p>
+						<p>Notes: '.$req_notes.'</p>
+						<p>Status: '.$req_status.'</p>
+					</div>
+					<div class="modal-footer">
+						<button class="btn btn-primary" type="button" onclick="window.print()">
+							<i class="fas fa-print"></i> Print
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
 	';
 }
 
@@ -120,7 +118,7 @@ if(isset($_POST['save_btn']))
 	$check_email = mysqli_query($conn, "SELECT * FROM `users` WHERE `Email` = '$new_email'");
 	$count_email = mysqli_num_rows($check_email);
 	
-	if($count_email == 0)
+	if($count_email > 0)
 	{
 	$new_email = $email;
 	}
@@ -198,6 +196,12 @@ $check_picture = mysqli_num_rows($count_image);
                 <a class="nav-link" href="admin-report.php">
                     <i class="fas fa-fw fa-chart-area"></i>
                     <span>Report</span>
+                </a>
+            </li>
+			<li class="nav-item">
+                <a class="nav-link" href="admin-archive.php">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>Archive</span>
                 </a>
             </li>
             <hr class="sidebar-divider d-none d-md-block">
@@ -338,9 +342,9 @@ $check_picture = mysqli_num_rows($count_image);
             </div>
         </div>
     </div>
-
-    <?php echo $reportmodal; ?>
 	
+    <?php echo $reportmodal; ?>
+
     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -407,5 +411,6 @@ $check_picture = mysqli_num_rows($count_image);
             });
         });
     </script>
+
 </body>
 </html>
