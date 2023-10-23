@@ -67,7 +67,7 @@ if(isset($_POST['save_btn']))
 	$check_email = mysqli_query($conn, "SELECT * FROM `users` WHERE `Email` = '$new_email'");
 	$count_email = mysqli_num_rows($check_email);
 	
-	if($count_email == 0)
+	if($count_email > 0)
 	{
 	$new_email = $email;
 	}
@@ -146,6 +146,12 @@ $check_picture = mysqli_num_rows($count_image);
                 <a class="nav-link" href="admin-report.php">
                     <i class="fas fa-fw fa-chart-area"></i>
                     <span>Report</span>
+                </a>
+            </li>
+			<li class="nav-item">
+                <a class="nav-link" href="admin-archive.php">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>Archive</span>
                 </a>
             </li>
             <hr class="sidebar-divider d-none d-md-block">

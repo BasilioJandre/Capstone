@@ -2,27 +2,22 @@
 include 'database/php/conn.php';
 include 'database/php/session.php';
 
-//Signup
+$error = '';
+$email = '';
+$name = '';
+$dept = '';
+$role = '';
 if($conn)
 {
-	$error = '';
-	$email = '';
-	$name = '';
-	$dept = '';
-	$role = '';
 	if(isset($_POST['signup_btn']))
 	{
     $email = $_POST['reg_email'];
     $name = $_POST['fullname'];
-
-		if(!empty($_POST['department']))
+	$dept = $_POST['department'];
+	$role = $_POST['role'];
+		if(!empty($email) && !empty($name) && !empty($_POST['password']) && !empty($_POST['re_password']))
 		{
-			$dept = $_POST['department'];	
-		}
-
-		if(!empty($_POST['reg_email']) && !empty($_POST['fullname']) && !empty($_POST['password']) && !empty($_POST['re_password']))
-		{
-			if(!empty($_POST['department']) && !empty($_POST['role']))
+			if(!empty($dept) && !empty($role))
 			{
 				$specchars = '"%\'*;<>?^`{|}~/\\#=&';
 				$pat = preg_quote($specchars, '/');
@@ -141,87 +136,10 @@ if($conn)
 			$error = 'All Fields Must Be Filled';
 		}
 	}
-
-
-//Login
-	if (isset($_POST['login_btn'])) 
-	{
-			$email = $_POST['login_email'];
-			$password = $_POST['login_password'];
-
-			if (!empty($email) && !empty($password)) 
-			{
-				// Validate email and password for invalid characters
-				$specchars = '"%\'*;<>?^`{|}~/\\#=&';
-				$pat = preg_quote($specchars, '/');
-				if (preg_match('/['.$pat.']/', $email) || preg_match('/['.$pat.']/', $password)) 
-				{
-					$error = 'Invalid characters in email or password';
-				} 
-				
-				else 
-				{
-					$s_email = mysqli_real_escape_string($conn, $email);
-					$s_password = mysqli_real_escape_string($conn, $password);
-
-					$check_email = mysqli_query($conn, "SELECT * FROM `users` WHERE `Email` = '$s_email'");
-					$row_email = mysqli_num_rows($check_email);
-
-					if ($row_email > 0) {
-						$check_active = mysqli_query($conn, "SELECT * FROM `users` WHERE `Email` = '$s_email' AND `Status` = 'Active'");
-						$row_active = mysqli_num_rows($check_active);
-
-						if ($row_active > 0) {
-							$query = mysqli_query($conn, "SELECT * FROM `users` WHERE `Email` = '$s_email'");
-							$info = mysqli_fetch_assoc($query);
-
-							$verify_email = $info['Email'];
-							$hash = $info['Password'];
-							$user_id = $info['User_ID'];
-							$name = $info['Full_Name'];
-							$dept = $info['Department'];
-							$role = $info['Role'];
-
-							if ($verify_email === $email && password_verify($password, $hash)) {
-								session_start();
-								$_SESSION['id'] = $user_id;
-								$_SESSION['email'] = $verify_email;
-								$_SESSION['name'] = $name;
-								$_SESSION['dept'] = $dept;
-								$_SESSION['role'] = $role;
-								$_SESSION['sess'] = TRUE;
-								
-								if($role == 'Department Head' || $role == 'Academic Head')
-								{
-									header('Location: head-dash.php');
-									exit();
-								}
-								
-								if($role == 'Admin')
-								{
-									header('Location: admin-dash.php');
-									exit();
-								}
-								
-								else
-								{
-									header('Location: user-dash.php');
-									exit();
-								}
-							} else {
-								$error = 'Invalid password';
-							}
-						} else {
-							$error = 'Account still pending approval';
-						}
-					} else {
-						$error = 'Email not registered';
-					}
-				}
-			} else {
-				$error = 'Please fill in all fields';
-			}
-		}
+}
+else
+{
+	$error = 'Connection Error';
 }
 ?>
 <!DOCTYPE html>
@@ -229,63 +147,93 @@ if($conn)
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Login & Registration Form</title>
+    <title>SIGNUP</title>
     <link href="css/register.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <input type="checkbox" id="check">
-        <div class="login form">
-            <header>LOGIN</header>
-			<center><a><?php echo $error; ?></a></center>
-            <form action="register.php" method="POST">
-                <input type="text" name="login_email" placeholder="Enter your email">
-                <input type="password" name="login_password" placeholder="Enter your password">
-                <button type="submit" id="login" name="login_btn" value="Login">Login</button>
-            </form>
-            <div class="signup">
-                <span class="signup">Don't have an account?
-                    <label for="check">Sign up</label>
-                </span>
-            </div>
-        </div>
-        <div class="registration form">
+        <div class="signup form">
             <header>SIGNUP</header>
-            <form action="register.php" method="post">
+			<a><?php echo $error; ?></a>
+            <form action="register.php" method="POST">
                 <input type="text" name="fullname" placeholder="Full Name">
                 <input type="text" name="reg_email" placeholder="Email Address">
                 <select name="department">
-                    <option value="" disabled selected>Select Department</option>
-                    <option value="hr">Early Childhood Program</option>
-                    <option value="marketing">Elementary Department</option>
-                    <option value="finance">Junior High School Dept.</option>
-                    <option value="finance">Senior High School Dept.</option>
-                    <option value="finance">College Department</option>
-                    <option value="finance">Graduate Studies</option>
-                    <option value="manager">GSU</option>
-                    <option value="developer">PPA</option>
-                    <option value="designer">Budget and Financing</option>
-                    <option value="designer">ICTC</option>
+						<option value="" disabled selected>Select Department</option>
+						<option value="Accounting Unit">Accounting Unit</option>
+						<option value="Alumni Office">Alumni Office</option>
+						<option value="Aula">Aula</option>
+						<option value="Bookstore">Bookstore Unit</option>
+						<option value="Budget and Control">Budget and Control Unit</option>
+						<option value="Finance">Finance</option>
+						<option value="Canteen Unit">Canteen Unit</option>
+						<option value="Campus Ministry">Campus Ministry</option>
+						<option value="College Dean">College Dean</option>
+						<option value="College Faculty">College Faculty</option>
+						<option value="College Guidance">College Guidance</option>
+						<option value="College Library">College Library</option>
+						<option value="College O.S.A">College O.S.A</option>
+						<option value="Grade School Principal">Grade School Principal</option>
+						<option value="Grade School Academics">Grade School Academics</option>
+						<option value="Grade School E.C.E">Grade School E.C.E</option>
+						<option value="Grade School Faculty">Grade School Faculty</option>
+						<option value="Grade School Guidance">Grade School Guidance</option>
+						<option value="Grade School Library">Grade School Library</option>
+						<option value="Grade School O.S.A">Grade School O.S.A</option>
+						<option value="Junior High School Principal">Junior High School Principal</option>
+						<option value="Senior High School Principal">Senior High School Principal</option>
+						<option value="High School Academics">High School Academics</option>
+						<option value="High School Faculty (BHS)">High School Faculty (BHS)</option>
+						<option value="High School Faculty (GHS)">High School Faculty (GHS)</option>
+						<option value="High School Guidance">High School Guidance</option>
+						<option value="High School Laboratory">High School Laboratory</option>
+						<option value="High School Library">High School Library</option>
+						<option value="High School O.S.A">High School O.S.A</option>
+						<option value="High School Reading Center">High School Reading Center</option>
+						<option value="Medical-Dental">Medical-Dental</option>
+						<option value="Mini Hotel">Mini Hotel</option>
+						<option value="Pastoral Ministry">Pastoral Ministry</option>
+						<option value="President's Office">President's Office</option>
+						<option value="Printing Unit">Printing Unit</option>
+						<option value="Purchasing Unit">Purchasing Unit</option>
+						<option value="Registrar">Registrar</option>
+						<option value="Research">Research</option>
+						<option value="School of Graduate Studies">School of Graduate Studies</option>
+						<option value="Security Office">Security Office</option>
+						<option value="Sister's Quarter">Sister's Quarter</option>
+						<option value="SGS Library">SGS Library</option>
+						<option value="Stocks">Stocks</option>
+						<option value="Treasury Unit">Treasury Unit</option>
+						<option value="TVSD">TVSD</option>
+						<option value="VPAA">VPAA</option>
+						<option value="HRMO">HRMO</option>
+						<option value="ICTC">ICTC</option>
+						<option value="GSU">GSU</option>
+						<option value="PAASCU">PAASCU</option>
+						<option value="CFO">CFO</option>
                 </select>
                 <select name="role">
                     <option value="" disabled selected>Select Role in Institution</option>
-                    <option value="designer">School Administration</option>
-                    <option value="designer">Dean's Team</option>
-                    <option value="finance">Teaching Personnel</option>
-                    <option value="finance">Non-Teaching Personnel</option>
+                    <option value="School Administration">School Administration</option>
+                    <option value="Department Head">Department Head</option>
+					<option value="Program Head">Program Head</option>
+                    <option value="Teaching Personnel">Teaching Personnel</option>
+                    <option value="Non-Teaching Personnel">Non-Teaching Personnel</option>
+				</select>
                 <input type="password" name="password" placeholder="Password">
-                <input type="password" name="confirm_password" placeholder="Confirm Password">
-                </select>
+                <input type="password" name="re_password" placeholder="Confirm Password">
 
                 <button type="submit" id="login" name="signup_btn" value="Signup">Sign Up</button>
             </form>
             <div class="signup">
                 <span class="signup">Already have an account?
-                    <label for="check">Login</label>
+                    <label><a href="login.php">Login</a></label>
                 </span>
             </div>
         </div>
     </div>
+    </div>
+    
 </body>
 </html>

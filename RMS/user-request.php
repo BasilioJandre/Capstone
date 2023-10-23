@@ -77,11 +77,15 @@ if(isset($_POST['send_btn']))
 			$s_notes = mysqli_real_escape_string($conn, $req_notes);
 			$notes = htmlspecialchars($s_notes);
 			
-			$insert = mysqli_query($conn, "INSERT INTO `requests`(`User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`,`Status`) VALUES ('$name','$user_id','$dept','$c_date','$n_date','$req_type','$req_service','$req_qty','$notes','New')");
+			$insert = mysqli_query($conn, "INSERT INTO `requests`(`User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`,`Status`) VALUES ('$name','$user_id','$dept','$c_date','$n_date','$req_type','$req_service','$req_qty','$notes','Pending')");
 			$count += 1;
 		}
+		
 	}
-
+	if($insert)
+	{
+		Header("Refresh:0");
+	}
 }
 
 
@@ -116,7 +120,7 @@ if(isset($_POST['save_btn']))
 	$check_email = mysqli_query($conn, "SELECT * FROM `users` WHERE `Email` = '$new_email'");
 	$count_email = mysqli_num_rows($check_email);
 	
-	if($count_email == 0)
+	if($count_email > 0)
 	{
 	$new_email = $email;
 	}
