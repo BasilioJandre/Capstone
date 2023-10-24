@@ -5,18 +5,14 @@ include('database/php/session.php');
 // Checks if Logged In
 if ($sess != TRUE)
 {
-	session_unset();
-    session_destroy();
-    header("Location: register.php");
+    header("Location: logout.php");
     exit;
 }
 
 // Checks for User type
 if ($role != 'Admin')
 {
-	session_unset();
-    session_destroy();
-    header("Location: register.php");
+    header("Location: logout.php");
     exit;
 }
 
@@ -378,7 +374,7 @@ $check_picture = mysqli_num_rows($count_image);
                 </div>
                 <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                 <div class="modal-footer">
-                    <a class="btn btn-primary" href="register.php">Logout</a>
+                    <a class="btn btn-primary" href="logout.php">Logout</a>
                 </div>
             </div>
         </div>

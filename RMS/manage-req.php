@@ -6,9 +6,7 @@ include('database/php/session.php');
 // Checks if Logged In
 if ($sess != TRUE)
 {
-	session_unset();
-    session_destroy();
-    header("Location: register.php");
+    header("Location: logout.php");
     exit;
 }
 
@@ -19,9 +17,7 @@ if ($role == 'Department Head' || $role == 'Academic Head')
 }
 else
 {
-	session_unset();
-    session_destroy();
-    header("Location: register.php");
+    header("Location: logout.php");
     exit;
 }
 
@@ -203,7 +199,7 @@ while($Req = mysqli_fetch_assoc($GetReq))
 						<!-- Add more request details as needed -->
 					</div>
 					<div class="modal-footer">
-						<button type="submit" class="btn btn-primary save-status" name="save_status">Save Status</button>
+						<button type="submit" class="btn btn-primary save-status" name="send_request">Send Request</button>
 					</div>
 				</div>
 			</div>
@@ -320,26 +316,12 @@ while($I_Req = mysqli_fetch_assoc($I_GetReq))
 
 						<!-- Add a dropdown menu to select the request status -->
 						<div class="form-group">
-							<label for="requestStatus">Forward To:</label>
+							<label for="requestStatus">Status:</label>
 							<select class="form-control" id="requestStatus" name="status" required>
-								<option value="" selected disabled>Select Department</option>
-								<option value="OP">OP</option>
-								<option value="SGS">SGS</option>
-								<option value="Research">Research</option>
-								<option value="CFO">CFO</option>
-								<option value="Admin $ Gen.Facilities">Admin & Gen.Facilities</option>
-								<option value="Registrar">Registrar</option>
-								<option value="College">College</option>
-								<option value="JHS/SHS">JHS/SHS</option>
-								<option value="Grade School">Grade School</option>
-								<option value="IOSA">IOSA</option>
-								<option value="VP Finance & Business Affairs">VP Finance & Business Affairs</option>
-								<option value="HRMO">HRMO</option>
-								<option value="ICTC">ICTC</option>
-								<option value="EVP Office">EVP Office</option>
-								<option value="VPAA Office">VPAA Office</option>
-								<option value="GSU">GSU</option>
-								<option value="Clinic">Clinic</option>
+								<option value="" selected disabled>Select Status</option>
+								<option value="Approve">Approve</option>
+								<option value="Decline">Decline</option>
+								<option value="Pending">Pending</option>
 							</select>
 						</div>
 						<div class="form-group">
@@ -393,13 +375,28 @@ while($I_Req = mysqli_fetch_assoc($I_GetReq))
 }
 
 //Save Outgoing Status
-if(isset($_POST['save_status']))
+if(isset($_POST['send_request']))
 {
 	$UpReq = $_POST['up_req_id'];
 	$AddNotes = $_POST['note_area'];
 	$Forward = $_POST['forward'];
 	
-	$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = 'Forwarded', `Forward_To` = '$Forward' WHERE `Requisition_No` = $UpReq");
+	$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = 'Forwarded', `Forward_To` = '$Forward', `Noted_By` = '$name($user_id)' WHERE `Requisition_No` = $UpReq");
+	
+	if($update_req)
+	{
+		Header("Refresh:0");
+	}
+}
+
+//Save Incoming Status
+if(isset($_POST['save_status']))
+{
+	$UpReq = $_POST['up_req_id'];
+	$AddNotes = $_POST['note_area'];
+	$Status = $_POST['status'];
+	
+	$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = '$Status', `Approved_By` = '$name($user_id)' WHERE `Requisition_No` = $UpReq");
 	
 	if($update_req)
 	{
@@ -682,7 +679,7 @@ if(isset($_POST['btn_del']))
                 </div>
                 <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                 <div class="modal-footer">
-                    <a class="btn btn-primary" href="register.php">Logout</a>
+                    <a class="btn btn-primary" href="logout.php">Logout</a>
                 </div>
             </div>
         </div>
@@ -690,9 +687,11 @@ if(isset($_POST['btn_del']))
 
     <!-- View Modal -->
     <?php echo $ReqView; ?>
+	<?php echo $I_ReqView; ?>
 
     <!-- Delete Modal -->
     <?php echo $ReqDel; ?>
+	<?php echo $I_ReqDel; ?>
 
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>

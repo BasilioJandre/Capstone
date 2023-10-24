@@ -2,6 +2,10 @@
 include 'database/php/conn.php';
 include 'database/php/session.php';
 
+session_unset();
+session_destroy();
+
+
 $error = '';
 $email = '';
 $name = '';

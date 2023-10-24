@@ -117,4 +117,88 @@ body {
 .signup label:hover {
   text-decoration: underline;
 }
+.header {
+  text-align: center;
+  font-weight: bold;
+  font-size: 24px;
+  font-family: 'Times New Roman', Times, serif;
+}
 
+h2 {
+  text-align: center;
+  font-size: 24px;
+}
+
+.logo {
+  display: block;
+  margin: 0 auto;
+  width: 100px;
+}
+
+.line {
+  clear: both;
+  margin-top: 20px;
+  border-top: 2px solid #000;
+}
+
+.info {
+  margin-top: 10px;
+  font-size: 18px;
+  display: flex;
+  justify-content: space-between;
+}
+.total-requests {
+  text-align: right;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  border: 1px solid #000;
+  padding: 10px;
+  text-align: center;
+  font-size: 18px;
+}
+
+th:first-child {
+  width: 15%;
+}
+
+.page-break {
+  page-break-before: always;
+}
+
+.centered-address {
+  text-align: center;
+}
+
+@media print {
+
+  body {
+      font-size: 14px;
+      margin: 0;
+      padding: 0;
+  }
+  .header {
+      font-size: 18px;
+  }
+  h2 {
+      font-size: 18px;
+  }
+  .logo {
+      display: none;
+  }
+  .line {
+      display: none; 
+  }
+  .info {
+      font-size: 16px;
+  }
+  table {
+      font-size: 16px;
+  }
+}
