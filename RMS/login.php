@@ -2,6 +2,12 @@
 include 'database/php/conn.php';
 include 'database/php/session.php';
 
+if($_SESSION['sess'] == TRUE)
+{
+	session_unset();
+    session_destroy();
+}
+
 $error = '';
 $email = '';
 if($conn)
