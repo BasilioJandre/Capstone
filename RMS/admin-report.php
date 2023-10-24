@@ -5,18 +5,14 @@ include('database/php/session.php');
 // Checks if Logged In
 if ($sess != TRUE)
 {
-	session_unset();
-    session_destroy();
-    header("Location: register.php");
+    header("Location: logout.php");
     exit;
 }
 
 // Checks for User type
 if ($role != 'Admin')
 {
-	session_unset();
-    session_destroy();
-    header("Location: register.php");
+    header("Location: logout.php");
     exit;
 }
 
@@ -76,10 +72,6 @@ while($reports = mysqli_fetch_assoc($getreport))
 						<p>Notes: '.$req_notes.'</p>
 						<p>Status: '.$req_status.'</p>
 					</div>
-					<div class="modal-footer">
-						<button class="btn btn-primary" type="button" onclick="window.print()">
-							<i class="fas fa-print"></i> Print
-						</button>
 					</div>
 				</div>
 			</div>
@@ -255,6 +247,9 @@ $check_picture = mysqli_num_rows($count_image);
                     </ul>
                 </nav>
                 <div class="container-fluid">
+                <button class="btn btn-primary mb-3" id="printButton">
+                    <i class="fas fa-print"></i> Generate Report
+                    </button>
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
                             <h6 class="m-0 font-weight-bold text-primary">REPORT</h6>
@@ -356,7 +351,7 @@ $check_picture = mysqli_num_rows($count_image);
                 </div>
                 <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                 <div class="modal-footer">
-                    <a class="btn btn-primary" href="register.php">Logout</a>
+                    <a class="btn btn-primary" href="logout.php">Logout</a>
                 </div>
             </div>
         </div>
@@ -411,6 +406,10 @@ $check_picture = mysqli_num_rows($count_image);
             });
         });
     </script>
-
+    <script>
+    document.getElementById("printButton").addEventListener("click", function() {
+        window.location.href = "reportGeneration.php";
+    });
+</script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 23, 2023 at 03:32 PM
+-- Generation Time: Oct 24, 2023 at 03:38 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.0.25
 
@@ -85,14 +85,6 @@ CREATE TABLE `requests` (
   `Forward_To` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `requests`
---
-
-INSERT INTO `requests` (`Requisition_No`, `User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`, `Additional_Notes`, `Noted_By`, `Approved_By`, `Status`, `Forward_To`) VALUES
-(1, 'testuser', '62215713', 'College Faculty', '2023-10-23', '1970-01-01', 'Repair', 'Consumable', 46582, 'asdasdadwadad', 'remark', '', '', 'Forwarded', 'CFO'),
-(5, 'shs', '47841552', 'High School Academics', '2023-10-23', '2023-10-11', 'Repair', 'Consumable', 246461, 'AAAAAAAAAAAAAAAAAAAAAAA', 'please work for the love of god', '', '', 'Forwarded', 'College');
-
 -- --------------------------------------------------------
 
 --
@@ -114,10 +106,11 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`User_ID`, `Full_Name`, `Email`, `Department`, `Role`, `Password`, `Status`) VALUES
-(22558296, 'shs acad head', 'shsah@email.com', 'Senior High School Principal', 'Department Head', '$2y$15$FkQcPQXvm.UNXV.UyxWElO7M/lcbVYtb2Cpy5OcOl1H3IYeGKuqUu', 'Active'),
-(47841552, 'shs', 'shs@email.com', 'High School Academics', 'Teaching Personnel', '$2y$15$OmKu/q0jPObMHZ4a6lBN0eH00Swbn4gyLfMLs5aj1A4iFQ4cJGgvq', 'Active'),
-(54413949, 'firstuser', 'firstuser@email.com', 'College Dean', 'Department Head', '$2y$15$Xo8wUSfkHIwPQVVvwOtHfOE4bTB50kYmmaQnnhR/UcKDI2UErSClu', 'Active'),
-(62215713, 'testuser', 'testuser@email.com', 'College Faculty', 'Teaching Personnel', '$2y$15$K1XrBslg6.A9wi6nLropPu/sLLEHl69cUaHaGY5B7.bWEGLl/ufOS', 'Active');
+(22558296, 'Sarah Bearing', 'shs.dept_head@email.com', 'Senior High School Principal', 'Department Head', '$2y$15$FkQcPQXvm.UNXV.UyxWElO7M/lcbVYtb2Cpy5OcOl1H3IYeGKuqUu', 'Active'),
+(47841552, 'Pedro Silang', 'shs@email.com', 'High School Academics', 'Teaching Personnel', '$2y$15$OmKu/q0jPObMHZ4a6lBN0eH00Swbn4gyLfMLs5aj1A4iFQ4cJGgvq', 'Active'),
+(54413949, 'John Doe', 'col.dept_head@email.com', 'College Dean', 'Department Head', '$2y$15$Xo8wUSfkHIwPQVVvwOtHfOE4bTB50kYmmaQnnhR/UcKDI2UErSClu', 'Active'),
+(62215713, 'Jane Doe', 'college@email.com', 'College Faculty', 'Teaching Personnel', '$2y$15$K1XrBslg6.A9wi6nLropPu/sLLEHl69cUaHaGY5B7.bWEGLl/ufOS', 'Active'),
+(72111764, 'Admin', 'admin@email.com', 'Aula', 'Admin', '$2y$15$46lvkdbRdRZwYO9.9MvBFe3JOptrQMuggU2aA6T.Ad8ovE/fww7DC', 'Active');
 
 --
 -- Indexes for dumped tables
@@ -167,13 +160,13 @@ ALTER TABLE `image`
 -- AUTO_INCREMENT for table `requests`
 --
 ALTER TABLE `requests`
-  MODIFY `Requisition_No` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `Requisition_No` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `User_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62215714;
+  MODIFY `User_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72111765;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
