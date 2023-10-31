@@ -71,11 +71,6 @@ while($reports = mysqli_fetch_assoc($getreport))
 						<p>Notes: '.$req_notes.'</p>
 						<p>Status: Archived </p>
 					</div>
-					<div class="modal-footer">
-						<button class="btn btn-primary" type="button" onclick="window.print()">
-							<i class="fas fa-print"></i> Print
-						</button>
-					</div>
 				</div>
 			</div>
 		</div>
@@ -195,7 +190,7 @@ $check_picture = mysqli_num_rows($count_image);
             </li>
 			<li class="nav-item active">
                 <a class="nav-link" href="admin-archive.php">
-                    <i class="fas fa-fw fa-chart-area"></i>
+                    <i class="fas fa-fw fa-file-archive"></i>
                     <span>Archive</span>
                 </a>
             </li>
@@ -250,10 +245,20 @@ $check_picture = mysqli_num_rows($count_image);
                     </ul>
                 </nav>
                 <div class="container-fluid">
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">REPORT</h6>
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary">ARCHIVE</h6>
+                            <div class="input-group" style="width:300px;">
+                                <input type="text" class="form-control" id="searchInput" placeholder="Search...">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary btn-sm" id="searchButton">
+                                        <i class="fas fa-search"></i> Search
+                                    </button>
+                                </div>
+                            </div>
                         </div>
+                    </div>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -362,22 +367,20 @@ $check_picture = mysqli_num_rows($count_image);
     <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
     <script src="js/admin-dash-2.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $("#profileImage").change(function() {
-                readURL(this);
-            });
-
-            function readURL(input) {
-                if (input.files && input.files[0]) {
-                    var reader = new FileReader();
-                    reader.onload = function(e) {
-                        $('#previewImage').attr('src', e.target.result);
-                    }
-                    reader.readAsDataURL(input.files[0]);
-                }
+$(document).ready(function() {
+    $("#searchButton").click(function() {
+        var searchValue = $("#searchInput").val().toLowerCase();
+        $("#dataTable tbody tr").each(function() {
+            var rowText = $(this).text().toLowerCase();
+            if (rowText.includes(searchValue)) {
+                $(this).show();
+            } else {
+                $(this).hide();
             }
         });
-    </script>
+    });
+});
+</script>
     <script>
         $(document).ready(function() {
             $("#saveProfileButton").click(function() {
@@ -406,6 +409,5 @@ $check_picture = mysqli_num_rows($count_image);
             });
         });
     </script>
-
 </body>
 </html>

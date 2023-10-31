@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 24, 2023 at 03:38 PM
+-- Generation Time: Oct 31, 2023 at 03:05 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.0.25
 
@@ -85,6 +85,37 @@ CREATE TABLE `requests` (
   `Forward_To` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `requests`
+--
+
+INSERT INTO `requests` (`Requisition_No`, `User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`, `Additional_Notes`, `Noted_By`, `Approved_By`, `Status`, `Forward_To`) VALUES
+(1, 'Pedro Silang', '47841552', 'High School Academics', '2023-10-30', '2023-10-18', 'Transfer', 'Consumable', 13, 'dasdadw', 'yes', 'Sarah Bearing(22558296)', 'John Doe(54413949)', 'Approved', 'College'),
+(2, 'Pedro Silang', '47841552', 'High School Academics', '2023-10-30', '2023-11-09', 'Purchase', 'Consumable', 123, 'test notes again', '', '', '', 'New', '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `track`
+--
+
+CREATE TABLE `track` (
+  `Request_No` int(11) NOT NULL,
+  `Forward_Date` varchar(50) NOT NULL,
+  `Step2` varchar(50) NOT NULL,
+  `Step3` varchar(50) NOT NULL,
+  `Step4` varchar(50) NOT NULL,
+  `Step5` varchar(50) NOT NULL,
+  `Step6` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `track`
+--
+
+INSERT INTO `track` (`Request_No`, `Forward_Date`, `Step2`, `Step3`, `Step4`, `Step5`, `Step6`) VALUES
+(1, '2023-10-30', '2023-10-31', '', '', '', '');
+
 -- --------------------------------------------------------
 
 --
@@ -135,6 +166,12 @@ ALTER TABLE `requests`
   ADD PRIMARY KEY (`Requisition_No`);
 
 --
+-- Indexes for table `track`
+--
+ALTER TABLE `track`
+  ADD PRIMARY KEY (`Request_No`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -160,7 +197,13 @@ ALTER TABLE `image`
 -- AUTO_INCREMENT for table `requests`
 --
 ALTER TABLE `requests`
-  MODIFY `Requisition_No` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `Requisition_No` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `track`
+--
+ALTER TABLE `track`
+  MODIFY `Request_No` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `users`
