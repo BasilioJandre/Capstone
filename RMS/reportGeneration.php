@@ -43,8 +43,9 @@ $pdf->SetFont('Arial', '', 12);
 
 $pdf->Ln(10);
 $pdf->Cell(80, 10, 'Department:');
+$pdf->Ln(5);
 $pdf->Cell(80, 10, 'Request By Month:');
-$pdf->Ln(10);
+$pdf->SetX(160);
 $pdf->Cell(160, 10, 'Total Requests: ');
 $pdf->Ln(10);
 
@@ -71,6 +72,11 @@ while($request = mysqli_fetch_assoc($get_request))
 	$pdf->Cell(70, 10, $description, 1);
 	$pdf->Ln();
 }
+
+$pdf->Ln(5);
+$pdf->SetX(150);
+$pdf->Cell(160, 10, 'Over all Request: ');
+
 // Output PDF content to a variable
 $pdfContent = $pdf->Output('', 'S');
 

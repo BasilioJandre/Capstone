@@ -1,11 +1,13 @@
 <?php
 include('database/php/conn.php');
 include('database/php/session.php');
+error_reporting(E_ERROR | E_PARSE);
 
 $date = date('Y-m-d');
 
 $req_query = mysqli_query($conn,"SELECT * FROM `requests` WHERE `User_ID` = '$user_id'");
 $ReqList ='';
+$TrackList='';
 while($get_req = mysqli_fetch_assoc($req_query))
 {
 	$ReqNo = $get_req['Requisition_No'];
@@ -16,6 +18,41 @@ while($get_req = mysqli_fetch_assoc($req_query))
 	$ReqNDate = $get_req['Date_Needed'];
 	$ReqDesc = $get_req['Description'];
 	$ReqStat = $get_req['Status'];
+	$Req_Forward = $get_req['Forward_To'];
+	
+	$track_query = mysqli_query($conn,"SELECT * FROM `track` WHERE `Request_No` = '$ReqNo'");
+	$tracking = mysqli_fetch_assoc($track_query);
+	
+	$forwarded = $tracking['Forward_Date'];
+	$status = $tracking['Step2'];
+	
+	$tracking_list = '';
+	
+	if(!empty($forwarded))
+	{
+		$tracking_list .= '
+		
+		<li>
+		<div class="status">Request has been Forwarded</div>
+		<div class="date">'.$forwarded.'</div>
+		<div class="location">Request has been forwarded to '.$Req_Forward.'</div>
+		</li>
+		
+		';
+	}
+	
+	if(!empty($status))
+	{
+		
+		$tracking_list .='
+		
+		<li>
+		<div class="status">Request has been '.$ReqStat.'</div>
+		<div class="date">'.$status.'</div>
+		</li>
+		
+		';
+	}
 	
 	$ReqList .='
 	
@@ -28,7 +65,7 @@ while($get_req = mysqli_fetch_assoc($req_query))
 	<td>'.$ReqNDate.'</td>
 	<td>'.$ReqStat.'</td>
 	<td>
-	<a href="#" class="btn btn-info btn-sm" data-toggle="modal" data-target="#trackModal">
+	<a href="#" class="btn btn-info btn-sm" data-toggle="modal" data-target="#trackModal'.$ReqNo.'">
 		<i class="fas fa-eye"></i> Track
 	</a>
 	<a href="#" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal">
@@ -36,6 +73,55 @@ while($get_req = mysqli_fetch_assoc($req_query))
 	</a>
 	</td>
 	</tr>
+	
+	';
+	
+	$TrackList .='
+	<div class="modal fade" id="trackModal'.$ReqNo.'" tabindex="-1" role="dialog" aria-labelledby="trackModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="trackModalLabel">Track Request</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="tracking-status">
+                    <div class="tracking-number">
+						<h5>
+                        <strong>Request Number:</strong>
+                        <span id="requestNumber">'.$ReqNo.'</span>
+						</h5>
+                    </div>
+                    <div class="tracking-date">
+						<h5>
+                        <strong>Date Made:</strong>
+                        <span id="dateMade">'.$ReqDate.'</span>
+						</h5>
+					</div>
+                    <div class="tracking-date">
+						<h5>
+                        <strong>Date Needed:</strong>
+                        <span id="dateNeeded">'.$ReqNDate.'</span>
+						</h5>
+					</div>
+                </div>
+                <div class="tracking-history">
+                    <h5>Tracking History</h5>
+                    <ul>
+                        <li>
+                            <div class="status">Request Sent to your Department Head</div>
+                            <div class="date">'.$ReqDate.'</div>
+							<div class="location">your request shall be reviewed by the Department Head</div>
+                        </li>
+						'.$tracking_list.'
+					</ul>
+                </div>
+            </div>
+        </div>
+    </div>
+	</div>
 	
 	';
 }
@@ -341,25 +427,8 @@ $check_picture = mysqli_num_rows($count_image);
         </div>
     </div>
     
-    <!-- Tracking Modal -->
-    <div class="modal fade" id="trackModal" tabindex="-1" role="dialog" aria-labelledby="trackModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="trackModalLabel">Track Request</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <!-- Add your tracking information here -->
-                    <p>Tracking details for the request go here.</p>
-                </div>
-            </div>
-        </div>
-    </div>
+<?php echo $TrackList; ?>
 
-    <!-- Delete Modal -->
     <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -466,7 +535,7 @@ $check_picture = mysqli_num_rows($count_image);
                 </div>
                 <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                 <div class="modal-footer">
-                    <a class="btn btn-primary" href="register.php">Logout</a>
+                    <a class="btn btn-primary" href="logout.php">Logout</a>
                 </div>
             </div>
         </div>
@@ -522,7 +591,6 @@ $check_picture = mysqli_num_rows($count_image);
 		');
             });
 
-            // Handle "Delete Field" button click
             $('.delete-field-button').click(function () {
                 let div = document.getElementById('extraFields['+count+']');
 				div.parentNode.removeChild(div);

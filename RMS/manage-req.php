@@ -1,7 +1,12 @@
 <?php
 include('database/php/conn.php');
 include('database/php/session.php');
-
+date_default_timezone_set('Asia/Manila');
+	
+$curr_date = date('Y-m-d');
+$curr_date_ex = explode(' ',$curr_date);
+$curr_date_s = "$curr_date_ex[0]";
+$curr_date = date("Y-m-d", strtotime($curr_date_s));
 
 // Checks if Logged In
 if ($sess != TRUE)
@@ -145,7 +150,7 @@ while($Req = mysqli_fetch_assoc($GetReq))
 	<div class="modal fade" id="viewModal'.$ReqNo.'" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel" aria-hidden="true">
 		<form action="manage-req.php" method="POST">
 			<div class="modal-dialog" role="document">
-				<div class="modal-content">
+				<div class="modal-content" style="width:750px;">
 					<div class="modal-header">
 						<h5 class="modal-title" id="viewModalLabel">View Request</h5>
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -319,8 +324,8 @@ while($I_Req = mysqli_fetch_assoc($I_GetReq))
 							<label for="requestStatus">Status:</label>
 							<select class="form-control" id="requestStatus" name="status" required>
 								<option value="" selected disabled>Select Status</option>
-								<option value="Approve">Approve</option>
-								<option value="Decline">Decline</option>
+								<option value="Approved">Approve</option>
+								<option value="Declined">Decline</option>
 								<option value="Pending">Pending</option>
 							</select>
 						</div>
@@ -382,6 +387,7 @@ if(isset($_POST['send_request']))
 	$Forward = $_POST['forward'];
 	
 	$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = 'Forwarded', `Forward_To` = '$Forward', `Noted_By` = '$name($user_id)' WHERE `Requisition_No` = $UpReq");
+	$update_track = mysqli_query($conn, "INSERT INTO `track` (`Request_No`, `Forward_Date`) VALUES ('$UpReq', '$curr_date')");
 	
 	if($update_req)
 	{
@@ -397,6 +403,7 @@ if(isset($_POST['save_status']))
 	$Status = $_POST['status'];
 	
 	$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = '$Status', `Approved_By` = '$name($user_id)' WHERE `Requisition_No` = $UpReq");
+	$update_track = mysqli_query($conn, "UPDATE `track` SET `Step2` = '$curr_date' WHERE `Request_No` = '$UpReq'");
 	
 	if($update_req)
 	{
@@ -538,75 +545,83 @@ if(isset($_POST['btn_del']))
                         </li>
                     </ul>
                 </nav>
-                <!-- End of Topbar -->
-                <!-- Begin Page Content -->
                 <div class="container-fluid">
-                    <!-- DataTales Example -->
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Outgoing Requests</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                    <thead>
-                                        <tr>
-                                        <th>Request No.</th>
-                                            <th>Requestor</th>
-                                            <th>Department</th>
-                                            <th>Type of Request</th>
-                                            <th>Description</th>
-                                            <th>Request Date</th>
-                                            <th>Date Needed</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php echo $ReqList;?>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-					
-					<div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Incoming Requests</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                    <thead>
-                                        <tr>
-                                        <th>Request No.</th>
-                                            <th>Requestor</th>
-                                            <th>Department</th>
-                                            <th>Type of Request</th>
-                                            <th>Description</th>
-                                            <th>Request Date</th>
-                                            <th>Date Needed</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php echo $I_ReqList;?>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <div class="d-flex align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Outgoing Request</h6>
+                <div class="input-group" style="width:300px;">
+                    <input type="text" class="form-control" id="searchInputOutgoing" placeholder="Search...">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary btn-sm" id="searchButtonOutgoing">
+                            <i class="fas fa-search"></i> Search
+                        </button>
                     </div>
                 </div>
-                <!-- /.container-fluid -->
             </div>
-            <!-- End of Main Content -->
         </div>
-        <!-- End of Content Wrapper -->
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTableOutgoing" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Request No.</th>
+                            <th>Requestor</th>
+                            <th>Department</th>
+                            <th>Type of Request</th>
+                            <th>Description</th>
+                            <th>Request Date</th>
+                            <th>Date Needed</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php echo $ReqList; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-    <!-- End of Page Wrapper -->
-	
-	<!--Edit Profile-->
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <div class="d-flex align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Incoming Request</h6>
+                <div class="input-group" style="width:300px;">
+                    <input type="text" class="form-control" id="searchInputIncoming" placeholder="Search...">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary btn-sm" id="searchButtonIncoming">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTableIncoming" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Request No.</th>
+                            <th>Requestor</th>
+                            <th>Department</th>
+                            <th>Type of Request</th>
+                            <th>Description</th>
+                            <th>Request Date</th>
+                            <th>Date Needed</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php echo $I_ReqList; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 	<div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -700,6 +715,50 @@ if(isset($_POST['btn_del']))
     <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
     <!-- Custom scripts for all pages-->
     <script src="js/admin-dash-2.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Outgoing Request Search
+        $("#searchButtonOutgoing").click(function () {
+            var searchValue = $("#searchInputOutgoing").val().toLowerCase();
+            $("#dataTableOutgoing tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(searchValue) > -1);
+            });
+        });
+
+        // Incoming Request Search
+        $("#searchButtonIncoming").click(function () {
+            var searchValue = $("#searchInputIncoming").val().toLowerCase();
+            $("#dataTableIncoming tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(searchValue) > -1);
+            });
+        });
+    });
+</script>
+    <script>
+$(document).ready(function() {
+    $("#searchButton").click(function() {
+        var searchValue = $("#searchInput").val().toLowerCase();
+        $("#dataTable1 tbody tr").each(function() {
+            var rowText = $(this).text().toLowerCase();
+            if (rowText.includes(searchValue)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+
+        $("#dataTable2 tbody tr").each(function() {
+            var rowText = $(this).text().toLowerCase();
+            if (rowText.includes(searchValue)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
+});
+</script>
 
     <script>
         // JavaScript to handle modal actions
