@@ -165,11 +165,11 @@ else
                 <input type="text" name="reg_email" placeholder="Email Address">
                 <select name="department">
 						<option value="" disabled selected>Select Department</option>
-						<option value="Accounting Unit">Accounting Unit</option>
+						<option value="Accounting Unit">Accounting</option>
 						<option value="Alumni Office">Alumni Office</option>
 						<option value="Aula">Aula</option>
-						<option value="Bookstore">Bookstore Unit</option>
-						<option value="Budget and Control">Budget and Control Unit</option>
+						<option value="Bookstore">Bookstore</option>
+						<option value="Budget and Control">Budget and Control</option>
 						<option value="Finance">Finance</option>
 						<option value="Canteen Unit">Canteen Unit</option>
 						<option value="Campus Ministry">Campus Ministry</option>

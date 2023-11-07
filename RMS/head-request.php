@@ -1,327 +1,3 @@
-<?php
-include('database/php/conn.php');
-include('database/php/session.php');
-error_reporting(E_ERROR | E_PARSE);
-
-$date = date('Y-m-d');
-
-//Tracking and Request History
-$req_query = mysqli_query($conn,"SELECT * FROM `requests` WHERE `User_ID` = '$user_id'");
-$ReqList ='';
-$TrackList='';
-while($get_req = mysqli_fetch_assoc($req_query))
-{
-	$ReqNo = $get_req['Requisition_No'];
-	$ReqType = $get_req['Request_Type'];
-	$ReqServ = $get_req['Product/Service'];
-	$ReqQty = $get_req['Quantity'];
-	$ReqDate = $get_req['Date_Requested'];
-	$ReqNDate = $get_req['Date_Needed'];
-	$ReqDesc = $get_req['Description'];
-	$ReqStat = $get_req['Status'];
-	$Req_Forward = $get_req['Forward_To'];
-	
-	$track_query = mysqli_query($conn,"SELECT * FROM `track` WHERE `Request_No` = '$ReqNo'");
-	$tracking = mysqli_fetch_assoc($track_query);
-	
-	$forwarded_head = $tracking['Forward_Head'];
-	$forward_head_to = $tracking['Forward_Head_To'];
-	$forwarded_evp_vpaa = $tracking['Forward_EVP/VPAA'];
-	$forwarded_budget = $tracking['Forward_Budget'];
-	$forward_budget_to = $tracking['Forward_Budget_To'];
-	$handled_date = $tracking['Handled_Date'];
-	$request_status = $tracking['Request_Status'];
-	$p_date = $tracking['Purchase_Date'];
-	$d_date = $tracking['Deliver_Date'];
-	
-	$tracking_list = '';
-	
-	if(!empty($forwarded_head))
-	{
-		$tracking_list .= '
-		
-		<li>
-		<div class="status">('.$forwarded_head.') Request has been Forwarded</div>
-		<div class="location">Your Department Head has forwarded your request to '.$forward_head_to.'</div>
-		</li>
-		
-		';
-	}
-	
-	if(!empty($forwarded_evp_vpaa))
-	{
-		
-		$tracking_list .='
-		
-		<li>
-		<div class="status">('.$forwarded_evp_vpaa.') Request has been Forwarded</div>
-		<div class="location">Request has been forwarded to Budget and Control</div>
-		</li>
-		
-		';
-	}
-	
-	if(!empty($forwarded_budget))
-	{
-		
-		$tracking_list .='
-		
-		<li>
-		<div class="status">('.$forwarded_budget.') Request has been Forwarded</div>
-		<div class="location">Request has been recieved by '.$forward_budget_to.'</div>
-		</li>
-		
-		';
-	}
-	
-	if(!empty($handled_date))
-	{
-		
-		if($request_status == 'Requires Purchase')
-		{
-			$tracking_list .='
-			
-			<li>
-			<div class="status">('.$handled_date.') Request has been returned to Budget and Control</div>
-			<div class="location">Request '.$request_status.'</div>
-			</li>
-			
-			';
-		}
-		else
-		{
-			$tracking_list .='
-			
-			<li>
-			<div class="status">('.$handled_date.') Request Closed</div>
-			<div class="location">Request '.$request_status.'</div>
-			</li>
-			
-			';
-		}
-	}
-	
-	if(!empty($p_date))
-	{
-		
-		$tracking_list .='
-		
-		<li>
-		<div class="status">('.$p_date.') Item has been Purchased</div>
-		<div class="location">The item will be delivered shortly</div>
-		</li>
-		
-		';
-	}
-	
-	if(!empty($d_date))
-	{
-		
-		$tracking_list .='
-		
-		<li>
-		<div class="status">('.$d_date.') Item has been Delivered</div>
-		<div class="date"></div>
-		</li>
-		
-		<li>
-		<div class="status">Request Closed</div>
-		</li>
-		
-		';
-	}
-	
-	$ReqList .='
-	
-	<tr>
-	<td>'.$ReqNo.'</td>
-	<td>'.$ReqType.'</td>
-	<td>'.$ReqServ.'</td>
-	<td>'.$ReqDesc.'</td>
-	<td>'.$ReqDate.'</td>
-	<td>'.$ReqNDate.'</td>
-	<td>'.$ReqStat.'</td>
-	<td>
-	<a href="#" class="btn btn-info btn-sm" data-toggle="modal" data-target="#trackModal'.$ReqNo.'">
-		<i class="fas fa-eye"></i> Track
-	</a>
-	<a href="#" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal">
-		<i class="fas fa-trash"></i> Delete
-	</a>
-	</td>
-	</tr>
-	
-	';
-	
-	$TrackList .='
-	<div class="modal fade" id="trackModal'.$ReqNo.'" tabindex="-1" role="dialog" aria-labelledby="trackModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="trackModalLabel">Track Request</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="tracking-status">
-                    <div class="tracking-number">
-						<h5>
-                        <strong>Request Number:</strong>
-                        <span id="requestNumber">'.$ReqNo.'</span>
-						</h5>
-                    </div>
-                    <div class="tracking-date">
-						<h5>
-                        <strong>Date Made:</strong>
-                        <span id="dateMade">'.$ReqDate.'</span>
-						</h5>
-					</div>
-                    <div class="tracking-date">
-						<h5>
-                        <strong>Date Needed:</strong>
-                        <span id="dateNeeded">'.$ReqNDate.'</span>
-						</h5>
-					</div>
-                </div>
-                <div class="tracking-history">
-                    <h5>Tracking History</h5>
-                    <ul>
-                        <li>
-                            <div class="status">('.$ReqDate.') Request Sent to your Department Head</div>
-							<div class="location">your request shall be reviewed by the Department Head</div>
-                        </li>
-						'.$tracking_list.'
-					</ul>
-                </div>
-            </div>
-        </div>
-    </div>
-	</div>
-	
-	';
-}
-
-
-//Form Function
-$count = 0;
-if(isset($_POST['send_btn']))
-{
-	$c_date_ex = explode(' ',$date);
-	$c_date_s = "$c_date_ex[0]";
-	$c_date = date("Y-m-d", strtotime($c_date_s));
-	
-	$n_date = $_POST['n_date'];
-	$n_date_ex = explode(' ',$n_date);
-	$n_date_s = "$n_date_ex[0]";
-	$n_date = date("Y-m-d", strtotime($n_date_s));
-	
-	$f_type = $_POST['f_request'];
-	$f_service = $_POST['f_service'];
-	$f_qty = $_POST['f_qty'];
-	$f_notes = $_POST['f_notes'];
-	
-	$sf_notes = mysqli_real_escape_string($conn, $f_notes);
-	$f_notes = htmlspecialchars($sf_notes);
-		
-	$insert = mysqli_query($conn, "INSERT INTO `requests`(`User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`,`Status`) VALUES ('$name','$user_id','$dept','$c_date','$n_date','$f_type','$f_service','$f_qty','$f_notes','New')");
-	
-	if(!empty($_POST['indicator'][0]))
-	{
-		foreach($_POST['request'] as $request)
-		{
-			
-			$req_type = $_POST['request'][$count];
-			$req_service = $_POST['service'][$count];
-			$req_qty = $_POST['qty'][$count];
-			$req_notes = $_POST['notes'][$count];
-			
-			$s_notes = mysqli_real_escape_string($conn, $req_notes);
-			$notes = htmlspecialchars($s_notes);
-			
-			$insert = mysqli_query($conn, "INSERT INTO `requests`(`User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`,`Status`) VALUES ('$name','$user_id','$dept','$c_date','$n_date','$req_type','$req_service','$req_qty','$notes','Pending')");
-			$count += 1;
-		}
-		
-	}
-	if($insert)
-	{
-		Header("Refresh:0");
-	}
-}
-
-
-// Update Profile
-if(isset($_POST['save_btn']))
-{
-	$tempname = $_FILES['profileImage']['tmp_name'];
-	
-	if(!empty($tempname))
-	{
-		$image_content = addslashes(file_get_contents($tempname));
-		$check = mysqli_query($conn, "SELECT * FROM `image` WHERE `User_ID` = '$user_id'");
-		$count = mysqli_num_rows($check);
-		
-		if($count <= 0)
-		{
-			$insert = mysqli_query($conn, "INSERT INTO `image` (`User_ID` , `User_Picture` ) VALUES ('$user_id' , '$image_content')");
-		}
-		
-		if($count > 0)
-		{
-			$update = mysqli_query($conn, "UPDATE `image` SET `User_Picture` = '$image_content' WHERE `User_ID` = '$user_id'");
-		}
-	}
-	
-	$new_name = $_POST['name'];
-	$new_email = $_POST['email'];
-	
-	$specchars = '"%\'*;<>?^`{|}~/\\#=&';
-	$pat = preg_quote($specchars, '/');
-	
-	$check_email = mysqli_query($conn, "SELECT * FROM `users` WHERE `Email` = '$new_email'");
-	$count_email = mysqli_num_rows($check_email);
-	
-	if($count_email > 0)
-	{
-	$new_email = $email;
-	}
-	if(!preg_match('/['.$pat.']/',$_POST['email']))
-	{
-		
-		if (!preg_match('/['.$pat.']/',$_POST['name']))
-		{
-		$update_user = mysqli_query($conn, "UPDATE `users` SET `Full_Name` = '$new_name' , `Email` = '$new_email' WHERE `User_ID` = '$user_id'");
-				
-			if($update_user)
-			{
-				$_SESSION['name'] = $new_name;
-				$_SESSION['email'] = $new_email;
-					
-				Header("Refresh:0");
-			
-			}
-			
-			else
-			{
-			
-			}
-		}
-	
-		else
-		{
-
-		}
-	}
-}
-
-
-//Takes User's Profile Picture
-$retrieve_image = mysqli_query($conn, "SELECT `User_Picture` FROM `image` WHERE `User_ID` = '$user_id'");
-$user_picture = mysqli_fetch_assoc($retrieve_image);
-$count_image = mysqli_query($conn, "SELECT * FROM `image` WHERE `User_ID` = '$user_id'");
-$check_picture = mysqli_num_rows($count_image);
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -331,33 +7,46 @@ $check_picture = mysqli_num_rows($count_image);
     <meta name="description" content="">
     <meta name="author" content="">
     <title>Requisition Management System</title>
+    <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <!-- Custom styles for this template-->
     <link href="css/admin-dash-2.min.css" rel="stylesheet">
 </head>
-<style>
-.customClass {};
-</style>
 <body id="page-top">
+    <!-- Page Wrapper -->
     <div id="wrapper">
+        <!-- Sidebar -->
         <ul class="navbar-nav bg-gradient-dark sidebar sidebar-dark accordion" id="accordionSidebar">
+            <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center">
-                <div class="sidebar-brand-icon">
+            <div class="sidebar-brand-icon">
                     <img src="img/pcc logo.png" alt="Logo" style="max-width: 80%; height: auto;">
                 </div>
                 <div class="sidebar-brand-text mx-3">Requisition Management System</div>
             </a>
+            <!-- Divider -->
             <hr class="sidebar-divider my-0">
-            <li class="nav-item">
-                <a class="nav-link" href="user-dash.php">
+            <!-- Nav Item - Dashboard -->
+            <li class="nav-item active">
+                <a class="nav-link" href="head-dash.php">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
             <hr class="sidebar-divider">
-            <li class="nav-item active">
-                <a class="nav-link" href="user-request.php">
+            <!-- Nav Item - Charts -->
+
+            <li class="nav-item">
+                <a class="nav-link" href="manage-req.php">
                     <i class="fas fa-fw fa-table"></i>
+                    <span>Manage Request</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="head-request.php">
+                    <i class="fa fa-plus-square"></i>
                     <span>Request Process</span>
                 </a>
             </li>
@@ -394,8 +83,8 @@ $check_picture = mysqli_num_rows($count_image);
                         </li>
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo $name; ?> <br> <?php echo $role; ?></span>
-                                <img class="img-profile rounded-circle" src="<?php if($check_picture > 0){echo 'data:image/jpg;charset=utf8;base64,'; echo base64_encode($user_picture['User_Picture']);} else {echo 'img/undraw_profile.svg';} ?>">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"></span>
+                                <img class="img-profile rounded-circle" src="">
                             </a>
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
                                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#editProfileModal">
@@ -434,7 +123,7 @@ $check_picture = mysqli_num_rows($count_image);
                             </tr>
                         </thead>
                         <tbody>
-                            <?php echo $ReqList; ?>
+                            
                         </tbody>
                     </table>
                 </div>
@@ -449,18 +138,18 @@ $check_picture = mysqli_num_rows($count_image);
                 <div class="modal-header">
                     <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                        <span aria-hidden="true"></span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <form action='user-request.php' method="POST" enctype="multipart/form-data" id="profileEditForm">
                         <div class="form-group">
                             <label for="name">Name</label>
-                            <input type="text" class="form-control" id="name" name="name" value="<?php echo $name; ?>">
+                            <input type="text" class="form-control" id="name" name="name" value="">
                         </div>
                         <div class="form-group">
                             <label for="email">Email Address</label>
-                            <input type="email" class="form-control" id="email" name="email" value="<?php echo $email; ?>">
+                            <input type="email" class="form-control" id="email" name="email" value="">
                         </div>
                         <div class="form-group">
                             <label for="department">Department</label>
@@ -505,23 +194,21 @@ $check_picture = mysqli_num_rows($count_image);
         </div>
     </div>
     
-<?php echo $TrackList; ?>
-
     <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Delete Request</h5>
+                    <h5 class="modal-title" id="deleteModalLabel">Archive Request</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                        <span aria-hidden="true"></span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <!-- Add your delete confirmation message here -->
-                    <p>Are you sure you want to delete this request?</p>
+                    <p>Are you sure you want to archive this request?</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger">Delete</button>
+                    <button type="button" class="btn btn-danger">Archive</button>
                 </div>
             </div>
         </div>
@@ -534,18 +221,18 @@ $check_picture = mysqli_num_rows($count_image);
                 <div class="modal-header">
                     <h5 class="modal-title" id="newRequestModalLabel">Request Form</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                        <span aria-hidden="true"></span>
                     </button>
                 </div>
                 <div class="modal-body">
                         <div class="form-row">
                             <div class="form-group col-md-4">
                                 <label for="requestorName">Name</label>
-                                <input type="text" class="form-control" id="requestorName" value="<?php echo $name; ?>" disabled="disabled">
+                                <input type="text" class="form-control" id="requestorName" value="" disabled="disabled">
                             </div>
                             <div class="form-group col-md-4">
                                 <label for="requestDate">Date</label>
-                                <input type="date" class="form-control" id="requestDate" value="<?php echo $date; ?>" disabled="disabled">
+                                <input type="date" class="form-control" id="requestDate" value="" disabled="disabled">
                             </div>
                             <div class="form-group col-md-4">
                                 <label for="dateNeeded">Date Needed</label>
