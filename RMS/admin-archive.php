@@ -42,9 +42,10 @@ while($reports = mysqli_fetch_assoc($getreport))
 	<td>'.$req_name.' ('.$req_id.')</td>
 	<td>'.$req_dept.'</td>
 	<td>'.$req_desc.'</td>
-	<td>oop</td>
+	<td>'.$req_notes.'</td>
+	<td>Archived</td>
 	<td>
-	<button class="btn btn-primary" data-toggle="modal" data-target="#viewModal'.$req_no.'"><i class="fas fa-eye"></i> View</button>
+	<button class="btn btn-primary" data-toggle="modal" data-target="#viewModal'.$req_no.'"><i class="fas fa-eye"></i>View</button>
 	</td>
 	</tr>
 	
@@ -268,6 +269,7 @@ $check_picture = mysqli_num_rows($count_image);
 											<th>REQUESTOR</th>
 											<th>DEPARTMENT</th>
                                             <th>REQUEST DESCRIPTION</th>
+											<th>REMARKS</th>
                                             <th>STATUS</th>
                                             <th></th>
                                         </tr>
