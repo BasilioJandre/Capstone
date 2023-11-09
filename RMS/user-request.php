@@ -224,7 +224,7 @@ if(isset($_POST['send_btn']))
 	$sf_notes = mysqli_real_escape_string($conn, $f_notes);
 	$f_notes = htmlspecialchars($sf_notes);
 		
-	$insert = mysqli_query($conn, "INSERT INTO `requests`(`User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`,`Status`) VALUES ('$name','$user_id','$dept','$c_date','$n_date','$f_type','$f_service','$f_qty','$f_notes','New')");
+	$insert = mysqli_query($conn, "INSERT INTO `requests`(`User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`,`Status`) VALUES ('$name','$user_id','$dept','$c_date','$n_date','$f_type','$f_service','$f_qty','$f_notes','Pending')");
 	
 	if(!empty($_POST['indicator'][0]))
 	{

@@ -96,32 +96,97 @@ $count_image = mysqli_query($conn, "SELECT * FROM `image` WHERE `User_ID` = '$us
 $check_picture = mysqli_num_rows($count_image);
 
 //Outgoing Requests
-$GetReq = mysqli_query($conn, "SELECT * FROM `requests`");;
 if($dept == 'College Dean')
 {
-	$GetReq = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Department`= 'College Faculty' OR `Department`= 'College Guidance' OR `Department`= 'College Library' OR `Department`= 'College O.S.A'");
+	$Condition = "`Department`= 'College Faculty' OR `Department`= 'College Guidance' OR `Department`= 'College Library' OR `Department`= 'College O.S.A'";
 }
 
-if($dept == 'Junior High School Principal' || $dept == 'Senior High School Principal')
+elseif($dept == 'Junior High School Principal' || $dept == 'Senior High School Principal')
 {
-	$GetReq = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Department`= 'High School Faculty (BHS)' OR `Department`= 'High School Faculty (GHS)' OR `Department`= 'High School Academics' OR `Department`= 'High School Guidance' OR `Department`= 'High School Library' OR `Department`= 'High School Laboratory' OR `Department`= 'High School O.S.A'");
+	$Condition = "`Department`= 'High School Faculty (BHS)' OR `Department`= 'High School Faculty (GHS)' OR `Department`= 'High School Academics' OR `Department`= 'High School Guidance' OR `Department`= 'High School Library' OR `Department`= 'High School Laboratory' OR `Department`= 'High School O.S.A'";
 }
 
-if($dept == 'Grade School Principal')
+elseif($dept == 'Grade School Principal')
 {
-	$GetReq = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Department` = 'Grade School Academics' OR `Department` = 'Grade School E.C.E' OR `Department` = 'Grade School Faculty' OR `Department` = 'Grade School Guidance' OR `Department` = 'Grade School Library' OR `Department` = 'Grade School O.S.A'");
+	$Condition = "`Department` = 'Grade School Academics' OR `Department` = 'Grade School E.C.E' OR `Department` = 'Grade School Faculty' OR `Department` = 'Grade School Guidance' OR `Department` = 'Grade School Library' OR `Department` = 'Grade School O.S.A'";
 }
 
-if($dept == 'Budget and Control')
+elseif($dept == 'Finance')
 {
-	$GetReq = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Forward_To` = 'Budget and Control'");
+	$Condition = "`Department` = 'Treasury' OR `Department` = 'Accounting' OR `Department` = 'Budget and Control' OR `Department` = 'Bookstore' OR `Department` = 'Canteen' OR `Department` = 'Printing' OR `Department` = 'Purchasing' OR `Department` = 'Stocks'";
 }
 
-if($dept == 'ICTC')
+elseif($dept == 'CFO')
 {
-	$GetReq = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Department` = 'test'");
+	$Condition = "`Department` = 'Sister Quarter' OR `Department` = 'Security Office' OR `Department` = 'Campus Ministry' OR `Department` = 'Pastoral Ministry'";
 }
 
+elseif($dept == 'ICTC')
+{
+	$Condition = "`Department` = 'ICTC'";
+}
+
+elseif($dept == 'GSU')
+{
+	$Condition = "`Department` = 'GSU'";
+}
+
+elseif($dept == 'HRMO')
+{
+	$Condition = "`Department` = 'HRMO'";
+}
+
+elseif($dept == 'Registrar')
+{
+	$Condition = "`Department` = 'Registrar'";
+}
+
+elseif($dept == 'Aula')
+{
+	$Condition = "`Department` = 'Aula'";
+}
+
+elseif($dept == 'Alumni Office')
+{
+	$Condition = "`Department` = 'Alumni Office'";
+}
+
+elseif($dept == 'Medical-Dental')
+{
+	$Condition = "`Department` = 'Medical-Dental'";
+}
+
+elseif($dept == 'Mini Hotel')
+{
+	$Condition = "`Department` = 'Mini Hotel'";
+}
+
+elseif($dept == 'PAASCU')
+{
+	$Condition = "`Department` = 'PAASCU'";
+}
+
+elseif($dept == 'TVSD')
+{
+	$Condition = "`Department` = 'TVSD'";
+}
+
+elseif($dept == 'Budget and Control')
+{
+	$Condition = "`Forward_To` = 'Budget and Control' AND `Request_Type` != 'Purchase'";
+}
+
+elseif($dept == 'VPAA' || $dept == 'EVP' || $dept == 'Office of the President')
+{
+	$Condition = "`Forward_To` = 'VPAA Office' OR `Forward_To` = 'EVP Office' OR `Forward_To` = 'Office of the President' OR `Department` = 'EVP' OR `Department` = 'VPAA' OR `Department` = 'Office of the President'";
+}
+
+else
+{
+	$Condition = "`Department` = 'NA'";
+}
+
+$GetReq = mysqli_query($conn, "SELECT * FROM `requests` WHERE ".$Condition."");
 $ReqList = '';
 $ReqView = '';
 $ReqDel = '';
@@ -190,23 +255,24 @@ if($dept == 'Budget and Control')
 							<label for="requestStatus">Forward To:</label>
 							<select class="form-control" id="requestStatus" name="forward" required>
 								<option value="" selected disabled>Select Department</option>
-								<option value="OP">OP</option>
-								<option value="SGS">SGS</option>
+								<option value="Office of the President">Office of the President</option>
+								<option value="School of Graduate Studies">School of Graduate Studies</option>
 								<option value="Research">Research</option>
 								<option value="CFO">CFO</option>
 								<option value="Admin $ Gen.Facilities">Admin & Gen.Facilities</option>
 								<option value="Registrar">Registrar</option>
 								<option value="College">College</option>
-								<option value="JHS/SHS">JHS/SHS</option>
+								<option value="JHS">JHS</option>
+								<option value="SHS">SHS</option>
 								<option value="Grade School">Grade School</option>
 								<option value="IOSA">IOSA</option>
-								<option value="VP Finance & Business Affairs">VP Finance & Business Affairs</option>
+								<option value="Finance">Finance</option>
 								<option value="HRMO">HRMO</option>
 								<option value="ICTC">ICTC</option>
 								<option value="EVP Office">EVP Office</option>
 								<option value="VPAA Office">VPAA Office</option>
 								<option value="GSU">GSU</option>
-								<option value="Clinic">Clinic</option>
+								<option value="Medical-Dental">Medical-Dental</option>
 							</select>
 						</div>
 						<div class="form-group">
@@ -220,6 +286,7 @@ if($dept == 'Budget and Control')
 						<!-- Add more request details as needed -->
 					</div>
 					<div class="modal-footer">
+						<button type="submit" class="btn btn-danger save-status" name="decline_request">Decline Request</button>
 						<button type="submit" class="btn btn-primary save-status" name="send_request">Send Request</button>
 					</div>
 				</div>
@@ -278,6 +345,7 @@ else
 						<!-- Add more request details as needed -->
 					</div>
 					<div class="modal-footer">
+						<button type="submit" class="btn btn-danger save-status" name="decline_request">Decline Request</button>
 						<button type="submit" class="btn btn-primary save-status" name="send_request">Send Request</button>
 					</div>
 				</div>
@@ -320,27 +388,82 @@ else
 
 
 //Incoming Requests
-$I_GetReq = mysqli_query($conn, "SELECT * FROM `requests`");;
 if($dept == 'College Dean')
 {
-	$I_GetReq = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Forward_To`= 'College'");
+	$I_Condition = "`Forward_To`= 'College'";
 }
 
-if($dept == 'Junior High School Principal' || $dept == 'Senior High School Principal')
+elseif($dept == 'Junior High School Principal' || $dept == 'Senior High School Principal')
 {
-	$I_GetReq = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Forward_To` = 'JHS/SHS'");
+	$I_Condition = "`Forward_To` = 'JHS' OR `Forward_To` = 'SHS'";
 }
 
-if($dept == 'Budget and Control')
+elseif($dept == 'Grade School Principal')
 {
-	$I_GetReq = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Status` = 'Requires Purchase' OR `Status` = 'Item Purchased' OR `Status` = 'Item Delivered'");
+	$I_Condition = "`Forward_To` = 'Grade School'";
 }
 
-if($dept == 'ICTC')
+elseif($dept == 'ICTC')
 {
-	$I_GetReq = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Forward_To` = 'ICTC'");
+	$I_Condition = "`Forward_To` = 'ICTC'";
 }
 
+elseif($dept == 'GSU')
+{
+	$I_Condition = "`Forward_To` = 'GSU'";
+}
+
+elseif($dept == 'CFO')
+{
+	$I_Condition = "`Forward_To` = 'CFO' OR `Forward_To` = 'Admin $ Gen.Facilities'";
+}
+
+elseif($dept == 'HRMO')
+{
+	$I_Condition = "`Forward_To` = 'HRMO'";
+}
+
+elseif($dept == 'Registrar')
+{
+	$I_Condition = "`Forward_To` = 'Registrar'";
+}
+
+elseif($dept == 'IOSA')
+{
+	$I_Condition = "`Forward_To` = 'IOSA'";
+}
+
+elseif($dept == 'Medical-Dental')
+{
+	$I_Condition = "`Forward_To` = 'Medical-Dental'";
+}
+
+elseif($dept == 'School of Graduate Studies' || $dept == 'Research')
+{
+	$I_Condition = "`Forward_To` = 'School of Graduate Studies' OR `Forward_To` = 'Research'";
+}
+
+elseif($dept == 'TVSD')
+{
+	$I_Condition = "`Forward_To` = 'TVSD'";
+}
+
+elseif($dept == 'Finance')
+{
+	$I_Condition = "`Forward_To` = 'Finance'";
+}
+
+elseif($dept == 'Budget and Control')
+{
+	$I_Condition = "`Status` = 'Requires Purchase' OR `Status` = 'Item Purchased' OR `Status` = 'Item Delivered' OR `Request_Type` = 'Purchase' AND `Forward_To` = 'Budget and Control'";
+}
+
+else
+{
+	$I_Condition = "`Forward_To` = 'NA'";
+}
+
+$I_GetReq = mysqli_query($conn, "SELECT * FROM `requests` WHERE ".$I_Condition."");
 $I_ReqList = '';
 $I_ReqView = '';
 $I_ReqDel = '';
@@ -524,7 +647,7 @@ else
 								<option value="" selected disabled>Select Status</option>
 								<option value="Approved">Approve</option>
 								<option value="Declined">Decline</option>
-								<option value="Pending">Pending</option>
+								<option value="Requires Purchase">Requires Purchase</option>
 							</select>
 						</div>
 						<div class="form-group">
@@ -585,9 +708,34 @@ if(isset($_POST['send_request']))
 		$AddNotes = $_POST['note_area'];
 		$Forward = $_POST['forward'];
 		
-		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = 'Forwarded', `Forward_To` = '$Forward', `Noted_By` = '$name($user_id)' WHERE `Requisition_No` = $UpReq");
+		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = 'Forwarded', `Forward_To` = '$Forward', `Noted_By_Budget` = '$name($user_id)' WHERE `Requisition_No` = $UpReq");
 		$update_track = mysqli_query($conn, "UPDATE `track` SET `Forward_Budget` = '$curr_date', `Forward_Budget_To` = '$Forward' WHERE `Request_No` = '$UpReq'");
 	}
+	
+	elseif($dept == 'EVP' || $dept == 'VPAA' || $dept == 'Office of the President')
+	{
+		$UpReq = $_POST['up_req_id'];
+		$AddNotes = $_POST['note_area'];
+		$Forward = $_POST['forward'];
+		
+		$check_noted_by = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Requisition_No` = '$UpReq'");
+		$noted_by = mysqli_fetch_assoc($check_noted_by);
+		
+		if(!empty($noted_by['Noted_By']))
+		{
+			$additional_noted = $name.'('.$user_id.') / '.$noted_by['Noted_By'];
+		}
+		
+		else
+		{
+			$additional_noted = $name.'('.$user_id.')';
+		}
+		
+		
+		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = 'Forwarded', `Forward_To` = '$Forward', `Noted_By` = '$additional_noted' WHERE `Requisition_No` = $UpReq");
+		$update_track = mysqli_query($conn, "UPDATE `track` SET `Forward_EVP/VPAA` = '$curr_date' WHERE `Request_No` = '$UpReq'");
+	}
+	
 	else
 	{
 		$UpReq = $_POST['up_req_id'];
@@ -777,6 +925,7 @@ if(isset($_POST['btn_del']))
                     </ul>
                 </nav>
                 <div class="container-fluid">
+
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <div class="d-flex align-items-center justify-content-between">
@@ -853,6 +1002,7 @@ if(isset($_POST['btn_del']))
         </div>
     </div>
 </div>
+
 	<div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
