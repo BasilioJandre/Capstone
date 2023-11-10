@@ -3,6 +3,9 @@ require('tcpdf/fpdf.php');
 include('database/php/conn.php');
 include('database/php/session.php');
 
+$first_date = $_SESSION['first_date'];
+$last_date = $_SESSION['last_date'];
+
 // Checks if Logged In
 if ($sess != TRUE)
 {
@@ -41,41 +44,52 @@ $pdf->SetFont('Helvetica', 'B', 16);
 $pdf->Cell(0, 10, 'REQUISITION MONTHLY REPORT', 0, 1, 'C'); 
 $pdf->SetFont('Arial', '', 12);
 
-$pdf->Ln(10);
-$pdf->Cell(80, 10, 'Department:');
-$pdf->Ln(5);
-$pdf->Cell(80, 10, 'Request By Month:');
-$pdf->SetX(160);
-$pdf->Cell(160, 10, 'Total Requests: ');
-$pdf->Ln(10);
-
-$pdf->SetFont('Arial', 'B', 12);
-$pdf->Cell(40, 10, 'Date', 1);
-$pdf->Cell(40, 10, 'Department', 1);
-$pdf->Cell(40, 10, 'Request Type', 1);
-$pdf->Cell(70, 10, 'Description', 1);
-$pdf->Ln();
-
-$pdf->SetFont('Arial', '', 12);
-
-$get_request = mysqli_query($conn,"SELECT * FROM `requests`");
-while($request = mysqli_fetch_assoc($get_request))
+$get_department = mysqli_query($conn, "SELECT DISTINCT `Department` FROM `requests`");
+while($departments = mysqli_fetch_assoc($get_department))
 {
-	$date = $request['Date_Requested'];
-	$department = $request['Department'];
-	$reqtype = $request['Request_Type'];
-	$description = $request['Description'];
-	
-	$pdf->Cell(40, 10, $date, 1);
-	$pdf->Cell(40, 10, $department, 1);
-	$pdf->Cell(40, 10, $reqtype, 1);
-	$pdf->Cell(70, 10, $description, 1);
+	$dept_report = $departments['Department'];
+	$get_request = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Department` = '$dept_report' AND `Date_Requested` BETWEEN '$first_date' AND '$last_date'");
+	$count_report = mysqli_num_rows($get_request);
+
+	$pdf->Ln(10);
+	$pdf->Cell(80, 10, 'Department: '.$dept_report.'');
+	$pdf->Ln(5);
+	$pdf->Cell(80, 10, 'Request By Month: ');
+	$pdf->SetX(160);
+	$pdf->Cell(160, 10, 'Total Requests: '.$report_count.'');
+	$pdf->Ln(10);
+
+	$pdf->SetFont('Arial', 'B', 12);
+	$pdf->Cell(40, 10, 'Date', 1);
+	$pdf->Cell(40, 10, 'Department', 1);
+	$pdf->Cell(40, 10, 'Request Type', 1);
+	$pdf->Cell(70, 10, 'Description', 1);
 	$pdf->Ln();
+
+	$pdf->SetFont('Arial', '', 12);
+	
+	
+	while($request = mysqli_fetch_assoc($get_request))
+	{
+		$date = $request['Date_Requested'];
+		$department = $request['Department'];
+		$reqtype = $request['Request_Type'];
+		$description = $request['Description'];
+		
+		$pdf->Cell(40, 10, $date, 1);
+		$pdf->Cell(40, 10, $department, 1);
+		$pdf->Cell(40, 10, $reqtype, 1);
+		$pdf->Cell(70, 10, $description, 1);
+		$pdf->Ln();
+	}
+
 }
+$get_all_request = mysqli_query($conn, "SELECT * FROM `requests`");
+$count_request = mysqli_num_rows($get_all_request);
 
 $pdf->Ln(5);
 $pdf->SetX(150);
-$pdf->Cell(160, 10, 'Over all Request: ');
+$pdf->Cell(160, 10, 'Over all Request: '.$count_request.'');
 
 // Output PDF content to a variable
 $pdfContent = $pdf->Output('', 'S');

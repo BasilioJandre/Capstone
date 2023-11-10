@@ -29,7 +29,7 @@ $t_request_check = mysqli_query($conn, "SELECT * FROM `requests`");
 $t_request_count = mysqli_num_rows($t_request_check);
 
 // Get total number of completed requests
-$c_request_check = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Status` = 'Approved' OR `Status` = 'Denied'");	
+$c_request_check = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Active` = 'no'");	
 $c_request_count = mysqli_num_rows($c_request_check);
 
 // Update Profile
@@ -146,7 +146,7 @@ $check_picture = mysqli_num_rows($count_image);
             </li>
 			<li class="nav-item">
                 <a class="nav-link" href="admin-archive.php">
-                    <i class="fas fa-fw fa-chart-area"></i>
+                    <i class="fas fa-fw fa-file-archive"></i>
                     <span>Archive</span>
                 </a>
             </li>
@@ -235,15 +235,15 @@ $check_picture = mysqli_num_rows($count_image);
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Request</div>
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Completed Requests</div>
                                             <div class="row no-gutters align-items-center">
                                                 <div class="col-auto">
-                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800"><?php echo $t_request_count; ?></div>
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800"><?php echo $c_request_count; ?></div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-auto">
-                                            <i class="fas fa-folder fa-2x text-gray-300"></i>
+                                            <i class="fas fa-check-square fa-2x text-gray-300"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -254,8 +254,8 @@ $check_picture = mysqli_num_rows($count_image);
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Total Request</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Total Requests</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $t_request_count; ?></div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-check-square fa-2x text-gray-300"></i>
