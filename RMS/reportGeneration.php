@@ -56,7 +56,7 @@ while($departments = mysqli_fetch_assoc($get_department))
 	$pdf->Ln(5);
 	$pdf->Cell(80, 10, 'Request By Month: ');
 	$pdf->SetX(160);
-	$pdf->Cell(160, 10, 'Total Requests: '.$report_count.'');
+	$pdf->Cell(160, 10, 'Total Requests: '.$count_report.'');
 	$pdf->Ln(10);
 
 	$pdf->SetFont('Arial', 'B', 12);
