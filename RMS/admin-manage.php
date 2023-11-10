@@ -19,8 +19,9 @@ if ($role != 'Admin')
 
 $userlist = '';
 $deletelist = '';
+$approvelist = '';
 
-$getuser = mysqli_query($conn, "SELECT * FROM `users`");
+$getuser = mysqli_query($conn, "SELECT * FROM `users` ORDER BY FIELD (`Status`,'Pending','Active')");
 
 while($users = mysqli_fetch_assoc($getuser))
 {
@@ -29,10 +30,21 @@ while($users = mysqli_fetch_assoc($getuser))
 	$user_email = $users['Email'];
 	$user_dept = $users['Department'];
 	$user_role = $users['Role'];
+	$user_stat = $users['Status'];
 	
-	$deleteno = 'deleteModal'.$id;
-	$deletename = 'delete'.$id;
-
+	if($user_stat == 'Pending')
+	{
+		$buttons = '
+		<button type="" class="btn btn-primary" data-toggle="modal" data-target="#approveModal'.$id.'" name=""><i class="fas fa-check"></i></button>
+		<button type="" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal'.$id.'" name=""><i class="fas fa-trash"></i></button>
+		';
+	}
+	elseif($user_stat == 'Active')
+	{
+		$buttons = '
+		<button type="" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal'.$id.'" name=""><i class="fas fa-trash"></i></button>
+		';
+	}
 	//List all users
 	$userlist .= '
 	
@@ -43,7 +55,7 @@ while($users = mysqli_fetch_assoc($getuser))
 	<td>'.$user_dept.'</td>
 	<td>'.$user_role.'</td>
 	<td>
-	<button type="" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal'.$id.'" name=""><i class="fas fa-trash"></i></button>
+	'.$buttons.'
 	</td>
 	</tr>
 	';
@@ -78,6 +90,35 @@ while($users = mysqli_fetch_assoc($getuser))
 	
 	';
 	
+	$approvelist.='
+	
+	<div class="modal fade" id="approveModal'.$id.'" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+	<form action="admin-manage.php" method="POST">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Approve User</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Add your delete confirmation message here -->
+                    <p>Confirm this user?</p>
+                </div>
+                <div class="modal-footer">
+				
+                    <button type="submit" class="btn btn-primary" name="approveuser">Approve</button>
+					<input type="hidden" value="'.$id.'" name="app_user_id">
+                
+				</div>
+            </div>
+        </div>
+	</form>
+    </div>
+	
+	';
+	
 }
 
 //Delete Function
@@ -85,6 +126,18 @@ if(isset($_POST["deleteuser"]))
 {
 	$del_user_id = $_POST['del_user_id'];
 	$query = mysqli_query($conn, "DELETE FROM `users` WHERE `User_ID` = '$del_user_id'");
+	if($query)
+	{
+		header('Refresh:0');
+	}
+}
+
+//Approve Function
+if(isset($_POST['approveuser']))
+{
+	$app_user_id = $_POST['app_user_id'];
+	$query = mysqli_query($conn, "UPDATE `users` SET `Status` = 'Active' WHERE `User_ID` = '$app_user_id'");
+	
 	if($query)
 	{
 		header('Refresh:0');
@@ -292,71 +345,52 @@ $check_picture = mysqli_num_rows($count_image);
     
     <!-- Profile Modal -->
   <div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form action='admin-manage.php' method="POST" enctype="multipart/form-data" id="profileEditForm">
-                        <div class="form-group">
-                            <label for="name">Name</label>
-                            <input type="text" class="form-control" id="name" name="name" value="<?php echo $name; ?>">
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email Address</label>
-                            <input type="email" class="form-control" id="email" name="email" value="<?php echo $email; ?>">
-                        </div>
-                        <div class="form-group">
-                            <label for="department">Department</label>
-                            <select class="form-control" id="department" name="dept" disabled="disabled">
-								<option value="" disabled>Select Department</option>
-								<option value="Early Childhood Program" <?php if ($dept == 'Early Childhood Program'){echo 'selected="selected"';}?>>Early Childhood Program</option>
-								<option value="Elementary Department" <?php if ($dept == 'Elementary Department'){echo 'selected="selected"';}?>>Elementary Department</option>
-								<option value="Junior High School" <?php if ($dept == 'Junior High School'){echo 'selected="selected"';}?>>Junior High School Dept.</option>
-								<option value="Senior High School" <?php if ($dept == 'Senior High School'){echo 'selected="selected"';}?>>Senior High School Dept.</option>
-								<option value="College Department" <?php if ($dept == 'College Department'){echo 'selected="selected"';}?>>College Department</option>
-								<option value="Graduate Studies" <?php if ($dept == 'Graduate Studies'){echo 'selected="selected"';}?>>Graduate Studies</option>
-								<option value="GSU" <?php if ($dept == 'GSU'){echo 'selected="selected"';}?>>GSU</option>
-								<option value="PPA" <?php if ($dept == 'PPA'){echo 'selected="selected"';}?>>PPA</option>
-								<option value="Accounts" <?php if ($dept == 'Accounts'){echo 'selected="selected"';}?>>Budget and Financing</option>
-								<option value="ICTC" <?php if ($dept == 'ICTC'){echo 'selected="selected"';}?>>ICTC</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="role">Role</label>
-                            <select class="form-control" id="role" name="role" disabled="disabled">
-								<option value="" disabled>Select Role in Institution</option>
-                                <option value="School Administration" <?php if ($role == 'School Administration'){echo 'selected="selected"';}?>>School Administration</option>
-                                <option value="Dean's Team" <?php if ($role == "Dean's Team"){echo 'selected="selected"';}?>>Dean's Team</option>
-                                <option value="Teaching Personnel" <?php if ($role == 'Teaching Personnel'){echo 'selected="selected"';}?>>Teaching Personnel</option>
-                                <option value="Non-Teaching Personnel" <?php if ($role == 'Non-Teaching Personnel'){echo 'selected="selected"';}?>>Non-Teaching Personnel</option>
-								<option value="Admin" <?php if ($role == 'Admin'){echo 'selected="selected"';}?>>Administrator</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="profileImage">Profile Image</label>
-                            <input type="file" class="form-control-file" id="profileImage" name="profileImage" value=""/>
-                        </div>
-                        <div class="form-group">
-                            <img id="previewImage" src="<?php if($check_picture > 0){echo 'data:image/jpg;charset=utf8;base64,'; echo base64_encode($user_picture['User_Picture']);} else {echo 'img/undraw_profile.svg';} ?>" alt="Profile Image" class="img-fluid rounded-circle" style="max-width: 100px;">
-                        </div> 
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+						<button class="close" type="button" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+				</div>
+			<div class="modal-body">
+				<form action='admin-manage.php' method="POST" enctype="multipart/form-data" id="profileEditForm">
+					<div class="form-group">
+						<label for="name">Name</label>
+						<input type="text" class="form-control" id="name" name="name" value="<?php echo $name; ?>">
 					</div>
-					
-                    <button class="btn btn-primary" type="submit" id="saveProfileButton" name="save_btn">Save</button>
-					</form>
-                </div>
-            </div>
-        </div>
+					<div class="form-group">
+						<label for="email">Email Address</label>
+						<input type="email" class="form-control" id="email" name="email" value="<?php echo $email; ?>">
+					</div>
+					<div class="form-group">
+						<label for="department">Department</label>
+						<input type="text" class="form-control" id="name" value="<?php echo $dept; ?>" disabled>
+					</div>
+					<div class="form-group">
+						<label for="role">Role</label>
+						<input type="text" class="form-control" id="name" value="<?php echo $role; ?>" disabled>
+					</div>
+					<div class="form-group">
+						<label for="profileImage">Profile Image</label>
+						<input type="file" class="form-control-file" id="profileImage" name="profileImage" value="">
+					</div>
+					<div class="form-group">
+						<img id="previewImage" src="<?php if ($check_picture > 0) {echo 'data:image/jpg;charset=utf8;base64,';echo base64_encode($user_picture['User_Picture']);} else {echo 'img/undraw_profile.svg';} ?>" alt="Profile Image" class="img-fluid rounded-circle" style="max-width: 100px;">
+					</div>
+			</div>
+					<button class="btn btn-primary" type="submit" id="saveProfileButton" name="save_btn">Save</button>
+				</form>
+			</div>
+		</div>
+	</div>
     </div>
 	
 	
     <!-- Delete Confirmation Modal -->
 	
     <?php echo $deletelist; ?>
+	<?php echo $approvelist; ?>
 
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
@@ -384,50 +418,6 @@ $check_picture = mysqli_num_rows($count_image);
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
     <script src="js/admin-dash-2.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $("#profileImage").change(function() {
-                readURL(this);
-            });
-
-            function readURL(input) {
-                if (input.files && input.files[0]) {
-                    var reader = new FileReader();
-                    reader.onload = function(e) {
-                        $('#previewImage').attr('src', e.target.result);
-                    }
-                    reader.readAsDataURL(input.files[0]);
-                }
-            }
-        });
-    </script>
-    <script>
-        $(document).ready(function() {
-            $("#saveProfileButton").click(function() {
-                var name = $("#name").val();
-                var email = $("#email").val();
-                var department = $("#department").val();
-                var role = $("#role").val();
-                $.ajax({
-                    url: "save_profile.php",
-                    type: "POST",
-                    data: {
-                        name: name,
-                        email: email,
-                        department: department,
-                        role: role
-                    },
-                    success: function(response) {
-                        if (response === "success") {
-                            alert("Profile updated successfully.");
-                            $('#editProfileModal').modal('hide');
-                        } else {
-                            alert("Error updating profile. Please try again later.");
-                        }
-                    }
-                });
-            });
-        });
-    </script>
+    <script src="js/profilephoto.js"></script>
 </body>
 </html>

@@ -79,7 +79,7 @@ if($conn)
 											goto redo;
 										}
 
-										$record = mysqli_query($conn, "INSERT INTO `users`(`User_ID`,`Full_Name`,`Email`,`Department`,`Role`,`Password`,`Status`) VALUES ('$id','$name','$email','$dept','$role','$encrypt_password','Active')");
+										$record = mysqli_query($conn, "INSERT INTO `users`(`User_ID`,`Full_Name`,`Email`,`Department`,`Role`,`Password`,`Status`) VALUES ('$id','$name','$email','$dept','$role','$encrypt_password','Pending')");
 
 										if($record == TRUE)
 										{

@@ -26,15 +26,50 @@ while($get_req = mysqli_fetch_assoc($req_query))
 	$track_query = mysqli_query($conn,"SELECT * FROM `track` WHERE `Request_No` = '$ReqNo'");
 	$tracking = mysqli_fetch_assoc($track_query);
 	
+	if(!empty($tracking['Forward_Head']))
+	{
 	$forwarded_head = $tracking['Forward_Head'];
+	}
+	
+	if(!empty($tracking['Forward_Head_To']))
+	{
 	$forward_head_to = $tracking['Forward_Head_To'];
+	}
+	
+	if(!empty($tracking['Forward_EVP/VPAA']))
+	{
 	$forwarded_evp_vpaa = $tracking['Forward_EVP/VPAA'];
+	}
+	
+	if(!empty($tracking['Forward_Budget']))
+	{
 	$forwarded_budget = $tracking['Forward_Budget'];
+	}
+	
+	if(!empty($tracking['Forward_Budget_To']))
+	{
 	$forward_budget_to = $tracking['Forward_Budget_To'];
+	}
+	
+	if(!empty($tracking['Handled_Date']))
+	{
 	$handled_date = $tracking['Handled_Date'];
+	}
+	
+	if(!empty($tracking['Request_Status']))
+	{
 	$request_status = $tracking['Request_Status'];
+	}
+	
+	if(!empty($tracking['Purchase_Date']))
+	{
 	$p_date = $tracking['Purchase_Date'];
+	}
+	
+	if(!empty($tracking['Deliver_Date']))
+	{
 	$d_date = $tracking['Deliver_Date'];
+	}
 	
 	$tracking_list = '';
 	
@@ -500,66 +535,48 @@ $check_picture = mysqli_num_rows($count_image);
 	
 	<!-- Profile Modal -->
 	<div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form action='user-request.php' method="POST" enctype="multipart/form-data" id="profileEditForm">
-                        <div class="form-group">
-                            <label for="name">Name</label>
-                            <input type="text" class="form-control" id="name" name="name" value="<?php echo $name; ?>">
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email Address</label>
-                            <input type="email" class="form-control" id="email" name="email" value="<?php echo $email; ?>">
-                        </div>
-                        <div class="form-group">
-                            <label for="department">Department</label>
-                            <select class="form-control" id="department" name="dept" disabled="disabled">
-								<option value="" disabled>Select Department</option>
-								<option value="Early Childhood Program" <?php if ($dept == 'Early Childhood Program'){echo 'selected="selected"';}?>>Early Childhood Program</option>
-								<option value="Elementary Department" <?php if ($dept == 'Elementary Department'){echo 'selected="selected"';}?>>Elementary Department</option>
-								<option value="Junior High School" <?php if ($dept == 'Junior High School'){echo 'selected="selected"';}?>>Junior High School Dept.</option>
-								<option value="Senior High School" <?php if ($dept == 'Senior High School'){echo 'selected="selected"';}?>>Senior High School Dept.</option>
-								<option value="College Department" <?php if ($dept == 'College Department'){echo 'selected="selected"';}?>>College Department</option>
-								<option value="Graduate Studies" <?php if ($dept == 'Graduate Studies'){echo 'selected="selected"';}?>>Graduate Studies</option>
-								<option value="GSU" <?php if ($dept == 'GSU'){echo 'selected="selected"';}?>>GSU</option>
-								<option value="PPA" <?php if ($dept == 'PPA'){echo 'selected="selected"';}?>>PPA</option>
-								<option value="Accounts" <?php if ($dept == 'Accounts'){echo 'selected="selected"';}?>>Budget and Financing</option>
-								<option value="ICTC" <?php if ($dept == 'ICTC'){echo 'selected="selected"';}?>>ICTC</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="role">Role</label>
-                            <select class="form-control" id="role" name="role" disabled="disabled">
-								<option value="" disabled>Select Role in Institution</option>
-                                <option value="School Administration" <?php if ($role == 'School Administration'){echo 'selected="selected"';}?>>School Administration</option>
-                                <option value="Dean's Team" <?php if ($role == "Dean's Team"){echo 'selected="selected"';}?>>Dean's Team</option>
-                                <option value="Teaching Personnel" <?php if ($role == 'Teaching Personnel'){echo 'selected="selected"';}?>>Teaching Personnel</option>
-                                <option value="Non-Teaching Personnel" <?php if ($role == 'Non-Teaching Personnel'){echo 'selected="selected"';}?>>Non-Teaching Personnel</option>
-								<option value="Admin" <?php if ($role == 'Admin'){echo 'selected="selected"';}?>>Administrator</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="profileImage">Profile Image</label>
-                            <input type="file" class="form-control-file" id="profileImage" name="profileImage" value=""/>
-                        </div>
-                        <div class="form-group">
-                            <img id="previewImage" src="<?php if($check_picture > 0){echo 'data:image/jpg;charset=utf8;base64,'; echo base64_encode($user_picture['User_Picture']);} else {echo 'img/undraw_profile.svg';} ?>" alt="Profile Image" class="img-fluid rounded-circle" style="max-width: 100px;">
-                        </div> 
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+						<button class="close" type="button" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+				</div>
+			<div class="modal-body">
+				<form action='user-request.php' method="POST" enctype="multipart/form-data" id="profileEditForm">
+					<div class="form-group">
+						<label for="name">Name</label>
+						<input type="text" class="form-control" id="name" name="name" value="<?php echo $name; ?>">
 					</div>
-					
-                    <button class="btn btn-primary" type="submit" id="saveProfileButton" name="save_btn">Save</button>
-					</form>
-                </div>
-            </div>
-        </div>
-    </div>
+					<div class="form-group">
+						<label for="email">Email Address</label>
+						<input type="email" class="form-control" id="email" name="email" value="<?php echo $email; ?>">
+					</div>
+					<div class="form-group">
+						<label for="department">Department</label>
+						<input type="text" class="form-control" id="name" value="<?php echo $dept; ?>" disabled>
+					</div>
+					<div class="form-group">
+						<label for="role">Role</label>
+						<input type="text" class="form-control" id="name" value="<?php echo $role; ?>" disabled>
+					</div>
+					<div class="form-group">
+						<label for="profileImage">Profile Image</label>
+						<input type="file" class="form-control-file" id="profileImage" name="profileImage" value="">
+					</div>
+					<div class="form-group">
+						<img id="previewImage" src="<?php if ($check_picture > 0) {echo 'data:image/jpg;charset=utf8;base64,';echo base64_encode($user_picture['User_Picture']);} else {echo 'img/undraw_profile.svg';} ?>" alt="Profile Image" class="img-fluid rounded-circle" style="max-width: 100px;">
+					</div>
+			</div>
+					<button class="btn btn-primary" type="submit" id="saveProfileButton" name="save_btn">Save</button>
+				</form>
+			</div>
+		</div>
+	</div>
+	
+	
+</div>
     
 <?php echo $TrackList; ?>
 <?php echo $DelList; ?>
@@ -664,6 +681,7 @@ $check_picture = mysqli_num_rows($count_image);
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="js/profilephoto.js"></script>
 <script>
         $(document).ready(function () {
 			var count = 1;
