@@ -98,77 +98,77 @@ $check_picture = mysqli_num_rows($count_image);
 //Outgoing Requests
 if($dept == 'College Dean')
 {
-	$Condition = "`Department`= 'College Faculty' OR `Department`= 'College Guidance' OR `Department`= 'College Library' OR `Department`= 'College O.S.A'";
+	$Condition = "`Status` = 'Pending' AND `Department`= 'College Faculty' OR `Department`= 'College Guidance' OR `Department`= 'College Library' OR `Department`= 'College O.S.A'";
 }
 
 elseif($dept == 'Junior High School Principal' || $dept == 'Senior High School Principal')
 {
-	$Condition = "`Department`= 'High School Faculty (BHS)' OR `Department`= 'High School Faculty (GHS)' OR `Department`= 'High School Academics' OR `Department`= 'High School Guidance' OR `Department`= 'High School Library' OR `Department`= 'High School Laboratory' OR `Department`= 'High School O.S.A'";
+	$Condition = "`Status` = 'Pending' AND `Department`= 'High School Faculty (BHS)' OR `Department`= 'High School Faculty (GHS)' OR `Department`= 'High School Academics' OR `Department`= 'High School Guidance' OR `Department`= 'High School Library' OR `Department`= 'High School Laboratory' OR `Department`= 'High School O.S.A'";
 }
 
 elseif($dept == 'Grade School Principal')
 {
-	$Condition = "`Department` = 'Grade School Academics' OR `Department` = 'Grade School E.C.E' OR `Department` = 'Grade School Faculty' OR `Department` = 'Grade School Guidance' OR `Department` = 'Grade School Library' OR `Department` = 'Grade School O.S.A'";
+	$Condition = "`Status` = 'Pending' AND `Department` = 'Grade School Academics' OR `Department` = 'Grade School E.C.E' OR `Department` = 'Grade School Faculty' OR `Department` = 'Grade School Guidance' OR `Department` = 'Grade School Library' OR `Department` = 'Grade School O.S.A'";
 }
 
 elseif($dept == 'Finance')
 {
-	$Condition = "`Department` = 'Treasury' OR `Department` = 'Accounting' OR `Department` = 'Budget and Control' OR `Department` = 'Bookstore' OR `Department` = 'Canteen' OR `Department` = 'Printing' OR `Department` = 'Purchasing' OR `Department` = 'Stocks'";
+	$Condition = "`Status` = 'Pending' AND `Department` = 'Treasury' OR `Department` = 'Accounting' OR `Department` = 'Budget and Control' OR `Department` = 'Bookstore' OR `Department` = 'Canteen' OR `Department` = 'Printing' OR `Department` = 'Purchasing' OR `Department` = 'Stocks'";
 }
 
 elseif($dept == 'CFO')
 {
-	$Condition = "`Department` = 'Sister Quarter' OR `Department` = 'Security Office' OR `Department` = 'Campus Ministry' OR `Department` = 'Pastoral Ministry'";
+	$Condition = "`Status` = 'Pending' AND `Department` = 'Sister Quarter' OR `Department` = 'Security Office' OR `Department` = 'Campus Ministry' OR `Department` = 'Pastoral Ministry'";
 }
 
 elseif($dept == 'ICTC')
 {
-	$Condition = "`Department` = 'ICTC'";
+	$Condition = "`Status` = 'Pending' AND `Department` = 'ICTC'";
 }
 
 elseif($dept == 'GSU')
 {
-	$Condition = "`Department` = 'GSU'";
+	$Condition = "`Status` = 'Pending' AND `Department` = 'GSU'";
 }
 
 elseif($dept == 'HRMO')
 {
-	$Condition = "`Department` = 'HRMO'";
+	$Condition = "`Status` = 'Pending' AND `Department` = 'HRMO'";
 }
 
 elseif($dept == 'Registrar')
 {
-	$Condition = "`Department` = 'Registrar'";
+	$Condition = "`Status` = 'Pending' AND `Department` = 'Registrar'";
 }
 
 elseif($dept == 'Aula')
 {
-	$Condition = "`Department` = 'Aula'";
+	$Condition = "`Status` = 'Pending' AND `Department` = 'Aula'";
 }
 
 elseif($dept == 'Alumni Office')
 {
-	$Condition = "`Department` = 'Alumni Office'";
+	$Condition = "`Status` = 'Pending' AND `Department` = 'Alumni Office'";
 }
 
 elseif($dept == 'Medical-Dental')
 {
-	$Condition = "`Department` = 'Medical-Dental'";
+	$Condition = "`Status` = 'Pending' AND `Department` = 'Medical-Dental'";
 }
 
 elseif($dept == 'Mini Hotel')
 {
-	$Condition = "`Department` = 'Mini Hotel'";
+	$Condition = "`Status` = 'Pending' AND `Department` = 'Mini Hotel'";
 }
 
 elseif($dept == 'PAASCU')
 {
-	$Condition = "`Department` = 'PAASCU'";
+	$Condition = "`Status` = 'Pending' AND `Department` = 'PAASCU'";
 }
 
 elseif($dept == 'TVSD')
 {
-	$Condition = "`Department` = 'TVSD'";
+	$Condition = "`Status` = 'Pending' AND `Department` = 'TVSD'";
 }
 
 elseif($dept == 'Budget and Control')
@@ -204,6 +204,7 @@ while($Req = mysqli_fetch_assoc($GetReq))
 	$NeedDate = $Req['Date_Needed'];
 	$Status = $Req['Status'];
 	$AddNotes = $Req['Additional_Notes'];
+	$Active = $Req['Active'];
 	
 	$ReqList .= '
 	
@@ -327,11 +328,10 @@ else
 						<!-- Add a dropdown menu to select the request status -->
 						<div class="form-group">
 							<label for="requestStatus">Forward To:</label>
-							<select class="form-control" id="requestStatus" name="forward" required>
-								<option value="" selected disabled>Select Department</option>
+							<select class="form-control" id="requestStatus" name="forward">
 								<option value="EVP Office">EVP Office</option>
 								<option value="VPAA Office">VPAA Office</option>
-								<option value="Budget and Control">Budget and Control</option>
+								<option value="Budget and Control" selected>Budget and Control</option>
 							</select>
 						</div>
 						<div class="form-group">
@@ -390,72 +390,72 @@ else
 //Incoming Requests
 if($dept == 'College Dean')
 {
-	$I_Condition = "`Forward_To`= 'College'";
+	$I_Condition = "`Forward_To`= 'College' AND `Active` = 'yes'";
 }
 
 elseif($dept == 'Junior High School Principal' || $dept == 'Senior High School Principal')
 {
-	$I_Condition = "`Forward_To` = 'JHS' OR `Forward_To` = 'SHS'";
+	$I_Condition = "`Forward_To` = 'JHS' OR `Forward_To` = 'SHS' AND `Active` = 'yes'";
 }
 
 elseif($dept == 'Grade School Principal')
 {
-	$I_Condition = "`Forward_To` = 'Grade School'";
+	$I_Condition = "`Forward_To` = 'Grade School' AND `Active` = 'yes'";
 }
 
 elseif($dept == 'ICTC')
 {
-	$I_Condition = "`Forward_To` = 'ICTC'";
+	$I_Condition = "`Forward_To` = 'ICTC' AND `Active` = 'yes'";
 }
 
 elseif($dept == 'GSU')
 {
-	$I_Condition = "`Forward_To` = 'GSU'";
+	$I_Condition = "`Forward_To` = 'GSU' AND `Active` = 'yes'";
 }
 
 elseif($dept == 'CFO')
 {
-	$I_Condition = "`Forward_To` = 'CFO' OR `Forward_To` = 'Admin $ Gen.Facilities'";
+	$I_Condition = "`Forward_To` = 'CFO' AND `Active` = 'yes' OR `Forward_To` = 'Admin $ Gen.Facilities' AND `Active` = 'yes'";
 }
 
 elseif($dept == 'HRMO')
 {
-	$I_Condition = "`Forward_To` = 'HRMO'";
+	$I_Condition = "`Forward_To` = 'HRMO' AND `Active` = 'yes'";
 }
 
 elseif($dept == 'Registrar')
 {
-	$I_Condition = "`Forward_To` = 'Registrar'";
+	$I_Condition = "`Forward_To` = 'Registrar' AND `Active` = 'yes'";
 }
 
 elseif($dept == 'IOSA')
 {
-	$I_Condition = "`Forward_To` = 'IOSA'";
+	$I_Condition = "`Forward_To` = 'IOSA' AND `Active` = 'yes'";
 }
 
 elseif($dept == 'Medical-Dental')
 {
-	$I_Condition = "`Forward_To` = 'Medical-Dental'";
+	$I_Condition = "`Forward_To` = 'Medical-Dental' AND `Active` = 'yes'";
 }
 
 elseif($dept == 'School of Graduate Studies' || $dept == 'Research')
 {
-	$I_Condition = "`Forward_To` = 'School of Graduate Studies' OR `Forward_To` = 'Research'";
+	$I_Condition = "`Forward_To` = 'School of Graduate Studies' AND `Active` = 'yes' OR `Forward_To` = 'Research' AND `Active` = 'yes'";
 }
 
 elseif($dept == 'TVSD')
 {
-	$I_Condition = "`Forward_To` = 'TVSD'";
+	$I_Condition = "`Forward_To` = 'TVSD' AND `Active` = 'yes'";
 }
 
 elseif($dept == 'Finance')
 {
-	$I_Condition = "`Forward_To` = 'Finance'";
+	$I_Condition = "`Forward_To` = 'Finance' AND `Active` = 'yes'";
 }
 
 elseif($dept == 'Budget and Control')
 {
-	$I_Condition = "`Status` = 'Requires Purchase' OR `Status` = 'Item Purchased' OR `Status` = 'Item Delivered' OR `Request_Type` = 'Purchase' AND `Forward_To` = 'Budget and Control'";
+	$I_Condition = "`Status` = 'Requires Purchase' AND `Active` = 'yes' OR `Status` = 'Item Purchased' AND `Active` = 'yes' OR `Status` = 'Item Delivered' AND `Active` = 'yes' OR `Request_Type` = 'Purchase' AND `Forward_To` = 'Budget and Control' AND `Active` = 'yes'";
 }
 
 else
@@ -604,6 +604,7 @@ elseif($dept == 'Budget and Control' )
 						<!-- Add more request details as needed -->
 					</div>
 					<div class="modal-footer">
+						<button type="submit" class="btn btn-danger save-status" name="decline_request">Decline Request</button>
 						<button type="submit" class="btn btn-primary save-status" name="item_purchase">Save Status</button>
 					</div>
 				</div>
@@ -761,6 +762,10 @@ if(isset($_POST['save_status']))
 	$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = '$Status', `Approved_By` = '$name($user_id)' WHERE `Requisition_No` = $UpReq");
 	$update_track = mysqli_query($conn, "UPDATE `track` SET `Handled_Date` = '$curr_date', `Request_Status` = '$Status' WHERE `Request_No` = '$UpReq'");
 	
+	if($Status = 'Declined' || $Status = 'Repaired')
+	{
+		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Active` = 'no' WHERE `Requisition_No` = $UpReq");
+	}
 	if($update_req)
 	{
 		Header("Refresh:0");
@@ -814,6 +819,31 @@ if(isset($_POST['btn_del']))
 	if($archive)
 	{
 		$delete = mysqli_query($conn, "DELETE FROM `requests` WHERE `Requisition_No` = '$DelReqID'");
+		Header("Refresh:0");
+	}
+}
+
+//Decline
+if(isset($_POST['decline_request']))
+{
+	$UpReq = $_POST['up_req_id'];
+	$AddNotes = $_POST['note_area'];
+	
+	$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = 'Declined', `Approved_By` = '$name($user_id)', `Active` = 'no' WHERE `Requisition_No` = $UpReq");
+	$check_track = mysqli_query($conn, "SELECT * FROM `track` WHERE `Request_No` = '$UpReq'");
+	$num_track = mysqli_num_rows($check_track);
+	
+	if($num_track == 1)
+	{
+		$update_track = mysqli_query($conn, "UPDATE `track` SET `Handled_Date` = '$curr_date', `Request_Status` = 'Declined' WHERE `Request_No` = '$UpReq'");
+	}
+	elseif($num_track < 1)
+	{
+		$update_track = mysqli_query($conn, "INSERT INTO `track` (`Handled_Date`,`Request_Status`) VALUES ('$curr_date','Declined')");
+	}
+	
+	if($update_req)
+	{
 		Header("Refresh:0");
 	}
 }
@@ -929,7 +959,7 @@ if(isset($_POST['btn_del']))
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <div class="d-flex align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Outgoing Request</h6>
+                <h6 class="m-0 font-weight-bold text-primary"><?php if($dept == 'VPAA' || $dept == 'EVP' || $dept == 'Office of the President'){echo 'Requests';} else{echo 'Outgoing Request';}?></h6>
                 <div class="input-group" style="width:300px;">
                     <input type="text" class="form-control" id="searchInputOutgoing" placeholder="Search...">
                     <div class="input-group-append">
@@ -964,6 +994,14 @@ if(isset($_POST['btn_del']))
         </div>
     </div>
 
+<?php
+if($dept == 'VPAA' || $dept == 'EVP' || $dept == 'Office of the President')
+{
+	echo '';
+}
+else
+{
+echo'
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <div class="d-flex align-items-center justify-content-between">
@@ -995,13 +1033,16 @@ if(isset($_POST['btn_del']))
                         </tr>
                     </thead>
                     <tbody>
-                        <?php echo $I_ReqList; ?>
+                        '.$I_ReqList.'
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
+';
+}
+?>
 
 	<div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">

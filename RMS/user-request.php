@@ -1,7 +1,8 @@
 <?php
 include('database/php/conn.php');
 include('database/php/session.php');
-error_reporting(E_ERROR | E_PARSE);
+date_default_timezone_set('Asia/Manila');
+
 
 $date = date('Y-m-d');
 
@@ -9,6 +10,7 @@ $date = date('Y-m-d');
 $req_query = mysqli_query($conn,"SELECT * FROM `requests` WHERE `User_ID` = '$user_id'");
 $ReqList ='';
 $TrackList='';
+$DelList='';
 while($get_req = mysqli_fetch_assoc($req_query))
 {
 	$ReqNo = $get_req['Requisition_No'];
@@ -68,7 +70,7 @@ while($get_req = mysqli_fetch_assoc($req_query))
 		
 		<li>
 		<div class="status">('.$forwarded_budget.') Request has been Forwarded</div>
-		<div class="location">Request has been recieved by '.$forward_budget_to.'</div>
+		<div class="location">Request has been received by '.$forward_budget_to.'</div>
 		</li>
 		
 		';
@@ -93,8 +95,8 @@ while($get_req = mysqli_fetch_assoc($req_query))
 			$tracking_list .='
 			
 			<li>
-			<div class="status">('.$handled_date.') Request Closed</div>
-			<div class="location">Request '.$request_status.'</div>
+			<div class="status">('.$handled_date.')Request '.$request_status.'</div>
+			<div class="location"></div>
 			</li>
 			
 			';
@@ -145,11 +147,38 @@ while($get_req = mysqli_fetch_assoc($req_query))
 	<a href="#" class="btn btn-info btn-sm" data-toggle="modal" data-target="#trackModal'.$ReqNo.'">
 		<i class="fas fa-eye"></i> Track
 	</a>
-	<a href="#" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal">
+	<a href="#" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal'.$ReqNo.'">
 		<i class="fas fa-trash"></i> Delete
 	</a>
 	</td>
 	</tr>
+	
+	';
+	
+	$DelList .='
+	
+    <div class="modal fade" id="deleteModal'.$ReqNo.'" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+	<form action="user-request.php" method="POST">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Delete Request</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Add your delete confirmation message here -->
+                    <p>Are you sure you want to delete this request?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger" name="btn_del">Delete</button>
+					<input type="hidden" value="'.$ReqNo.'" name="del_req_id">
+                </div>
+            </div>
+        </div>
+	</form>
+    </div>
 	
 	';
 	
@@ -224,7 +253,7 @@ if(isset($_POST['send_btn']))
 	$sf_notes = mysqli_real_escape_string($conn, $f_notes);
 	$f_notes = htmlspecialchars($sf_notes);
 		
-	$insert = mysqli_query($conn, "INSERT INTO `requests`(`User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`,`Status`) VALUES ('$name','$user_id','$dept','$c_date','$n_date','$f_type','$f_service','$f_qty','$f_notes','Pending')");
+	$insert = mysqli_query($conn, "INSERT INTO `requests`(`User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`,`Status`,`Active`) VALUES ('$name','$user_id','$dept','$c_date','$n_date','$f_type','$f_service','$f_qty','$f_notes','Pending','yes')");
 	
 	if(!empty($_POST['indicator'][0]))
 	{
@@ -239,7 +268,7 @@ if(isset($_POST['send_btn']))
 			$s_notes = mysqli_real_escape_string($conn, $req_notes);
 			$notes = htmlspecialchars($s_notes);
 			
-			$insert = mysqli_query($conn, "INSERT INTO `requests`(`User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`,`Status`) VALUES ('$name','$user_id','$dept','$c_date','$n_date','$req_type','$req_service','$req_qty','$notes','Pending')");
+			$insert = mysqli_query($conn, "INSERT INTO `requests`(`User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`,`Status`,`Active`) VALUES ('$name','$user_id','$dept','$c_date','$n_date','$req_type','$req_service','$req_qty','$notes','Pending','yes')");
 			$count += 1;
 		}
 		
@@ -315,6 +344,33 @@ if(isset($_POST['save_btn']))
 	}
 }
 
+//Delete
+if(isset($_POST['btn_del']))
+{
+	$DelReqID = $_POST['del_req_id'];
+	$query = mysqli_query($conn,"SELECT * FROM `requests` WHERE `Requisition_No` = $DelReqID");
+	$assign_value = mysqli_fetch_assoc($query);
+	
+	$a_req_id = $assign_value['Requisition_No'];
+	$a_req_user = $assign_value['User_Name'];
+	$a_req_uid = $assign_value['User_ID'];
+	$a_req_dept = $assign_value['Department'];
+	$a_req_rdate = $assign_value['Date_Requested'];
+	$a_req_ndate = $assign_value['Date_Needed'];
+	$a_req_type = $assign_value['Request_Type'];
+	$a_req_serv = $assign_value['Product/Service'];
+	$a_req_qty = $assign_value['Quantity'];
+	$a_req_desc = $assign_value['Description'];
+	$a_req_notes = $assign_value['Additional_Notes'];
+	
+	$archive = mysqli_query($conn, "INSERT INTO `archive`(`Requisition_No`, `User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`, `Additional_Notes`) VALUES ('$a_req_id','$a_req_user','$a_req_uid','$a_req_dept','$a_req_rdate','$a_req_ndate','$a_req_type','$a_req_serv','$a_req_qty','$a_req_desc','$a_req_notes')");
+	
+	if($archive)
+	{
+		$delete = mysqli_query($conn, "DELETE FROM `requests` WHERE `Requisition_No` = '$DelReqID'");
+		Header("Refresh:0");
+	}
+}
 
 //Takes User's Profile Picture
 $retrieve_image = mysqli_query($conn, "SELECT `User_Picture` FROM `image` WHERE `User_ID` = '$user_id'");
@@ -506,26 +562,8 @@ $check_picture = mysqli_num_rows($count_image);
     </div>
     
 <?php echo $TrackList; ?>
+<?php echo $DelList; ?>
 
-    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Delete Request</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <!-- Add your delete confirmation message here -->
-                    <p>Are you sure you want to delete this request?</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger">Delete</button>
-                </div>
-            </div>
-        </div>
-    </div>
     <!-- New Request Modal -->
     <div class="modal fade" id="newRequestModal" tabindex="-1" role="dialog" aria-labelledby="newRequestModalLabel" aria-hidden="true">
 		<form action="user-request.php" method="POST" id="requestForm">

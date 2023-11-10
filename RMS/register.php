@@ -51,53 +51,43 @@ if($conn)
 
 									if($row_email == 0)
 									{
-										$check_name = mysqli_query($conn, "SELECT * FROM `users` WHERE `Full_Name` = '$name'");
-										$row_name = mysqli_num_rows($check_name);
+										$encrypt_password = password_hash($password, PASSWORD_BCRYPT, array('cost'=>15));
 
-										if($row_name == 0)
+										function generateid($length = 8)
 										{
-											$encrypt_password = password_hash($password, PASSWORD_BCRYPT, array('cost'=>15));
+											$idchars = '123456789';
+											$id = '';
 
-											function generateid($length = 8)
+											for($x=0; $x < $length; $x++)
 											{
-												$idchars = '123456789';
-												$id = '';
-
-												for($x=0; $x < $length; $x++)
-												{
-													$id .= $idchars[rand(0, strlen($idchars)-1)];
-												}
-												return $id;
+												$id .= $idchars[rand(0, strlen($idchars)-1)];
 											}
+											return $id;
+										}
 
-											redo:
-											$idx = generateid();
-											$check_id = mysqli_query($conn, "SELECT * FROM `users` WHERE `User_ID` = '$idx'");
-											$row_id = mysqli_num_rows($check_id);
+										redo:
+										$idx = generateid();
+										$check_id = mysqli_query($conn, "SELECT * FROM `users` WHERE `User_ID` = '$idx'");
+										$row_id = mysqli_num_rows($check_id);
 
-											if($row_id == 0)
-											{
-												$id = $idx;
-											}
-											else
-											{
-												goto redo;
-											}
-
-											$record = mysqli_query($conn, "INSERT INTO `users`(`User_ID`,`Full_Name`,`Email`,`Department`,`Role`,`Password`,`Status`) VALUES ('$id','$name','$email','$dept','$role','$encrypt_password','Active')");
-
-											if($record == TRUE)
-											{
-												$error = 'Registration Successful!';
-												$email = '';
-												$name = '';
-												$dept = '';
-												$role = '';
-											}
+										if($row_id == 0)
+										{
+											$id = $idx;
 										}
 										else
 										{
-											$error = 'Name Already Registered';
+											goto redo;
+										}
+
+										$record = mysqli_query($conn, "INSERT INTO `users`(`User_ID`,`Full_Name`,`Email`,`Department`,`Role`,`Password`,`Status`) VALUES ('$id','$name','$email','$dept','$role','$encrypt_password','Active')");
+
+										if($record == TRUE)
+										{
+											$error = 'Registration Successful!';
+											$email = '';
+											$name = '';
+											$dept = '';
+											$role = '';
 										}
 									}
 									else

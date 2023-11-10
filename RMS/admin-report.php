@@ -1,6 +1,12 @@
 <?php
 include('database/php/conn.php');
 include('database/php/session.php');
+date_default_timezone_set('Asia/Manila');
+
+$curr_date = date('Y-m-d');
+$curr_date_ex = explode(' ',$curr_date);
+$curr_date_s = "$curr_date_ex[0]";
+$curr_year = date("Y", strtotime($curr_date_s));
 
 // Checks if Logged In
 if ($sess != TRUE)
@@ -16,6 +22,17 @@ if ($role != 'Admin')
     exit;
 }
 
+//Year Dropdown Function
+$yearlist = '';
+$endyear = 2223; //Change the value to add more years
+for($startyear = 2023; $startyear <= $endyear; $startyear++)
+{
+	$yearlist .= '
+	
+	<option value="'.$startyear.'">'.$startyear.'</option>
+	
+	';
+}
 
 $reportlist = '';
 $reportmodal = '';
@@ -77,6 +94,36 @@ while($reports = mysqli_fetch_assoc($getreport))
 			</div>
 		</div>
 	';
+}
+
+//Generate Report
+$month = '';
+$year = '';
+if(isset($_POST['generate_report']))
+{
+	$month = $_POST['selectMonth'];
+	$year = $_POST['selectYear'];
+	
+	if(empty($year))
+	{
+		$year = $curr_year;
+	}
+	if(empty($month))
+	{
+		$first_date = date(''.$year.'-01-01', strtotime(''.$year.'-01-01'));
+		$last_date = date(''.$year.'-12-t', strtotime(''.$year.'-12-01'));
+		
+	}
+	else
+	{
+		$first_date = date(''.$year.'-'.$month.'-01', strtotime(''.$year.'-01-01'));
+		$last_date = date(''.$year.'-'.$month.'-01', strtotime(''.$year.'-01-01'));
+	}
+	
+	$_SESSION['first_date'] = $first_date;
+	$_SESSION['last_date'] = $last_date;
+	
+	Header("Location: reportGeneration.php");
 }
 
 // Update Profile
@@ -142,6 +189,7 @@ if(isset($_POST['save_btn']))
 		}
 	}
 }
+
 //Takes User's Profile Picture
 $retrieve_image = mysqli_query($conn, "SELECT `User_Picture` FROM `image` WHERE `User_ID` = '$user_id'");
 $user_picture = mysqli_fetch_assoc($retrieve_image);
@@ -247,9 +295,10 @@ $check_picture = mysqli_num_rows($count_image);
                     </ul>
                 </nav>
                 <div class="container-fluid">
-    <button class="btn btn-primary mb-3" id="printButton">
-        <i class="fas fa-print"></i> Generate Report
-    </button>
+	<form action="admin-report.php" method="POST">
+		<button type="submit "class="btn btn-primary mb-3" id="printButton" name="generate_report">
+			<i class="fas fa-print"></i> Generate Report
+		</button>
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <div class="d-flex align-items-center justify-content-between">
@@ -264,19 +313,29 @@ $check_picture = mysqli_num_rows($count_image);
                         </div>
                     </div>
                     <div class="input-group" style="width: 200px; margin-left: 10px;">
-                        <select class="form-control" id="selectMonth">
-                            <option value="">Select Month</option>
-                            <option value="January">January</option>
-                            <option value="February">February</option>
+                        <select class="form-control" id="selectMonth" name="selectMonth">
+                            <option value ="" selected disabled>Select Month</option>
+							<option value="">All Months</option>
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+							<option value="3">March</option>
+							<option value="4">April</option>
+							<option value="5">May</option>
+							<option value="6">June</option>
+							<option value="7">July</option>
+							<option value="8">August</option>
+							<option value="9">September</option>
+							<option value="10">October</option>
+							<option value="11">November</option>
+							<option value="12">December</option>
                             <!-- Add more month options -->
                         </select>
                     </div>
                     <div class="input-group" style="width: 200px; margin-left: 10px;">
-                        <select class="form-control" id="selectYear">
-                            <option value="">Select Year</option>
-                            <option value="2023">2023</option>
-                            <option value="2022">2022</option>
-                            <!-- Add more year options -->
+                        <select class="form-control" id="selectYear" name="selectYear">
+						<option value="" selected disabled>Select Year</option>
+						<option value="">Current Year</option>
+                            <?php echo $yearlist; ?>
                         </select>
                     </div>
                 </div>
@@ -295,14 +354,14 @@ $check_picture = mysqli_num_rows($count_image);
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <?php echo $reportlist; ?>
-                        <!-- Add more rows as needed -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+						<tbody>
+							<?php echo $reportlist; ?>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</form>
 </div>
 
     <div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
@@ -408,38 +467,5 @@ $check_picture = mysqli_num_rows($count_image);
             }
         });
     </script>
-    <script>
-        $(document).ready(function() {
-            $("#saveProfileButton").click(function() {
-                var name = $("#name").val();
-                var email = $("#email").val();
-                var department = $("#department").val();
-                var role = $("#role").val();
-                $.ajax({
-                    url: "save_profile.php",
-                    type: "POST",
-                    data: {
-                        name: name,
-                        email: email,
-                        department: department,
-                        role: role
-                    },
-                    success: function(response) {
-                        if (response === "success") {
-                            alert("Profile updated successfully.");
-                            $('#editProfileModal').modal('hide');
-                        } else {
-                            alert("Error updating profile. Please try again later.");
-                        }
-                    }
-                });
-            });
-        });
-    </script>
-    <script>
-    document.getElementById("printButton").addEventListener("click", function() {
-        window.location.href = "reportGeneration.php";
-    });
-</script>
 </body>
 </html>

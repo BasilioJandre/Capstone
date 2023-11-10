@@ -204,7 +204,7 @@ $check_picture = mysqli_num_rows($count_image);
             </li>
 			<li class="nav-item">
                 <a class="nav-link" href="admin-archive.php">
-                    <i class="fas fa-fw fa-chart-area"></i>
+                    <i class="fas fa-fw fa-file-archive"></i>
                     <span>Archive</span>
                 </a>
             </li>
