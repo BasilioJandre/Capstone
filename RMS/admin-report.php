@@ -42,8 +42,10 @@ $getreport = mysqli_query($conn, "SELECT * FROM `requests`");
 while($reports = mysqli_fetch_assoc($getreport))
 {
 	$req_no = $reports['Requisition_No'];
-	$req_date = $reports['Date_Requested'];
-	$req_need = $reports['Date_Needed'];
+	$req_date_x = $reports['Date_Requested'];
+	$req_date = date("m/d/Y", strtotime($req_date_x));
+	$req_need_x = $reports['Date_Needed'];
+	$req_need = date("m/d/Y", strtotime($req_need_x));
 	$req_name = $reports['User_Name'];
 	$req_id = $reports['User_ID'];
 	$req_desc = $reports['Description'];

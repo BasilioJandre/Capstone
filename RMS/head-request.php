@@ -21,8 +21,10 @@ while($get_req = mysqli_fetch_assoc($req_query))
 	$ReqType = $get_req['Request_Type'];
 	$ReqServ = $get_req['Product/Service'];
 	$ReqQty = $get_req['Quantity'];
-	$ReqDate = $get_req['Date_Requested'];
-	$ReqNDate = $get_req['Date_Needed'];
+	$ReqDate_x = $get_req['Date_Requested'];
+	$ReqDate = date("m/d/Y", strtotime($ReqDate_x));
+	$ReqNDate_x = $get_req['Date_Needed'];
+	$ReqNDate = date("m/d/Y", strtotime($ReqNDate_x));
 	$ReqDesc = $get_req['Description'];
 	$ReqStat = $get_req['Status'];
 	$Req_Forward = $get_req['Forward_To'];
@@ -30,9 +32,20 @@ while($get_req = mysqli_fetch_assoc($req_query))
 	$track_query = mysqli_query($conn,"SELECT * FROM `track` WHERE `Request_No` = '$ReqNo'");
 	$tracking = mysqli_fetch_assoc($track_query);
 	
+	$forwarded_head = '';
+	$forward_head_to = '';
+	$forwarded_evp_vpaa = '';
+	$forwarded_budget = '';
+	$forward_budget_to = '';
+	$handled_date = '';
+	$request_status = '';
+	$p_date = '';
+	$d_date = '';
+	
 	if(!empty($tracking['Forward_Head']))
 	{
-	$forwarded_head = $tracking['Forward_Head'];
+	$forwarded_head_x = $tracking['Forward_Head'];
+	$forwarded_head = date("m/d/Y", strtotime($forwarded_head_x));
 	}
 	
 	if(!empty($tracking['Forward_Head_To']))
@@ -42,12 +55,14 @@ while($get_req = mysqli_fetch_assoc($req_query))
 	
 	if(!empty($tracking['Forward_EVP/VPAA']))
 	{
-	$forwarded_evp_vpaa = $tracking['Forward_EVP/VPAA'];
+	$forwarded_evp_vpaa_x = $tracking['Forward_EVP/VPAA'];
+	$forwarded_evp_vpaa = date("m/d/Y", strtotime($forwarded_evp_vpaa_x));
 	}
 	
 	if(!empty($tracking['Forward_Budget']))
 	{
-	$forwarded_budget = $tracking['Forward_Budget'];
+	$forwarded_budget_x = $tracking['Forward_Budget'];
+	$forwarded_budget = date("m/d/Y", strotime($forwarded_budget_x));
 	}
 	
 	if(!empty($tracking['Forward_Budget_To']))
@@ -57,7 +72,8 @@ while($get_req = mysqli_fetch_assoc($req_query))
 	
 	if(!empty($tracking['Handled_Date']))
 	{
-	$handled_date = $tracking['Handled_Date'];
+	$handled_date_x = $tracking['Handled_Date'];
+	$handled_date = date("m/d/Y", strtotime($handled_date_x));
 	}
 	
 	if(!empty($tracking['Request_Status']))
@@ -67,12 +83,14 @@ while($get_req = mysqli_fetch_assoc($req_query))
 	
 	if(!empty($tracking['Purchase_Date']))
 	{
-	$p_date = $tracking['Purchase_Date'];
+	$p_date_x = $tracking['Purchase_Date'];
+	$p_date = date("m/d/Y", strtotime($p_date_x));
 	}
 	
 	if(!empty($tracking['Deliver_Date']))
 	{
-	$d_date = $tracking['Deliver_Date'];
+	$d_date_x = $tracking['Deliver_Date'];
+	$d_date = date("m/d/Y", strtotime($d_date_x));
 	}
 	
 	$tracking_list = '';
@@ -249,6 +267,16 @@ while($get_req = mysqli_fetch_assoc($req_query))
 						<h5>
                         <strong>Date Needed:</strong>
                         <span id="dateNeeded">'.$ReqNDate.'</span>
+						</h5>
+					</div>
+					<div class="tracking-date">
+						<h5>
+						<strong>Notes:</strong>
+						</h5>
+					</div>
+					<div class="tracking-date">
+						<h5>
+						<textarea rows="7" cols="49" value="'.$ReqNotes.'" disabled></textarea>
 						</h5>
 					</div>
                 </div>

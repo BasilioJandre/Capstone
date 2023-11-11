@@ -21,7 +21,7 @@ $userlist = '';
 $deletelist = '';
 $approvelist = '';
 
-$getuser = mysqli_query($conn, "SELECT * FROM `users` ORDER BY FIELD (`Status`,'Pending','Active')");
+$getuser = mysqli_query($conn, "SELECT * FROM `users` WHERE `User_ID` != '$user_id' ORDER BY FIELD (`Status`,'Pending','Active')");
 
 while($users = mysqli_fetch_assoc($getuser))
 {
