@@ -2,6 +2,14 @@
 require('tcpdf/fpdf.php');
 include('database/php/conn.php');
 include('database/php/session.php');
+date_default_timezone_set('Asia/Manila');
+
+
+$curr_date = date('Y-m-d');
+$curr_date_ex = explode(' ',$curr_date);
+$curr_date_s = "$curr_date_ex[0]";
+$curr_date_x = date("Y-m-d", strtotime($curr_date_s));
+$curr_date = date("m/d/Y", strtotime($curr_date_x));
 
 $first_date = $_SESSION['first_date'];
 $last_date = $_SESSION['last_date'];
@@ -52,18 +60,17 @@ while($departments = mysqli_fetch_assoc($get_department))
 	$count_report = mysqli_num_rows($get_request);
 
 	$pdf->Ln(10);
-	$pdf->Cell(80, 10, 'Department: '.$first_date.'');
+	$pdf->Cell(80, 10, 'Department: '.$dept_report.'');
 	$pdf->Ln(5);
-	$pdf->Cell(80, 10, 'Request By Month: '.$dept_report.'');
+	$pdf->Cell(80, 10, 'Request By Month: ');
 	$pdf->SetX(160);
 	$pdf->Cell(160, 10, 'Total Requests: '.$count_report.'');
 	$pdf->Ln(10);
 
 	$pdf->SetFont('Arial', 'B', 12);
 	$pdf->Cell(40, 10, 'Date', 1);
-	$pdf->Cell(40, 10, 'Department', 1);
 	$pdf->Cell(40, 10, 'Request Type', 1);
-	$pdf->Cell(70, 10, 'Description', 1);
+	$pdf->Cell(110, 10, 'Description', 1);
 	$pdf->Ln();
 
 	$pdf->SetFont('Arial', '', 12);
@@ -71,15 +78,16 @@ while($departments = mysqli_fetch_assoc($get_department))
 	
 	while($request = mysqli_fetch_assoc($get_request))
 	{
-		$date = $request['Date_Requested'];
+		$date_x = $request['Date_Requested'];
+		$date = date("m/d/Y", strtotime($date_x));
 		$department = $request['Department'];
 		$reqtype = $request['Request_Type'];
 		$description = $request['Description'];
 		
 		$pdf->Cell(40, 10, $date, 1);
-		$pdf->Cell(40, 10, $department, 1);
+
 		$pdf->Cell(40, 10, $reqtype, 1);
-		$pdf->Cell(70, 10, $description, 1);
+		$pdf->Cell(110, 10, $description, 1);
 		$pdf->Ln();
 	}
 
@@ -88,6 +96,7 @@ $get_all_request = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Date_Req
 $count_request = mysqli_num_rows($get_all_request);
 
 $pdf->Ln(5);
+$pdf->Cell(160, 10, 'Date Printed: '.$curr_date.'');
 $pdf->SetX(150);
 $pdf->Cell(160, 10, 'Over all Request: '.$count_request.'');
 
@@ -96,5 +105,5 @@ $pdfContent = $pdf->Output('', 'S');
 
 // Output the PDF content as a preview
 header('Content-Type: application/pdf');
-header('Content-Disposition: inline; filename="requisition_report.pdf"');
+header('Content-Disposition: inline; filename="Requisition_Report_'.$curr_date.'.pdf"');
 echo $pdfContent;

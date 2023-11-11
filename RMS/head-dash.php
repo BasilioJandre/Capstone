@@ -25,82 +25,82 @@ else
 //Conditions
 if($dept == 'College Dean')
 {
-	$Condition = "`Status` = 'Pending' AND (`Department`= 'College Faculty' OR `Department`= 'College Guidance' OR `Department`= 'College Library' OR `Department`= 'College O.S.A')";
+	$Condition = "`Department`= 'College Faculty' OR `Department`= 'College Guidance' OR `Department`= 'College Library' OR `Department`= 'College O.S.A'";
 }
 
 elseif($dept == 'Junior High School Principal' || $dept == 'Senior High School Principal')
 {
-	$Condition = "`Status` = 'Pending' AND (`Department`= 'High School Faculty (BHS)' OR `Department`= 'High School Faculty (GHS)' OR `Department`= 'High School Academics' OR `Department`= 'High School Guidance' OR `Department`= 'High School Library' OR `Department`= 'High School Laboratory' OR `Department`= 'High School O.S.A')";
+	$Condition = "`Department`= 'High School Faculty (BHS)' OR `Department`= 'High School Faculty (GHS)' OR `Department`= 'High School Academics' OR `Department`= 'High School Guidance' OR `Department`= 'High School Library' OR `Department`= 'High School Laboratory' OR `Department`= 'High School O.S.A'";
 }
 
 elseif($dept == 'Grade School Principal')
 {
-	$Condition = "`Status` = 'Pending' AND (`Department` = 'Grade School Academics' OR `Department` = 'Grade School E.C.E' OR `Department` = 'Grade School Faculty' OR `Department` = 'Grade School Guidance' OR `Department` = 'Grade School Library' OR `Department` = 'Grade School O.S.A')";
+	$Condition = "`Department` = 'Grade School Academics' OR `Department` = 'Grade School E.C.E' OR `Department` = 'Grade School Faculty' OR `Department` = 'Grade School Guidance' OR `Department` = 'Grade School Library' OR `Department` = 'Grade School O.S.A'";
 }
 
 elseif($dept == 'Finance')
 {
-	$Condition = "`Status` = 'Pending' AND (`Department` = 'Treasury' OR `Department` = 'Accounting' OR `Department` = 'Budget and Control' OR `Department` = 'Bookstore' OR `Department` = 'Canteen' OR `Department` = 'Printing' OR `Department` = 'Purchasing' OR `Department` = 'Stocks')";
+	$Condition = "`Department` = 'Treasury' OR `Department` = 'Accounting' OR `Department` = 'Budget and Control' OR `Department` = 'Bookstore' OR `Department` = 'Canteen' OR `Department` = 'Printing' OR `Department` = 'Purchasing' OR `Department` = 'Stocks'";
 }
 
 elseif($dept == 'CFO')
 {
-	$Condition = "`Status` = 'Pending' AND (`Department` = 'Sister Quarter' OR `Department` = 'Security Office' OR `Department` = 'Campus Ministry' OR `Department` = 'Pastoral Ministry')";
+	$Condition = "`Department` = 'Sister Quarter' OR `Department` = 'Security Office' OR `Department` = 'Campus Ministry' OR `Department` = 'Pastoral Ministry'";
 }
 
 elseif($dept == 'ICTC')
 {
-	$Condition = "`Status` = 'Pending' AND `Department` = 'ICTC'";
+	$Condition = "`Department` = 'ICTC'";
 }
 
 elseif($dept == 'GSU')
 {
-	$Condition = "`Status` = 'Pending' AND `Department` = 'GSU'";
+	$Condition = "`Department` = 'GSU'";
 }
 
 elseif($dept == 'HRMO')
 {
-	$Condition = "`Status` = 'Pending' AND `Department` = 'HRMO'";
+	$Condition = "`Department` = 'HRMO'";
 }
 
 elseif($dept == 'Registrar')
 {
-	$Condition = "`Status` = 'Pending' AND `Department` = 'Registrar'";
+	$Condition = "`Department` = 'Registrar'";
 }
 
 elseif($dept == 'Aula')
 {
-	$Condition = "`Status` = 'Pending' AND `Department` = 'Aula'";
+	$Condition = "`Department` = 'Aula'";
 }
 
 elseif($dept == 'Alumni Office')
 {
-	$Condition = "`Status` = 'Pending' AND `Department` = 'Alumni Office'";
+	$Condition = "`Department` = 'Alumni Office'";
 }
 
 elseif($dept == 'Medical-Dental')
 {
-	$Condition = "`Status` = 'Pending' AND `Department` = 'Medical-Dental'";
+	$Condition = "`Department` = 'Medical-Dental'";
 }
 
 elseif($dept == 'Mini Hotel')
 {
-	$Condition = "`Status` = 'Pending' AND `Department` = 'Mini Hotel'";
+	$Condition = "`Department` = 'Mini Hotel'";
 }
 
 elseif($dept == 'PAASCU')
 {
-	$Condition = "`Status` = 'Pending' AND `Department` = 'PAASCU'";
+	$Condition = "`Department` = 'PAASCU'";
 }
 
 elseif($dept == 'TVSD')
 {
-	$Condition = "`Status` = 'Pending' AND `Department` = 'TVSD'";
+	$Condition = "`Department` = 'TVSD'";
 }
 
 elseif($dept == 'Budget and Control')
 {
-	$Condition = "`Forward_To` = 'Budget and Control' AND `Request_Type` != 'Purchase'";
+	$Condition = "`Forward_To` = 'Budget and Control' OR `Request_Type` = 'Purchase'";
 }
 
 elseif($dept == 'VPAA' || $dept == 'EVP' || $dept == 'Office of the President')
@@ -113,17 +113,16 @@ else
 	$Condition = "`Department` = 'NA'";
 }
 
-$GetReq = mysqli_query($conn, "SELECT * FROM `requests` WHERE ".$Condition."");
-
 //Get number of pending requests
-$p_request_count = mysqli_num_rows($GetReq);
+$p_request_check = mysqli_query($conn, "SELECT * FROM `requests` WHERE (".$Condition.") AND `Status` = 'Pending'");
+$p_request_count = mysqli_num_rows($p_request_check);
 
 // Get total number of requests
-$n_request_check = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Status` = 'New'");	
+$n_request_check = mysqli_query($conn, "SELECT * FROM `requests` WHERE (".$Condition.") AND `Status` = 'Forwarded'");	
 $n_request_count = mysqli_num_rows($n_request_check);
 
 // Get total number of completed requests
-$c_request_check = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Status` = 'Approved' OR `Status` = 'Denied'");	
+$c_request_check = mysqli_query($conn, "SELECT * FROM `requests` WHERE (".$Condition.") AND `Active` = 'no'");	
 $c_request_count = mysqli_num_rows($c_request_check);
 
 // Update Profile
@@ -319,7 +318,7 @@ $check_picture = mysqli_num_rows($count_image);
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">New Request</div>
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Forwarded Request</div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $n_request_count;?></div>
                                         </div>
                                         <div class="col-auto">

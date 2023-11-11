@@ -173,12 +173,12 @@ elseif($dept == 'TVSD')
 
 elseif($dept == 'Budget and Control')
 {
-	$Condition = "`Forward_To` = 'Budget and Control' AND `Request_Type` != 'Purchase'";
+	$Condition = "(`Forward_To` = 'Budget and Control' AND `Request_Type` != 'Purchase') AND `Active` = 'yes'";
 }
 
 elseif($dept == 'VPAA' || $dept == 'EVP' || $dept == 'Office of the President')
 {
-	$Condition = "`Forward_To` = 'VPAA Office' OR `Forward_To` = 'EVP Office' OR `Forward_To` = 'Office of the President' OR `Department` = 'EVP' OR `Department` = 'VPAA' OR `Department` = 'Office of the President'";
+	$Condition = "(`Forward_To` = 'VPAA Office' OR `Forward_To` = 'EVP Office' OR `Forward_To` = 'Office of the President' OR `Department` = 'EVP' OR `Department` = 'VPAA' OR `Department` = 'Office of the President') AND `Active` = 'yes'";
 }
 
 else
@@ -200,8 +200,10 @@ while($Req = mysqli_fetch_assoc($GetReq))
 	$ReqType = $Req['Request_Type'];
 	$ReqServ = $Req['Product/Service'];
 	$ReqDesc = $Req['Description'];
-	$ReqDate = $Req['Date_Requested'];
-	$NeedDate = $Req['Date_Needed'];
+	$ReqDate_x = $Req['Date_Requested'];
+	$ReqDate = date("m/d/Y", strtotime($ReqDate_x));
+	$NeedDate_x = $Req['Date_Needed'];
+	$NeedDate = date("m/d/Y", strtotime($NeedDate_x));
 	$Status = $Req['Status'];
 	$AddNotes = $Req['Additional_Notes'];
 	$Active = $Req['Active'];
@@ -246,7 +248,8 @@ if($dept == 'Budget and Control')
 						<p>Requestor: '.$ReqName.'</p>
 						<p>Department: '.$ReqDept.'</p>
 						<p>Type of Request: '.$ReqType.' ('.$ReqServ.')</p>
-						<p>Description: '.$ReqDesc.'</p>
+						<p>Description:</p>
+						<textarea rows="7" cols="49" disabled>'.$ReqDesc.'</textarea>
 						<p>Request Date: '.$ReqDate.'</p>
 						<p>Date Needed: '.$NeedDate.'</p>
 						<p>Status: '.$Status.'</p>
@@ -255,8 +258,7 @@ if($dept == 'Budget and Control')
 						<div class="form-group">
 							<label for="requestStatus">Forward To:</label>
 							<select class="form-control" id="requestStatus" name="forward" required>
-								<option value="" selected disabled>Select Department</option>
-								<option value="Office of the President">Office of the President</option>
+								<option value="Office of the President" selected>Office of the President</option>
 								<option value="School of Graduate Studies">School of Graduate Studies</option>
 								<option value="Research">Research</option>
 								<option value="CFO">CFO</option>
@@ -328,10 +330,10 @@ else
 						<!-- Add a dropdown menu to select the request status -->
 						<div class="form-group">
 							<label for="requestStatus">Forward To:</label>
-							<select class="form-control" id="requestStatus" name="forward">
+							<select class="form-control" id="requestStatus" name="forward" required>
+								<option value="Budget and Control" selected>Budget and Control</option>
 								<option value="EVP Office">EVP Office</option>
 								<option value="VPAA Office">VPAA Office</option>
-								<option value="Budget and Control" selected>Budget and Control</option>
 							</select>
 						</div>
 						<div class="form-group">
@@ -477,8 +479,10 @@ while($I_Req = mysqli_fetch_assoc($I_GetReq))
 	$I_ReqType = $I_Req['Request_Type'];
 	$I_ReqServ = $I_Req['Product/Service'];
 	$I_ReqDesc = $I_Req['Description'];
-	$I_ReqDate = $I_Req['Date_Requested'];
-	$I_NeedDate = $I_Req['Date_Needed'];
+	$I_ReqDate_x = $I_Req['Date_Requested'];
+	$I_ReqDate = date("m/d/Y", strtotime($I_ReqDate_x));
+	$I_NeedDate_x = $I_Req['Date_Needed'];
+	$I_NeedDate = date("m/d/Y", strtotime($I_NeedDate_x));
 	$I_Status = $I_Req['Status'];
 	$I_AddNotes = $I_Req['Additional_Notes'];
 	
@@ -588,8 +592,7 @@ elseif($dept == 'Budget and Control' )
 						<div class="form-group">
 							<label for="requestStatus">Status:</label>
 							<select class="form-control" id="requestStatus" name="status" required>
-								<option value="" selected disabled>Select Status</option>
-								<option value="Item Purchased">Item Purchased</option>
+								<option value="Item Purchased" selected>Item Purchased</option>
 								<option value="Item Delivered">Item Delivered</option>
 							</select>
 						</div>
@@ -829,7 +832,7 @@ if(isset($_POST['decline_request']))
 	$UpReq = $_POST['up_req_id'];
 	$AddNotes = $_POST['note_area'];
 	
-	$update_request = mysqli_query($conn, "UPDATE `requests` SET `Approved_By` = '$name($user_id)', `Status` = 'Declined' WHERE `Requisition_No` = '$UpReq'");
+	$update_request = mysqli_query($conn, "UPDATE `requests` SET `Approved_By` = '$name($user_id)', `Status` = 'Declined', `Active` = 'no' WHERE `Requisition_No` = '$UpReq'");
 	$update_track = mysqli_query($conn, "UPDATE `track` SET `Handled_Date` = '$curr_date', `Request_Status` = 'Declined' WHERE `Request_No` = '$UpReq'");
 	
 	if($update_track)
