@@ -44,17 +44,17 @@ $pdf->SetFont('Helvetica', 'B', 16);
 $pdf->Cell(0, 10, 'REQUISITION MONTHLY REPORT', 0, 1, 'C'); 
 $pdf->SetFont('Arial', '', 12);
 
-$get_department = mysqli_query($conn, "SELECT DISTINCT `Department` FROM `requests`");
+$get_department = mysqli_query($conn, "SELECT DISTINCT `Department` FROM `requests` WHERE `Date_Requested` BETWEEN '$first_date' AND '$last_date'");
 while($departments = mysqli_fetch_assoc($get_department))
 {
 	$dept_report = $departments['Department'];
-	$get_request = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Department` = '$dept_report' AND `Date_Requested` BETWEEN '$first_date' AND '$last_date'");
+	$get_request = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Department` = '$dept_report' AND (`Date_Requested` BETWEEN '$first_date' AND '$last_date')");
 	$count_report = mysqli_num_rows($get_request);
 
 	$pdf->Ln(10);
-	$pdf->Cell(80, 10, 'Department: '.$dept_report.'');
+	$pdf->Cell(80, 10, 'Department: '.$first_date.'');
 	$pdf->Ln(5);
-	$pdf->Cell(80, 10, 'Request By Month: ');
+	$pdf->Cell(80, 10, 'Request By Month: '.$dept_report.'');
 	$pdf->SetX(160);
 	$pdf->Cell(160, 10, 'Total Requests: '.$count_report.'');
 	$pdf->Ln(10);
@@ -84,7 +84,7 @@ while($departments = mysqli_fetch_assoc($get_department))
 	}
 
 }
-$get_all_request = mysqli_query($conn, "SELECT * FROM `requests`");
+$get_all_request = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Date_Requested` BETWEEN '$first_date' AND '$last_date'");
 $count_request = mysqli_num_rows($get_all_request);
 
 $pdf->Ln(5);

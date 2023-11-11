@@ -2,9 +2,13 @@
 include('database/php/conn.php');
 include('database/php/session.php');
 date_default_timezone_set('Asia/Manila');
-
+$curr_date = date('Y-m-d');
+$curr_date_ex = explode(' ',$curr_date);
+$curr_date_s = "$curr_date_ex[0]";
+$curr_date = date("Y-m-d", strtotime($curr_date_s));
 
 $date = date('Y-m-d');
+
 
 //Tracking and Request History
 $req_query = mysqli_query($conn,"SELECT * FROM `requests` WHERE `User_ID` = '$user_id'");
@@ -25,6 +29,16 @@ while($get_req = mysqli_fetch_assoc($req_query))
 	
 	$track_query = mysqli_query($conn,"SELECT * FROM `track` WHERE `Request_No` = '$ReqNo'");
 	$tracking = mysqli_fetch_assoc($track_query);
+	
+	$forwarded_head = '';
+	$forward_head_to = '';
+	$forwarded_evp_vpaa = '';
+	$forwarded_budget = '';
+	$forward_budget_to = '';
+	$handled_date = '';
+	$request_status = '';
+	$p_date = '';
+	$d_date = '';
 	
 	if(!empty($tracking['Forward_Head']))
 	{
@@ -287,30 +301,72 @@ if(isset($_POST['send_btn']))
 	
 	$sf_notes = mysqli_real_escape_string($conn, $f_notes);
 	$f_notes = htmlspecialchars($sf_notes);
-		
-	$insert = mysqli_query($conn, "INSERT INTO `requests`(`User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`,`Status`,`Active`) VALUES ('$name','$user_id','$dept','$c_date','$n_date','$f_type','$f_service','$f_qty','$f_notes','Pending','yes')");
 	
-	if(!empty($_POST['indicator'][0]))
+	$countID = 1;
+	$idno = 1;
+	while($countID >= 1)
 	{
-		foreach($_POST['request'] as $request)
-		{
-			
-			$req_type = $_POST['request'][$count];
-			$req_service = $_POST['service'][$count];
-			$req_qty = $_POST['qty'][$count];
-			$req_notes = $_POST['notes'][$count];
-			
-			$s_notes = mysqli_real_escape_string($conn, $req_notes);
-			$notes = htmlspecialchars($s_notes);
-			
-			$insert = mysqli_query($conn, "INSERT INTO `requests`(`User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`,`Status`,`Active`) VALUES ('$name','$user_id','$dept','$c_date','$n_date','$req_type','$req_service','$req_qty','$notes','Pending','yes')");
-			$count += 1;
-		}
-		
+		$idx = 'REQNO'.$idno;
+		$checkforID = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Requisition_No` = '$idx'");
+		$countID = mysqli_num_rows($checkforID);
+		$idno += 1;
 	}
-	if($insert)
+	
+	if($countID == 0)
 	{
-		Header("Refresh:0");
+		$id = $idx;
+	}
+	
+	if($curr_date <= $n_date)
+	{
+	$insert = mysqli_query($conn, "INSERT INTO `requests`(`Requisition_No`, `User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`,`Status`,`Active`) VALUES ('$id','$name','$user_id','$dept','$c_date','$n_date','$f_type','$f_service','$f_qty','$f_notes','Pending','yes')");
+	$update_track = mysqli_query($conn, "INSERT INTO `track` (`Request_No`) VALUES ('$id')");
+	}
+	else
+	{
+		echo'<script>alert("Date Invalid!")</script>';
+	}
+	
+	if($curr_date <= $n_date)
+	{
+		if(!empty($_POST['indicator'][0]))
+		{
+			foreach($_POST['request'] as $request)
+			{
+					
+				$req_type = $_POST['request'][$count];
+				$req_service = $_POST['service'][$count];
+				$req_qty = $_POST['qty'][$count];
+				$req_notes = $_POST['notes'][$count];
+					
+				$s_notes = mysqli_real_escape_string($conn, $req_notes);
+				$notes = htmlspecialchars($s_notes);
+					
+				$countID = 1;
+				$idno = 1;
+				while($countID >= 1)
+				{
+					$idx = 'REQNO'.$idno;
+					$checkforID = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Requisition_No` = '$idx'");
+					$countID = mysqli_num_rows($checkforID);
+					$idno += 1;
+				}
+					
+				if($countID == 0)
+				{
+					$id = $idx;
+				}
+					
+					
+				$insert = mysqli_query($conn, "INSERT INTO `requests`(`Requisition_No`,`User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`,`Status`,`Active`) VALUES ('$id','$name','$user_id','$dept','$c_date','$n_date','$req_type','$req_service','$req_qty','$notes','Pending','yes')");
+				$update_track = mysqli_query($conn, "INSERT INTO `track` (`Request_No`) VALUES ('$id')");
+				$count += 1;
+			}
+		}
+		if($insert)
+		{
+			Header("Refresh:0");
+		}
 	}
 }
 

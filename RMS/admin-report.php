@@ -62,7 +62,7 @@ while($reports = mysqli_fetch_assoc($getreport))
 	<td>'.$req_desc.'</td>
 	<td>'.$req_status.'</td>
 	<td>
-	<button class="btn btn-primary" data-toggle="modal" data-target="#viewModal'.$req_no.'"><i class="fas fa-eye"></i> View</button>
+	<button class="btn btn-primary" data-toggle="modal" data-target="#viewModal'.$req_no.'"><i class="fas fa-eye"></i>View</button>
 	</td>
 	</tr>
 	
@@ -81,11 +81,11 @@ while($reports = mysqli_fetch_assoc($getreport))
 					<div class="modal-body">
 						<p>Request Number: '.$req_no.'</p>
 						<p>Date: '.$req_date.'</p>
+						<p>Date Needed: '.$req_need.'</p>
 						<p>Requestor: '.$req_name.' ('.$req_id.')</p>
 						<p>Department: '.$req_dept.'</p>
 						<p>Request: '.$req_type.' ('.$service.')</p>
 						<p>Description: '.$req_desc.'</p>
-						<p>Date Needed: '.$req_need.'</p>
 						<p>Notes: '.$req_notes.'</p>
 						<p>Status: '.$req_status.'</p>
 					</div>
@@ -117,7 +117,7 @@ if(isset($_POST['generate_report']))
 	else
 	{
 		$first_date = date(''.$year.'-'.$month.'-01', strtotime(''.$year.'-01-01'));
-		$last_date = date(''.$year.'-'.$month.'-01', strtotime(''.$year.'-01-01'));
+		$last_date = date(''.$year.'-'.$month.'-t', strtotime(''.$year.'-12-01'));
 	}
 	
 	$_SESSION['first_date'] = $first_date;
@@ -316,31 +316,32 @@ $check_picture = mysqli_num_rows($count_image);
                         <select class="form-control" id="selectMonth" name="selectMonth">
                             <option value ="" selected disabled>Select Month</option>
 							<option value="">All Months</option>
-                            <option value="1">January</option>
-                            <option value="2">February</option>
-							<option value="3">March</option>
-							<option value="4">April</option>
-							<option value="5">May</option>
-							<option value="6">June</option>
-							<option value="7">July</option>
-							<option value="8">August</option>
-							<option value="9">September</option>
-							<option value="10">October</option>
-							<option value="11">November</option>
-							<option value="12">December</option>
+                            <option value=1>January</option>
+                            <option value=2>February</option>
+							<option value=3>March</option>
+							<option value=4>April</option>
+							<option value=5>May</option>
+							<option value=6>June</option>
+							<option value=7>July</option>
+							<option value=8>August</option>
+							<option value=9>September</option>
+							<option value=10>October</option>
+							<option value=11>November</option>
+							<option value=12>December</option>
                             <!-- Add more month options -->
                         </select>
                     </div>
                     <div class="input-group" style="width: 200px; margin-left: 10px;">
                         <select class="form-control" id="selectYear" name="selectYear">
 						<option value="" selected disabled>Select Year</option>
-						<option value="">Current Year</option>
                             <?php echo $yearlist; ?>
                         </select>
                     </div>
                 </div>
             </div>
         </div>
+		</div>
+	</form>
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -361,7 +362,6 @@ $check_picture = mysqli_num_rows($count_image);
 				</div>
 			</div>
 		</div>
-	</form>
 </div>
 
    <div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">

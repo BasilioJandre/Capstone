@@ -289,32 +289,72 @@ if(isset($_POST['send_btn']))
 	
 	$sf_notes = mysqli_real_escape_string($conn, $f_notes);
 	$f_notes = htmlspecialchars($sf_notes);
-		
-	$insert = mysqli_query($conn, "INSERT INTO `requests`(`User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`,`Noted_By`,`Status`,`Forward_To`,`Active`) VALUES ('$name','$user_id','$dept','$c_date','$n_date','$f_type','$f_service','$f_qty','$f_notes','$name($user_id)','Forwarded','$forward_to','yes')");
-	$update_track = mysqli_query($conn, "INSERT INTO `track` (`Forward_Head`,`Forward_Head_To`) VALUES ('$curr_date','$forward_to')");
 	
-	if(!empty($_POST['indicator'][0]))
+	$countID = 1;
+	$idno = 1;
+	while($countID >= 1)
 	{
-		foreach($_POST['request'] as $request)
-		{
-			
-			$req_type = $_POST['request'][$count];
-			$req_service = $_POST['service'][$count];
-			$req_qty = $_POST['qty'][$count];
-			$req_notes = $_POST['notes'][$count];
-			
-			$s_notes = mysqli_real_escape_string($conn, $req_notes);
-			$notes = htmlspecialchars($s_notes);
-			
-			$insert = mysqli_query($conn, "INSERT INTO `requests`(`User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`,`Noted_By`,`Status`,`Forward_To`,`Active`) VALUES ('$name','$user_id','$dept','$c_date','$n_date','$req_type','$req_service','$req_qty','$notes','$name($user_id)','Forwarded','$forward_to','yes')");
-			$update_track = mysqli_query($conn, "INSERT INTO `track` (`Forward_Head`,`Forward_Head_To`) VALUES ('$curr_date','$forward_to')");
-			$count += 1;
-		}
-		
+		$idx = 'REQNO'.$idno;
+		$checkforID = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Requisition_No` = '$idx'");
+		$countID = mysqli_num_rows($checkforID);
+		$idno += 1;
 	}
-	if($insert)
+	
+	if($countID == 0)
 	{
-		Header("Refresh:0");
+		$id = $idx;
+	}
+	
+	if($curr_date <= $n_date)
+	{
+	$insert = mysqli_query($conn, "INSERT INTO `requests`(`Requisition_No`,`User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`,`Noted_By`,`Status`,`Forward_To`,`Active`) VALUES ('$id','$name','$user_id','$dept','$c_date','$n_date','$f_type','$f_service','$f_qty','$f_notes','$name($user_id)','Forwarded','$forward_to','yes')");
+	$update_track = mysqli_query($conn, "INSERT INTO `track` (`Request_No`,`Forward_Head`,`Forward_Head_To`) VALUES ('$id','$curr_date','$forward_to')");
+	}
+	else
+	{
+		echo'<script>alert("Date Invalid!")</script>';
+	}
+	
+	if($curr_date <= $n_date)
+	{
+		if(!empty($_POST['indicator'][0]))
+		{
+			foreach($_POST['request'] as $request)
+			{
+				
+				$req_type = $_POST['request'][$count];
+				$req_service = $_POST['service'][$count];
+				$req_qty = $_POST['qty'][$count];
+				$req_notes = $_POST['notes'][$count];
+				
+				$s_notes = mysqli_real_escape_string($conn, $req_notes);
+				$notes = htmlspecialchars($s_notes);
+				
+				$countID = 1;
+				$idno = 1;
+				while($countID >= 1)
+				{
+					$idx = 'REQNO'.$idno;
+					$checkforID = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Requisition_No` = '$idx'");
+					$countID = mysqli_num_rows($checkforID);
+					$idno += 1;
+				}
+				
+				if($countID == 0)
+				{
+					$id = $idx;
+				}
+				
+				$insert = mysqli_query($conn, "INSERT INTO `requests`(`Requisition_No`,`User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`,`Noted_By`,`Status`,`Forward_To`,`Active`) VALUES ('$id','$name','$user_id','$dept','$c_date','$n_date','$req_type','$req_service','$req_qty','$notes','$name($user_id)','Forwarded','$forward_to','yes')");
+				$update_track = mysqli_query($conn, "INSERT INTO `track` (`Request_No`,`Forward_Head`,`Forward_Head_To`) VALUES ('$id','$curr_date','$forward_to')");
+				$count += 1;
+			}
+			
+		}
+		if($insert)
+		{
+			Header("Refresh:0");
+		}
 	}
 }
 

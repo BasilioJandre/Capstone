@@ -709,7 +709,7 @@ if(isset($_POST['send_request']))
 		$AddNotes = $_POST['note_area'];
 		$Forward = $_POST['forward'];
 		
-		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = 'Forwarded', `Forward_To` = '$Forward', `Noted_By_Budget` = '$name($user_id)' WHERE `Requisition_No` = $UpReq");
+		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = 'Forwarded', `Forward_To` = '$Forward', `Noted_By_Budget` = '$name($user_id)' WHERE `Requisition_No` = '$UpReq'");
 		$update_track = mysqli_query($conn, "UPDATE `track` SET `Forward_Budget` = '$curr_date', `Forward_Budget_To` = '$Forward' WHERE `Request_No` = '$UpReq'");
 	}
 	
@@ -733,7 +733,7 @@ if(isset($_POST['send_request']))
 		}
 		
 		
-		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = 'Forwarded', `Forward_To` = '$Forward', `Noted_By` = '$additional_noted' WHERE `Requisition_No` = $UpReq");
+		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = 'Forwarded', `Forward_To` = '$Forward', `Noted_By` = '$additional_noted' WHERE `Requisition_No` = '$UpReq'");
 		$update_track = mysqli_query($conn, "UPDATE `track` SET `Forward_EVP/VPAA` = '$curr_date' WHERE `Request_No` = '$UpReq'");
 	}
 	
@@ -743,8 +743,8 @@ if(isset($_POST['send_request']))
 		$AddNotes = $_POST['note_area'];
 		$Forward = $_POST['forward'];
 		
-		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = 'Forwarded', `Forward_To` = '$Forward', `Noted_By` = '$name($user_id)' WHERE `Requisition_No` = $UpReq");
-		$update_track = mysqli_query($conn, "INSERT INTO `track` (`Request_No`, `Forward_Head`, `Forward_Head_To`) VALUES ('$UpReq', '$curr_date','$Forward')");
+		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = 'Forwarded', `Forward_To` = '$Forward', `Noted_By` = '$name($user_id)' WHERE `Requisition_No` = '$UpReq'");
+		$update_track = mysqli_query($conn, "UPDATE `track` SET `Forward_Head` = '$curr_date', `Forward_Head_To` = '$Forward' WHERE `Request_No` = '$UpReq'");
 	}
 	if($update_req)
 	{
@@ -759,7 +759,7 @@ if(isset($_POST['save_status']))
 	$AddNotes = $_POST['note_area'];
 	$Status = $_POST['status'];
 	
-	$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = '$Status', `Approved_By` = '$name($user_id)' WHERE `Requisition_No` = $UpReq");
+	$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = '$Status', `Approved_By` = '$name($user_id)' WHERE `Requisition_No` = '$UpReq'");
 	$update_track = mysqli_query($conn, "UPDATE `track` SET `Handled_Date` = '$curr_date', `Request_Status` = '$Status' WHERE `Request_No` = '$UpReq'");
 	
 	if($Status = 'Declined' || $Status = 'Repaired')
@@ -781,12 +781,12 @@ if(isset($_POST['item_purchase']))
 	if($purchase_status == 'Item Purchased')
 	{
 		$update_track = mysqli_query($conn, "UPDATE `track` SET `Purchase_Date` = '$curr_date' WHERE `Request_No` = '$UpReq'");
-		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = '$purchase_status' WHERE `Requisition_No` = $UpReq");
+		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = '$purchase_status' WHERE `Requisition_No` = '$UpReq'");
 	}
 	if($purchase_status == 'Item Delivered')
 	{
 		$update_track = mysqli_query($conn, "UPDATE `track` SET `Deliver_Date` = '$curr_date' WHERE `Request_No` = '$UpReq'");
-		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = '$purchase_status' WHERE `Requisition_No` = $UpReq");
+		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = '$purchase_status' WHERE `Requisition_No` = '$UpReq'");
 	}
 	
 	if($update_req)
@@ -799,7 +799,7 @@ if(isset($_POST['item_purchase']))
 if(isset($_POST['btn_del']))
 {
 	$DelReqID = $_POST['del_req_id'];
-	$query = mysqli_query($conn,"SELECT * FROM `requests` WHERE `Requisition_No` = $DelReqID");
+	$query = mysqli_query($conn,"SELECT * FROM `requests` WHERE `Requisition_No` = '$DelReqID'");
 	$assign_value = mysqli_fetch_assoc($query);
 	
 	$a_req_id = $assign_value['Requisition_No'];
@@ -829,20 +829,10 @@ if(isset($_POST['decline_request']))
 	$UpReq = $_POST['up_req_id'];
 	$AddNotes = $_POST['note_area'];
 	
-	$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = 'Declined', `Approved_By` = '$name($user_id)', `Active` = 'no' WHERE `Requisition_No` = $UpReq");
-	$check_track = mysqli_query($conn, "SELECT * FROM `track` WHERE `Request_No` = '$UpReq'");
-	$num_track = mysqli_num_rows($check_track);
+	$update_request = mysqli_query($conn, "UPDATE `requests` SET `Approved_By` = '$name($user_id)', `Status` = 'Declined' WHERE `Requisition_No` = '$UpReq'");
+	$update_track = mysqli_query($conn, "UPDATE `track` SET `Handled_Date` = '$curr_date', `Request_Status` = 'Declined' WHERE `Request_No` = '$UpReq'");
 	
-	if($num_track == 1)
-	{
-		$update_track = mysqli_query($conn, "UPDATE `track` SET `Handled_Date` = '$curr_date', `Request_Status` = 'Declined' WHERE `Request_No` = '$UpReq'");
-	}
-	elseif($num_track < 1)
-	{
-		$update_track = mysqli_query($conn, "INSERT INTO `track` (`Handled_Date`,`Request_Status`) VALUES ('$curr_date','Declined')");
-	}
-	
-	if($update_req)
+	if($update_track)
 	{
 		Header("Refresh:0");
 	}

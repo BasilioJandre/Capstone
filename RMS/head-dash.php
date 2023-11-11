@@ -22,9 +22,101 @@ else
     exit;
 }
 
-// Get number of pending requests	
-$p_request_check = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Status` = 'Pending'");	
-$p_request_count = mysqli_num_rows($p_request_check);
+//Conditions
+if($dept == 'College Dean')
+{
+	$Condition = "`Status` = 'Pending' AND (`Department`= 'College Faculty' OR `Department`= 'College Guidance' OR `Department`= 'College Library' OR `Department`= 'College O.S.A')";
+}
+
+elseif($dept == 'Junior High School Principal' || $dept == 'Senior High School Principal')
+{
+	$Condition = "`Status` = 'Pending' AND (`Department`= 'High School Faculty (BHS)' OR `Department`= 'High School Faculty (GHS)' OR `Department`= 'High School Academics' OR `Department`= 'High School Guidance' OR `Department`= 'High School Library' OR `Department`= 'High School Laboratory' OR `Department`= 'High School O.S.A')";
+}
+
+elseif($dept == 'Grade School Principal')
+{
+	$Condition = "`Status` = 'Pending' AND (`Department` = 'Grade School Academics' OR `Department` = 'Grade School E.C.E' OR `Department` = 'Grade School Faculty' OR `Department` = 'Grade School Guidance' OR `Department` = 'Grade School Library' OR `Department` = 'Grade School O.S.A')";
+}
+
+elseif($dept == 'Finance')
+{
+	$Condition = "`Status` = 'Pending' AND (`Department` = 'Treasury' OR `Department` = 'Accounting' OR `Department` = 'Budget and Control' OR `Department` = 'Bookstore' OR `Department` = 'Canteen' OR `Department` = 'Printing' OR `Department` = 'Purchasing' OR `Department` = 'Stocks')";
+}
+
+elseif($dept == 'CFO')
+{
+	$Condition = "`Status` = 'Pending' AND (`Department` = 'Sister Quarter' OR `Department` = 'Security Office' OR `Department` = 'Campus Ministry' OR `Department` = 'Pastoral Ministry')";
+}
+
+elseif($dept == 'ICTC')
+{
+	$Condition = "`Status` = 'Pending' AND `Department` = 'ICTC'";
+}
+
+elseif($dept == 'GSU')
+{
+	$Condition = "`Status` = 'Pending' AND `Department` = 'GSU'";
+}
+
+elseif($dept == 'HRMO')
+{
+	$Condition = "`Status` = 'Pending' AND `Department` = 'HRMO'";
+}
+
+elseif($dept == 'Registrar')
+{
+	$Condition = "`Status` = 'Pending' AND `Department` = 'Registrar'";
+}
+
+elseif($dept == 'Aula')
+{
+	$Condition = "`Status` = 'Pending' AND `Department` = 'Aula'";
+}
+
+elseif($dept == 'Alumni Office')
+{
+	$Condition = "`Status` = 'Pending' AND `Department` = 'Alumni Office'";
+}
+
+elseif($dept == 'Medical-Dental')
+{
+	$Condition = "`Status` = 'Pending' AND `Department` = 'Medical-Dental'";
+}
+
+elseif($dept == 'Mini Hotel')
+{
+	$Condition = "`Status` = 'Pending' AND `Department` = 'Mini Hotel'";
+}
+
+elseif($dept == 'PAASCU')
+{
+	$Condition = "`Status` = 'Pending' AND `Department` = 'PAASCU'";
+}
+
+elseif($dept == 'TVSD')
+{
+	$Condition = "`Status` = 'Pending' AND `Department` = 'TVSD'";
+}
+
+elseif($dept == 'Budget and Control')
+{
+	$Condition = "`Forward_To` = 'Budget and Control' AND `Request_Type` != 'Purchase'";
+}
+
+elseif($dept == 'VPAA' || $dept == 'EVP' || $dept == 'Office of the President')
+{
+	$Condition = "`Forward_To` = 'VPAA Office' OR `Forward_To` = 'EVP Office' OR `Forward_To` = 'Office of the President' OR `Department` = 'EVP' OR `Department` = 'VPAA' OR `Department` = 'Office of the President'";
+}
+
+else
+{
+	$Condition = "`Department` = 'NA'";
+}
+
+$GetReq = mysqli_query($conn, "SELECT * FROM `requests` WHERE ".$Condition."");
+
+//Get number of pending requests
+$p_request_count = mysqli_num_rows($GetReq);
 
 // Get total number of requests
 $n_request_check = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Status` = 'New'");	
