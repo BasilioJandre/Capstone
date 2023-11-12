@@ -62,7 +62,7 @@ while($get_req = mysqli_fetch_assoc($req_query))
 	if(!empty($tracking['Forward_Budget']))
 	{
 	$forwarded_budget_x = $tracking['Forward_Budget'];
-	$forwarded_budget = date("m/d/Y", strotime($forwarded_budget_x));
+	$forwarded_budget = date("m/d/Y", strtotime($forwarded_budget_x));
 	}
 	
 	if(!empty($tracking['Forward_Budget_To']))

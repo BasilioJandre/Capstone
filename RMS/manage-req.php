@@ -103,7 +103,7 @@ if($dept == 'College Dean')
 
 elseif($dept == 'Junior High School Principal' || $dept == 'Senior High School Principal')
 {
-	$Condition = "`Status` = 'Pending' AND (`Department`= 'High School Faculty (BHS)' OR `Department`= 'High School Faculty (GHS)' OR `Department`= 'High School Academics' OR `Department`= 'High School Guidance' OR `Department`= 'High School Library' OR `Department`= 'High School Laboratory' OR `Department`= 'High School O.S.A')";
+	$Condition = "`Status` = 'Pending' AND (`Department`= 'High School Faculty (BHS)' OR `Department`= 'High School Faculty (GHS)' OR `Department`= 'High School Academics' OR `Department`= 'High School Guidance' OR `Department`= 'High School Library' OR `Department`= 'High School Laboratory' OR `Department`= 'High School O.S.A' OR `Department` = 'High School Reading Center')";
 }
 
 elseif($dept == 'Grade School Principal')
@@ -164,6 +164,11 @@ elseif($dept == 'Mini Hotel')
 elseif($dept == 'PAASCU')
 {
 	$Condition = "`Status` = 'Pending' AND `Department` = 'PAASCU'";
+}
+
+elseif($dept == 'School of Graduate Studies' || $dept == 'Research')
+{
+	$Condition = "`Status` = 'Pending' AND (`Department` = 'SGS Library' OR `Department` = 'School of Graduate Studies' OR `Department` = 'Research')";
 }
 
 elseif($dept == 'TVSD')
