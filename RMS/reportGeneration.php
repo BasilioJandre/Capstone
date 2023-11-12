@@ -13,6 +13,7 @@ $curr_date = date("m/d/Y", strtotime($curr_date_x));
 
 $first_date = $_SESSION['first_date'];
 $last_date = $_SESSION['last_date'];
+$month_display = $_SESSION['month_display'];
 
 // Checks if Logged In
 if ($sess != TRUE)
@@ -62,7 +63,7 @@ while($departments = mysqli_fetch_assoc($get_department))
 	$pdf->Ln(10);
 	$pdf->Cell(80, 10, 'Department: '.$dept_report.'');
 	$pdf->Ln(5);
-	$pdf->Cell(80, 10, 'Request By Month: ');
+	$pdf->Cell(80, 10, 'Request By Month: '.$month_display.'');
 	$pdf->SetX(160);
 	$pdf->Cell(160, 10, 'Total Requests: '.$count_report.'');
 	$pdf->Ln(10);

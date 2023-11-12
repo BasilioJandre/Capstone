@@ -178,7 +178,7 @@ elseif($dept == 'Budget and Control')
 
 elseif($dept == 'VPAA' || $dept == 'EVP' || $dept == 'Office of the President')
 {
-	$Condition = "(`Forward_To` = 'VPAA Office' OR `Forward_To` = 'EVP Office' OR `Forward_To` = 'Office of the President' OR `Department` = 'EVP' OR `Department` = 'VPAA' OR `Department` = 'Office of the President') AND `Active` = 'yes'";
+	$Condition = "(`Forward_To` = 'VPAA Office' OR `Forward_To` = 'EVP Office' OR `Forward_To` = 'Office of the President' OR `Department` = 'EVP' OR `Department` = 'VPAA' OR `Department` = 'Office of the President') AND (`Active` = 'yes' AND `Noted_By_Budget` = '')";
 }
 
 else
@@ -458,6 +458,10 @@ elseif($dept == 'Finance')
 elseif($dept == 'Budget and Control')
 {
 	$I_Condition = "(`Status` = 'Requires Purchase' OR `Status` = 'Item Purchased' OR `Status` = 'Item Delivered') OR (`Request_Type` = 'Purchase' AND `Forward_To` = 'Budget and Control') AND `Active` = 'yes'";
+}
+elseif($dept == 'VPAA' || $dept == 'EVP' || $dept == 'Office of the President')
+{
+	$I_Condition = "(`Forward_To` = 'VPAA Office' OR `Forward_To` = 'EVP Office' OR `Forward_To` = 'Office of the President') AND (`Noted_By_Budget` != '' AND `Active` = 'yes')";
 }
 
 else
@@ -767,7 +771,7 @@ if(isset($_POST['save_status']))
 	
 	if($Status = 'Declined' || $Status = 'Repaired')
 	{
-		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Active` = 'no' WHERE `Requisition_No` = $UpReq");
+		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Active` = 'no' WHERE `Requisition_No` = '$UpReq'");
 	}
 	if($update_req)
 	{
@@ -959,7 +963,7 @@ if(isset($_POST['decline_request']))
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <div class="d-flex align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary"><?php if($dept == 'VPAA' || $dept == 'EVP' || $dept == 'Office of the President'){echo 'Requests';} else{echo 'Outgoing Request';}?></h6>
+                <h6 class="m-0 font-weight-bold text-primary">Outgoing Request</h6>
                 <div class="input-group" style="width:300px;">
                     <input type="text" class="form-control" id="searchInputOutgoing" placeholder="Search...">
                     <div class="input-group-append">
@@ -994,14 +998,6 @@ if(isset($_POST['decline_request']))
         </div>
     </div>
 
-<?php
-if($dept == 'VPAA' || $dept == 'EVP' || $dept == 'Office of the President')
-{
-	echo '';
-}
-else
-{
-echo'
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <div class="d-flex align-items-center justify-content-between">
@@ -1033,16 +1029,13 @@ echo'
                         </tr>
                     </thead>
                     <tbody>
-                        '.$I_ReqList.'
+                       <?php echo $I_ReqList; ?>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
-';
-}
-?>
 
 	<div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
 		<div class="modal-dialog" role="document">

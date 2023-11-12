@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 11, 2023 at 01:52 PM
+-- Generation Time: Nov 12, 2023 at 05:13 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.0.25
 
@@ -78,6 +78,13 @@ CREATE TABLE `requests` (
   `Active` varchar(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `requests`
+--
+
+INSERT INTO `requests` (`Requisition_No`, `User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`, `Additional_Notes`, `Noted_By`, `Noted_By_Budget`, `Approved_By`, `Status`, `Forward_To`, `Active`) VALUES
+('REQNO1', 'Sarah Doe', '32364651', 'College Faculty', '2023-11-11', '2023-11-12', 'Repair', 'Equipment', 2, 'broken keyboards', '', 'Carla Crisostomo(97737112) / Jenny Smith(95328448)', 'Jane Doe(23859356)', 'Carla Crisostomo(97737112)', 'Repaired', 'VPAA Office', 'no');
+
 -- --------------------------------------------------------
 
 --
@@ -96,6 +103,13 @@ CREATE TABLE `track` (
   `Purchase_Date` date DEFAULT NULL,
   `Deliver_Date` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `track`
+--
+
+INSERT INTO `track` (`Request_No`, `Forward_Head`, `Forward_Head_To`, `Forward_EVP/VPAA`, `Forward_Budget`, `Forward_Budget_To`, `Handled_Date`, `Request_Status`, `Purchase_Date`, `Deliver_Date`) VALUES
+('REQNO1', '2023-11-12', 'VPAA Office', '2023-11-12', '2023-11-12', 'VPAA Office', '2023-11-12', 'Repaired', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -118,7 +132,13 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`User_ID`, `Full_Name`, `Email`, `Department`, `Role`, `Password`, `Status`) VALUES
-(58153965, 'Charles Baker', 'b_charles@email.com', 'Admin', 'Admin', '$2y$15$1pIGFn0bzRE622wxA1NydemTDZB0Fx.hPRI6D2rQrbZAIUTh4/Bmm', 'Active');
+(23859356, 'Jane Doe', 'doejane@email.com', 'Budget and Control', 'Department Head', '$2y$15$GoMUdBnLHmro8OPh/wIeV.tMGcGk0D6kiqtiXuiW4twQeFy2VK.RO', 'Active'),
+(32364651, 'Sarah Doe', 'd_sarah@email.com', 'College Faculty', 'Teaching Personnel', '$2y$15$zf9M9hO8Yo7PXMSACJ3PKOrh9qrAddOZO2pVn4Fl7F6R2H.gLV2ua', 'Active'),
+(32669997, 'John Deere', 'jd@email.com', 'ICTC', 'Admin', '$2y$15$47kW6PvGy5q/UTYXjPVOEewHog88.SxBQ.nmRzz.WbQwRqcn0dOG.', 'Active'),
+(49113465, 'Pedro Calungsod', 'calungsod@email.com', 'College Faculty', 'Teaching Personnel', '$2y$15$K8ThNXxcReUiHpO0xQP5h.AiupeykFkmlOgqPwlsRD7ZPRksFP6nG', 'Pending'),
+(58153965, 'Charles Baker', 'b_charles@email.com', 'Admin', 'Admin', '$2y$15$1pIGFn0bzRE622wxA1NydemTDZB0Fx.hPRI6D2rQrbZAIUTh4/Bmm', 'Active'),
+(95328448, 'Jenny Smith', 'jsmith@email.com', 'College Dean', 'Department Head', '$2y$15$NDUFCTOQK3A6j5XiGF2WSOMHom9if4IWhAqypIAqL.zzVCgxXbLB.', 'Active'),
+(97737112, 'Carla Crisostomo', 'CarlaCris@email.com', 'VPAA', 'Department Head', '$2y$15$Dj92X/JOJn0gWgxr2qbRwOFIs0lQ5CsnCAQ4xaRGOmp4XLvfbiFk.', 'Active');
 
 --
 -- Indexes for dumped tables
@@ -174,7 +194,7 @@ ALTER TABLE `image`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `User_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58153966;
+  MODIFY `User_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97737113;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -20,8 +20,9 @@ if ($role != 'Admin')
 $userlist = '';
 $deletelist = '';
 $approvelist = '';
+$adminlist = '';
 
-$getuser = mysqli_query($conn, "SELECT * FROM `users` WHERE `User_ID` != '$user_id' ORDER BY FIELD (`Status`,'Pending','Active')");
+$getuser = mysqli_query($conn, "SELECT * FROM `users` WHERE `User_ID` != '$user_id' ORDER BY `Status` DESC, `Role` ASC");
 
 while($users = mysqli_fetch_assoc($getuser))
 {
@@ -35,6 +36,7 @@ while($users = mysqli_fetch_assoc($getuser))
 	if($user_stat == 'Pending')
 	{
 		$buttons = '
+		<button type="" class="btn btn-primary" data-toggle="modal" data-target="#adminModal'.$id.'" name=""><i class="fas fa-user"></i></button>
 		<button type="" class="btn btn-primary" data-toggle="modal" data-target="#approveModal'.$id.'" name=""><i class="fas fa-check"></i></button>
 		<button type="" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal'.$id.'" name=""><i class="fas fa-trash"></i></button>
 		';
@@ -42,6 +44,7 @@ while($users = mysqli_fetch_assoc($getuser))
 	elseif($user_stat == 'Active')
 	{
 		$buttons = '
+		<button type="" class="btn btn-primary" data-toggle="modal" data-target="#adminModal'.$id.'" name=""><i class="fas fa-user"></i></button>
 		<button type="" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal'.$id.'" name=""><i class="fas fa-trash"></i></button>
 		';
 	}
@@ -119,6 +122,35 @@ while($users = mysqli_fetch_assoc($getuser))
 	
 	';
 	
+	$adminlist.='
+	
+	<div class="modal fade" id="adminModal'.$id.'" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+	<form action="admin-manage.php" method="POST">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Admin User</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Add your delete confirmation message here -->
+                    <p>Make this user a System Administrator?</p>
+                </div>
+                <div class="modal-footer">
+				
+                    <button type="submit" class="btn btn-primary" name="adminuser">Approve</button>
+					<input type="hidden" value="'.$id.'" name="adm_user_id">
+                
+				</div>
+            </div>
+        </div>
+	</form>
+    </div>
+	
+	';
+	
 }
 
 //Delete Function
@@ -137,6 +169,18 @@ if(isset($_POST['approveuser']))
 {
 	$app_user_id = $_POST['app_user_id'];
 	$query = mysqli_query($conn, "UPDATE `users` SET `Status` = 'Active' WHERE `User_ID` = '$app_user_id'");
+	
+	if($query)
+	{
+		header('Refresh:0');
+	}
+}
+
+//Admin Function
+if(isset($_POST['adminuser']))
+{
+	$adm_user_id = $_POST['adm_user_id'];
+	$query = mysqli_query($conn, "UPDATE `users` SET `Status` = 'Active', `Role` = 'Admin' WHERE `User_ID` = '$adm_user_id'");
 	
 	if($query)
 	{
@@ -391,6 +435,7 @@ $check_picture = mysqli_num_rows($count_image);
 	
     <?php echo $deletelist; ?>
 	<?php echo $approvelist; ?>
+	<?php echo $adminlist; ?>
 
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
