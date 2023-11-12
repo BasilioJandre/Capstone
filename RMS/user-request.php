@@ -15,6 +15,7 @@ $req_query = mysqli_query($conn,"SELECT * FROM `requests` WHERE `User_ID` = '$us
 $ReqList ='';
 $TrackList='';
 $DelList='';
+$ViewList = '';
 while($get_req = mysqli_fetch_assoc($req_query))
 {
 	$ReqNo = $get_req['Requisition_No'];
@@ -29,6 +30,9 @@ while($get_req = mysqli_fetch_assoc($req_query))
 	$ReqNotes = $get_req['Additional_Notes'];
 	$ReqStat = $get_req['Status'];
 	$Req_Forward = $get_req['Forward_To'];
+	$ReqEnd = $get_req['Noted_By'];
+	$ReqNoted = $get_req['Noted_By_Budget'];
+	$ReqSigned = $get_req['Approved_By'];
 	
 	$track_query = mysqli_query($conn,"SELECT * FROM `track` WHERE `Request_No` = '$ReqNo'");
 	$tracking = mysqli_fetch_assoc($track_query);
@@ -63,7 +67,7 @@ while($get_req = mysqli_fetch_assoc($req_query))
 	if(!empty($tracking['Forward_Budget']))
 	{
 	$forwarded_budget_x = $tracking['Forward_Budget'];
-	$forwarded_budget = date("m/d/Y", strotime($forwarded_budget_x));
+	$forwarded_budget = date("m/d/Y", strtotime($forwarded_budget_x));
 	}
 	
 	if(!empty($tracking['Forward_Budget_To']))
@@ -208,6 +212,9 @@ while($get_req = mysqli_fetch_assoc($req_query))
 	<a href="#" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal'.$ReqNo.'">
 		<i class="fas fa-trash"></i> Delete
 	</a>
+	<a href="#" class="btn btn-info btn-sm" data-toggle="modal" data-target="#viewModal'.$ReqNo.'">
+		<i class="fas fa-eye"></i> View Request Form
+	</a>
 	</td>
 	</tr>
 	
@@ -270,16 +277,6 @@ while($get_req = mysqli_fetch_assoc($req_query))
                         <span id="dateNeeded">'.$ReqNDate.'</span>
 						</h5>
 					</div>
-					<div class="tracking-date">
-						<h5>
-						<strong>Notes:</strong>
-						</h5>
-					</div>
-					<div class="tracking-date">
-						<h5>
-						<span id="dateNeeded"><textarea rows="7" cols="49" value="'.$ReqNotes.'" disabled></textarea></span>
-						</h5>
-					</div>
                 </div>
                 <div class="tracking-history">
                     <h5>Tracking History</h5>
@@ -294,6 +291,45 @@ while($get_req = mysqli_fetch_assoc($req_query))
             </div>
         </div>
     </div>
+	</div>
+	
+	';
+	
+	$ViewList .= '
+	
+	<div class="modal fade" id="viewModal'.$ReqNo.'" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel" aria-hidden="true">
+		<form action="manage-req.php" method="POST">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content" style="width:750px;">
+					<div class="modal-header">
+						<h5 class="modal-title" id="viewModalLabel">View Request</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<!-- Add your view content here -->
+						<p>Request Details:</p>
+						<p>Request No.: '.$ReqNo.'</p>
+						<p>Request Date: '.$ReqDate.'</p>
+						<p>Date Needed: '.$ReqNDate.'</p>
+						<p>Type of Request: '.$ReqType.' ('.$ReqServ.')</p>
+						<p>Endorsed By: '.$ReqEnd.'</p>
+						<p>Noted By: '.$ReqNoted.'</p>
+						<p>Description:</p>
+						<textarea rows="7" cols="49" disabled>'.$ReqDesc.'</textarea>
+						<p>Status: '.$ReqStat.'</p>
+						<p>Signed: '.$ReqSigned.'</p>
+						<div class="form-group">
+							<label for="requestStatus">Remarks:</label>
+							<div class="fixed-input-box">
+								<textarea rows="7" cols="49" name="note_area">'.$ReqNotes.'</textarea>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
 	</div>
 	
 	';
@@ -655,6 +691,7 @@ $check_picture = mysqli_num_rows($count_image);
     
 <?php echo $TrackList; ?>
 <?php echo $DelList; ?>
+<?php echo $ViewList; ?>
 
     <!-- New Request Modal -->
     <div class="modal fade" id="newRequestModal" tabindex="-1" role="dialog" aria-labelledby="newRequestModalLabel" aria-hidden="true">

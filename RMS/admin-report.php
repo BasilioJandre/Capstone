@@ -71,6 +71,32 @@ if(isset($_POST['filter_btn']))
 
 if(isset($_POST['generate_report']))
 {
+	if(empty($_POST['selectYear']))
+	{
+		$year = $curr_year;
+	}
+	else
+	{
+		$year = $_POST['selectYear'];
+	}
+	if(empty($_POST['selectMonth']))
+	{
+		$first_date = date(''.$year.'-01-01', strtotime(''.$year.'-01-01'));
+		$last_date = date(''.$year.'-12-t', strtotime(''.$year.'-12-01'));
+		$month_display = 'All Months';	
+	}
+	else
+	{
+		$month = $_POST['selectMonth'];
+		$first_date = date(''.$year.'-'.$month.'-01', strtotime(''.$year.'-01-01'));
+		$last_date = date(''.$year.'-'.$month.'-t', strtotime(''.$year.'-12-01'));
+		$month_display = date('F', strtotime(''.$year.'-'.$month.'-01'));
+	}
+	
+	$_SESSION['first_date'] = $first_date;
+	$_SESSION['last_date'] = $last_date;
+	$_SESSION['month_display'] = $month_display;
+	
 	Header("Location: reportGeneration.php");
 }
 
