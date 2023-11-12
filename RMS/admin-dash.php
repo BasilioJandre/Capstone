@@ -17,11 +17,11 @@ if ($role != 'Admin')
 }
 
 // Get number of users
-$user_check = mysqli_query($conn, "SELECT * FROM `users`");	
+$user_check = mysqli_query($conn, "SELECT * FROM `users` WHERE `Role` != 'Admin'");	
 $user_count = mysqli_num_rows($user_check);
 
 // Get number of pending requests
-$p_request_check = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Status` = 'Pending'");	
+$p_request_check = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Status` = 'Pending' OR `Status` = 'Forwarded'");	
 $p_request_count = mysqli_num_rows($p_request_check);
 
 // Get total number of requests
@@ -205,7 +205,7 @@ $check_picture = mysqli_num_rows($count_image);
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Users</div>
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Normal Users</div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $user_count; ?></div>
                                         </div>
                                         <div class="col-auto">

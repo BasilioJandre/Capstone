@@ -34,16 +34,58 @@ for($startyear = 2023; $startyear <= $endyear; $startyear++)
 	';
 }
 
+//Generate Report
+$month = '';
+$year = '';
+$first_date = date(''.$curr_year.'-01-01', strtotime(''.$year.'-01-01'));
+$last_date = date(''.$curr_year.'-12-t', strtotime(''.$year.'-12-31'));
+if(isset($_POST['filter_btn']))
+{
+	
+	if(empty($_POST['selectYear']))
+	{
+		$year = $curr_year;
+	}
+	else
+	{
+		$year = $_POST['selectYear'];
+	}
+	if(empty($_POST['selectMonth']))
+	{
+		$first_date = date(''.$year.'-01-01', strtotime(''.$year.'-01-01'));
+		$last_date = date(''.$year.'-12-t', strtotime(''.$year.'-12-01'));
+		$month_display = 'All Months';	
+	}
+	else
+	{
+		$month = $_POST['selectMonth'];
+		$first_date = date(''.$year.'-'.$month.'-01', strtotime(''.$year.'-01-01'));
+		$last_date = date(''.$year.'-'.$month.'-t', strtotime(''.$year.'-12-01'));
+		$month_display = date('F', strtotime(''.$year.'-'.$month.'-01'));
+	}
+	
+	$_SESSION['first_date'] = $first_date;
+	$_SESSION['last_date'] = $last_date;
+	$_SESSION['month_display'] = $month_display;
+}
+
+if(isset($_POST['generate_report']))
+{
+	Header("Location: reportGeneration.php");
+}
+
 $reportlist = '';
 $reportmodal = '';
 
-$getreport = mysqli_query($conn, "SELECT * FROM `requests`");
+$getreport = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Date_Requested` BETWEEN '$first_date' AND '$last_date'");
 
 while($reports = mysqli_fetch_assoc($getreport))
 {
 	$req_no = $reports['Requisition_No'];
-	$req_date = $reports['Date_Requested'];
-	$req_need = $reports['Date_Needed'];
+	$req_date_x = $reports['Date_Requested'];
+	$req_date = date("m/d/Y", strtotime($req_date_x));
+	$req_need_x = $reports['Date_Needed'];
+	$req_need = date("m/d/Y", strtotime($req_need_x));
 	$req_name = $reports['User_Name'];
 	$req_id = $reports['User_ID'];
 	$req_desc = $reports['Description'];
@@ -94,36 +136,6 @@ while($reports = mysqli_fetch_assoc($getreport))
 			</div>
 		</div>
 	';
-}
-
-//Generate Report
-$month = '';
-$year = '';
-if(isset($_POST['generate_report']))
-{
-	$month = $_POST['selectMonth'];
-	$year = $_POST['selectYear'];
-	
-	if(empty($year))
-	{
-		$year = $curr_year;
-	}
-	if(empty($month))
-	{
-		$first_date = date(''.$year.'-01-01', strtotime(''.$year.'-01-01'));
-		$last_date = date(''.$year.'-12-t', strtotime(''.$year.'-12-01'));
-		
-	}
-	else
-	{
-		$first_date = date(''.$year.'-'.$month.'-01', strtotime(''.$year.'-01-01'));
-		$last_date = date(''.$year.'-'.$month.'-t', strtotime(''.$year.'-12-01'));
-	}
-	
-	$_SESSION['first_date'] = $first_date;
-	$_SESSION['last_date'] = $last_date;
-	
-	Header("Location: reportGeneration.php");
 }
 
 // Update Profile
@@ -315,19 +327,19 @@ $check_picture = mysqli_num_rows($count_image);
                     <div class="input-group" style="width: 200px; margin-left: 10px;">
                         <select class="form-control" id="selectMonth" name="selectMonth">
                             <option value ="" selected disabled>Select Month</option>
-							<option value="">All Months</option>
-                            <option value=1>January</option>
-                            <option value=2>February</option>
-							<option value=3>March</option>
-							<option value=4>April</option>
-							<option value=5>May</option>
-							<option value=6>June</option>
-							<option value=7>July</option>
-							<option value=8>August</option>
-							<option value=9>September</option>
-							<option value=10>October</option>
-							<option value=11>November</option>
-							<option value=12>December</option>
+							<option value=""<?php if(empty($month)){echo 'selected';}?>>All Months</option>
+                            <option value=1 <?php if($month == 1){echo 'selected';}?>>January</option>
+                            <option value=2 <?php if($month == 2){echo 'selected';}?>>February</option>
+							<option value=3 <?php if($month == 3){echo 'selected';}?>>March</option>
+							<option value=4 <?php if($month == 4){echo 'selected';}?>>April</option>
+							<option value=5 <?php if($month == 5){echo 'selected';}?>>May</option>
+							<option value=6 <?php if($month == 6){echo 'selected';}?>>June</option>
+							<option value=7 <?php if($month == 7){echo 'selected';}?>>July</option>
+							<option value=8 <?php if($month == 8){echo 'selected';}?>>August</option>
+							<option value=9 <?php if($month == 9){echo 'selected';}?>>September</option>
+							<option value=10 <?php if($month == 10){echo 'selected';}?>>October</option>
+							<option value=11 <?php if($month == 11){echo 'selected';}?>>November</option>
+							<option value=12 <?php if($month == 12){echo 'selected';}?>>December</option>
                             <!-- Add more month options -->
                         </select>
                     </div>
@@ -337,6 +349,9 @@ $check_picture = mysqli_num_rows($count_image);
                             <?php echo $yearlist; ?>
                         </select>
                     </div>
+					<div class="input-group" style="width: 40px; margin-left: 10px;">
+						<button type='submit' class="btn btn-primary" name="filter_btn">Filter</button>
+					</div>
                 </div>
             </div>
         </div>
