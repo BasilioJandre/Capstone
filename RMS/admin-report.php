@@ -193,12 +193,17 @@ if(isset($_POST['save_btn']))
 	$pat = preg_quote($specchars, '/');
 	
 	$check_email = mysqli_query($conn, "SELECT * FROM `users` WHERE `Email` = '$new_email'");
-	$count_email = mysqli_num_rows($check_email);
+	$row_email = mysqli_num_rows($check_email);
 	
-	if($count_email > 0)
+	if($row_email == 0)
 	{
-	$new_email = $email;
+		$new_email = $_POST['email'];
 	}
+	elseif($row_email == 1)
+	{
+		$new_email = $email;
+	}
+	
 	if(!preg_match('/['.$pat.']/',$_POST['email']))
 	{
 		
@@ -375,7 +380,7 @@ $check_picture = mysqli_num_rows($count_image);
                             <?php echo $yearlist; ?>
                         </select>
                     </div>
-					<div class="input-group" style="width: 40px; margin-left: 10px;">
+					<div class="input-group" style="width: 60px; margin-left: 10px;">
 						<button type='submit' class="btn btn-primary" name="filter_btn">Filter</button>
 					</div>
                 </div>

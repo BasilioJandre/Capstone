@@ -26,12 +26,18 @@ if (isset($_POST['save_btn'])) {
     $specchars = '"%\'*;<>?^`{|}~/\\#=&';
     $pat = preg_quote($specchars, '/');
 
-    $check_email = mysqli_query($conn, "SELECT * FROM `users` WHERE `Email` = '$new_email'");
-    $count_email = mysqli_num_rows($check_email);
-
-    if ($count_email > 0) {
-        $new_email = $email;
-    }
+	$check_email = mysqli_query($conn, "SELECT * FROM `users` WHERE `Email` = '$new_email'");
+	$row_email = mysqli_num_rows($check_email);
+	
+	if($row_email == 0)
+	{
+		$new_email = $_POST['email'];
+	}
+	elseif($row_email == 1)
+	{
+		$new_email = $email;
+	}
+	
     if (!preg_match('/[' . $pat . ']/', $_POST['email'])) {
 
         if (!preg_match('/[' . $pat . ']/', $_POST['name'])) {
@@ -48,6 +54,37 @@ if (isset($_POST['save_btn'])) {
         }
     }
 }
+
+$reqlist = '';
+$get_req = mysqli_query($conn, "SELECT * FROM `requests` WHERE `User_ID` = '$user_id'");
+while($req = mysqli_fetch_assoc($get_req))
+{
+    $reqno = $req['Requisition_No'];
+    $reqtype = $req['Request_Type'];
+    $prod = $req['Product/Service'];
+    $desc = $req['Description'];
+    $date_x = $req['Date_Requested'];
+    $date = date("m/d/Y", strtotime($date_x));
+    $stat = $req['Status'];
+
+    $reqlist .= '
+    <tr>
+    <td>'.$reqno.'</td>
+    <td>'.$reqtype.'</td>
+    <td>'.$prod.'</td>
+    <td>'.$desc.'</td>
+    <td>'.$date.'</td>
+    <td>'.$stat.'</td>
+    </tr>
+    ';
+}
+
+$p_req_check = mysqli_query($conn, "SELECT * FROM `requests` WHERE `User_ID` = '$user_id' AND `Status` = 'Pending'");
+$p_req_count = mysqli_num_rows($p_req_check);
+
+$c_req_check = mysqli_query($conn, "SELECT * FROM `requests` WHERE `User_ID` = '$user_id' AND `Active` = 'no'");
+$c_req_count = mysqli_num_rows($c_req_check);
+
 //Takes User's Profile Picture
 $retrieve_image = mysqli_query($conn, "SELECT `User_Picture` FROM `image` WHERE `User_ID` = '$user_id'");
 $user_picture = mysqli_fetch_assoc($retrieve_image);
@@ -179,12 +216,12 @@ $check_picture = mysqli_num_rows($count_image);
                     </div>
                     <div class="row">
                         <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-warning shadow h-100 py-2">
+                            <div class="card border-left-warning shadow h-80 py-2">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Pending Request</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800"></div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $p_req_count; ?></div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-spinner fa-2x text-gray-300"></i>
@@ -194,12 +231,12 @@ $check_picture = mysqli_num_rows($count_image);
                             </div>
                         </div>
                         <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-success shadow h-100 py-2">
+                            <div class="card border-left-success shadow h-80 py-2">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Completed Request</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800"></div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $c_req_count; ?></div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-check-square fa-2x text-gray-300"></i>
@@ -223,13 +260,11 @@ $check_picture = mysqli_num_rows($count_image);
                                                     <th>Product/Service</th>
                                                     <th>Request Description</th>
                                                     <th>Request Date</th>
-                                                    <th>Date Needed</th>
                                                     <th>Status</th>
-                                                    <th>Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <!-- Add your table data here -->
+                                               <?php echo $reqlist; ?>
                                             </tbody>
                                         </table>
                                     </div>

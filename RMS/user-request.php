@@ -16,6 +16,7 @@ $ReqList ='';
 $TrackList='';
 $DelList='';
 $ViewList = '';
+$closereqbtn = '';
 while($get_req = mysqli_fetch_assoc($req_query))
 {
 	$ReqNo = $get_req['Requisition_No'];
@@ -33,6 +34,35 @@ while($get_req = mysqli_fetch_assoc($req_query))
 	$ReqEnd = $get_req['Noted_By'];
 	$ReqNoted = $get_req['Noted_By_Budget'];
 	$ReqSigned = $get_req['Approved_By'];
+	$Req_Active = $get_req['Active'];
+	
+	if($Req_Active == 'yes')
+	{
+		$closereqbtn = '
+		
+		<div class="modal-footer">
+			<form action="user-request.php" method="POST">
+                    <button type="submit" class="btn btn-danger" name="close_req">Close Request</button>
+					<input type="hidden" value="'.$ReqNo.'" name="close_req_id">
+			</form>
+            </div>
+		
+		';
+		
+		$close_segment='';
+	}
+	elseif($Req_Active == 'no')
+	{
+		$closereqbtn = '';
+		
+		$close_segment = '
+		
+		<li>
+		<div class="status">Request Closed</div>
+		</li>
+		
+		';
+	}
 	
 	$track_query = mysqli_query($conn,"SELECT * FROM `track` WHERE `Request_No` = '$ReqNo'");
 	$tracking = mysqli_fetch_assoc($track_query);
@@ -188,10 +218,6 @@ while($get_req = mysqli_fetch_assoc($req_query))
 		<div class="date"></div>
 		</li>
 		
-		<li>
-		<div class="status">Request Closed</div>
-		</li>
-		
 		';
 	}
 	
@@ -202,7 +228,7 @@ while($get_req = mysqli_fetch_assoc($req_query))
 	<td>'.$ReqType.'</td>
 	<td>'.$ReqServ.'</td>
 	<td>'.$ReqDesc.'</td>
-	<td>'.$ReqDate.'</td>
+	<td width="50">'.$ReqDate.'</td>
 	<td>'.$ReqNDate.'</td>
 	<td>'.$ReqStat.'</td>
 	<td>
@@ -286,9 +312,11 @@ while($get_req = mysqli_fetch_assoc($req_query))
 							<div class="location">your request shall be reviewed by the Department Head</div>
                         </li>
 						'.$tracking_list.'
+						'.$close_segment.'
 					</ul>
                 </div>
             </div>
+			'.$closereqbtn.'
         </div>
     </div>
 	</div>
@@ -323,7 +351,7 @@ while($get_req = mysqli_fetch_assoc($req_query))
 						<div class="form-group">
 							<label for="requestStatus">Remarks:</label>
 							<div class="fixed-input-box">
-								<textarea rows="7" cols="49" name="note_area">'.$ReqNotes.'</textarea>
+								<textarea rows="7" cols="49" name="note_area" disabled>'.$ReqNotes.'</textarea>
 							</div>
 						</div>
 					</div>
@@ -362,7 +390,7 @@ if(isset($_POST['send_btn']))
 	while($countID >= 1)
 	{
 		$idx = 'REQNO'.$idno;
-		$checkforID = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Requisition_No` = '$idx'");
+		$checkforID = mysqli_query($conn, "SELECT * FROM `track` WHERE `Request_No` = '$idx'");
 		$countID = mysqli_num_rows($checkforID);
 		$idno += 1;
 	}
@@ -402,7 +430,7 @@ if(isset($_POST['send_btn']))
 				while($countID >= 1)
 				{
 					$idx = 'REQNO'.$idno;
-					$checkforID = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Requisition_No` = '$idx'");
+					$checkforID = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Request_No` = '$idx'");
 					$countID = mysqli_num_rows($checkforID);
 					$idno += 1;
 				}
@@ -455,12 +483,17 @@ if(isset($_POST['save_btn']))
 	$pat = preg_quote($specchars, '/');
 	
 	$check_email = mysqli_query($conn, "SELECT * FROM `users` WHERE `Email` = '$new_email'");
-	$count_email = mysqli_num_rows($check_email);
+	$row_email = mysqli_num_rows($check_email);
 	
-	if($count_email > 0)
+	if($row_email == 0)
 	{
-	$new_email = $email;
+		$new_email = $_POST['email'];
 	}
+	elseif($row_email == 1)
+	{
+		$new_email = $email;
+	}
+	
 	if(!preg_match('/['.$pat.']/',$_POST['email']))
 	{
 		
@@ -494,7 +527,7 @@ if(isset($_POST['save_btn']))
 if(isset($_POST['btn_del']))
 {
 	$DelReqID = $_POST['del_req_id'];
-	$query = mysqli_query($conn,"SELECT * FROM `requests` WHERE `Requisition_No` = $DelReqID");
+	$query = mysqli_query($conn,"SELECT * FROM `requests` WHERE `Requisition_No` = '$DelReqID'");
 	$assign_value = mysqli_fetch_assoc($query);
 	
 	$a_req_id = $assign_value['Requisition_No'];
@@ -517,6 +550,13 @@ if(isset($_POST['btn_del']))
 		Header("Refresh:0");
 	}
 }
+
+if(isset($_POST['close_req']))
+{
+	$close_id = $_POST['close_req_id'];
+	$update_req = mysqli_query($conn, "UPDATE `requests` SET `Active` = 'no' WHERE `Requisition_No` = '$close_id'");
+	Header("Refresh:0");
+}	
 
 //Takes User's Profile Picture
 $retrieve_image = mysqli_query($conn, "SELECT `User_Picture` FROM `image` WHERE `User_ID` = '$user_id'");

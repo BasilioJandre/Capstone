@@ -115,9 +115,17 @@ else
     <title>LOGIN</title>
     <link href="css/register.css" rel="stylesheet">
 </head>
+<style>
+	#logo{
+		display: block;
+		margin: 0 auto;
+		margin-top: 20px;
+	}
+</style>
 <body>
     <div class="container">
         <input type="checkbox" id="check">
+		<img id="logo" src="img/pcc logo.png" alt="logo" width="80" height="80">
         <div class="login form">
             <header>LOGIN</header>
 			<a><?php echo $error; ?></a>

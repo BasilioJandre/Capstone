@@ -55,12 +55,17 @@ if(isset($_POST['save_btn']))
 	$pat = preg_quote($specchars, '/');
 	
 	$check_email = mysqli_query($conn, "SELECT * FROM `users` WHERE `Email` = '$new_email'");
-	$count_email = mysqli_num_rows($check_email);
+	$row_email = mysqli_num_rows($check_email);
 	
-	if($count_email > 0)
+	if($row_email == 0)
 	{
-	$new_email = $email;
+		$new_email = $_POST['email'];
 	}
+	elseif($row_email == 1)
+	{
+		$new_email = $email;
+	}
+	
 	if(!preg_match('/['.$pat.']/',$_POST['email']))
 	{
 		
@@ -578,7 +583,7 @@ elseif($dept == 'Budget and Control' )
 	<div class="modal fade" id="viewModal'.$I_ReqNo.'" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel" aria-hidden="true">
 		<form action="manage-req.php" method="POST">
 			<div class="modal-dialog" role="document">
-				<div class="modal-content">
+				<div class="modal-content" style="width:550px;">
 					<div class="modal-header">
 						<h5 class="modal-title" id="viewModalLabel">View Request</h5>
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -634,7 +639,7 @@ else
 	<div class="modal fade" id="viewModal'.$I_ReqNo.'" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel" aria-hidden="true">
 		<form action="manage-req.php" method="POST">
 			<div class="modal-dialog" role="document">
-				<div class="modal-content">
+				<div class="modal-content" style="width:550px;">
 					<div class="modal-header">
 						<h5 class="modal-title" id="viewModalLabel">View Request</h5>
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -798,7 +803,7 @@ if(isset($_POST['item_purchase']))
 	if($purchase_status == 'Item Delivered')
 	{
 		$update_track = mysqli_query($conn, "UPDATE `track` SET `Deliver_Date` = '$curr_date' WHERE `Request_No` = '$UpReq'");
-		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = '$purchase_status' WHERE `Requisition_No` = '$UpReq'");
+		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = '$purchase_status', `Approved_By` = '$name($user_id)' WHERE `Requisition_No` = '$UpReq'");
 	}
 	
 	if($update_req)

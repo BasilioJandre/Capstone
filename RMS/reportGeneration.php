@@ -48,9 +48,9 @@ $pdf->SetY(40);
 $pdf->SetFont('times', 'B', 16);
 $pdf->Cell(0, 10,'Pasig Catholic College', 0, 1, 'C'); 
 $pdf->SetFont('helvetica', '', 12);
-$pdf->Cell(0, 0, 'Malinao, Pasig City', 0, 1, 'C'); 
+$pdf->Cell(0, 0, 'Justice R. Jabson St., Malinao, Pasig City', 0, 1, 'C'); 
 $pdf->SetFont('Helvetica', 'B', 16);
-$pdf->Cell(0, 10, 'REQUISITION MONTHLY REPORT', 0, 1, 'C'); 
+$pdf->Cell(0, 15, 'REQUISITION MONTHLY REPORT', 0, 1, 'C'); 
 $pdf->SetFont('Arial', '', 12);
 
 $get_department = mysqli_query($conn, "SELECT DISTINCT `Department` FROM `requests` WHERE `Date_Requested` BETWEEN '$first_date' AND '$last_date'");

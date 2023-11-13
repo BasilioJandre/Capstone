@@ -162,7 +162,7 @@ else
 			<a><?php echo $error; ?></a>
             <form action="register.php" method="POST">
                 <input type="text" name="fullname" <?php if(empty($name)){echo 'placeholder="Full Name"';}else{echo 'value="'.$name.'"';}?>>
-                <input type="text" name="reg_email" <?php if(empty($email)){echo 'placeholder="Full Name"';}else{echo 'value="'.$email.'"';}?>>
+                <input type="text" name="reg_email" <?php if(empty($email)){echo 'placeholder="Email Address"';}else{echo 'value="'.$email.'"';}?>>
                 <select name="department">
 						<option value="" disabled selected>Select Department</option>
 						<option value = "Office of the President" <?php if($dept == "Office of the President"){echo 'selected';}?>>Office of the President</option>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 12, 2023 at 05:13 AM
+-- Generation Time: Nov 13, 2023 at 04:08 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.0.25
 
@@ -40,6 +40,14 @@ CREATE TABLE `archive` (
   `Description` mediumtext NOT NULL,
   `Additional_Notes` mediumtext NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `archive`
+--
+
+INSERT INTO `archive` (`Requisition_No`, `User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`, `Additional_Notes`) VALUES
+(1, 'Sarah Doe', '32364651', 'College Faculty', '2023-11-11', '2023-11-12', 'Repair', 'Equipment', 2, 'broken keyboards', ''),
+(2, 'Sarah Doe', '32364651', 'College Faculty', '2023-11-12', '2023-11-22', 'Borrow', 'Equipment', 10, 'PC set ups for Esports event', '');
 
 -- --------------------------------------------------------
 
@@ -83,7 +91,13 @@ CREATE TABLE `requests` (
 --
 
 INSERT INTO `requests` (`Requisition_No`, `User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`, `Additional_Notes`, `Noted_By`, `Noted_By_Budget`, `Approved_By`, `Status`, `Forward_To`, `Active`) VALUES
-('REQNO1', 'Sarah Doe', '32364651', 'College Faculty', '2023-11-11', '2023-11-12', 'Repair', 'Equipment', 2, 'broken keyboards', '', 'Carla Crisostomo(97737112) / Jenny Smith(95328448)', 'Jane Doe(23859356)', 'Carla Crisostomo(97737112)', 'Repaired', 'VPAA Office', 'no');
+('REQNO3', 'Juan Dela Cruz', '26948221', 'High School Academics', '2023-11-13', '2023-12-05', 'Purchase', 'Consumable', 2, '2 reams of bond paper for school supplies', '', 'Sarah Magpantay(25163716)', '', '', 'Item Delivered', 'Budget and Control', 'no'),
+('REQNO4', 'Juan Dela Cruz', '26948221', 'High School Academics', '2023-11-13', '2023-12-18', 'Purchase', 'Equipment', 1, 'Projector for classroom', '', '', '', '', 'Pending', '', 'yes'),
+('REQNO5', 'Juan Dela Cruz', '26948221', 'High School Academics', '2023-11-13', '2023-11-21', 'Repair', 'Furnishing/Appliance', 1, 'broken armchair', '', '', '', '', 'Pending', '', 'yes'),
+('REQNO6', 'Juan Dela Cruz', '26948221', 'High School Academics', '2023-11-13', '2023-11-16', 'Transfer', 'Equipment', 1, 'transfer projector from room 1 to room 2 please :)', '', '', '', '', 'Pending', '', 'yes'),
+('REQNO7', 'Sarah Doe', '32364651', 'College Faculty', '2023-11-13', '2023-11-14', 'Repair', 'Equipment', 1, 'Broken monitor on lab 401', '', 'Jenny Smith(95328448)', '', '', 'Forwarded', 'Budget and Control', 'yes'),
+('REQNO8', 'Sarah Doe', '32364651', 'College Faculty', '2023-11-13', '2023-11-15', 'Borrow', 'Furnishing/Appliance', 15, 'chairs for grounds event', '', 'Jenny Smith(95328448)', '', '', 'Forwarded', 'Budget and Control', 'yes'),
+('REQNO9', 'Sarah Doe', '32364651', 'College Faculty', '2023-11-13', '2023-11-22', 'Borrow', 'Equipment', 2, 'borrow 2 monitors', '', 'Jenny Smith(95328448)', 'Jane Doe(23859356)', '', 'Forwarded', 'ICTC', 'yes');
 
 -- --------------------------------------------------------
 
@@ -109,7 +123,15 @@ CREATE TABLE `track` (
 --
 
 INSERT INTO `track` (`Request_No`, `Forward_Head`, `Forward_Head_To`, `Forward_EVP/VPAA`, `Forward_Budget`, `Forward_Budget_To`, `Handled_Date`, `Request_Status`, `Purchase_Date`, `Deliver_Date`) VALUES
-('REQNO1', '2023-11-12', 'VPAA Office', '2023-11-12', '2023-11-12', 'VPAA Office', '2023-11-12', 'Repaired', NULL, NULL);
+('REQNO1', '2023-11-12', 'VPAA Office', '2023-11-12', '2023-11-12', 'VPAA Office', '2023-11-12', 'Repaired', NULL, NULL),
+('REQNO2', NULL, '', NULL, NULL, '', NULL, '', NULL, NULL),
+('REQNO3', '2023-11-13', 'Budget and Control', NULL, NULL, '', NULL, '', '2023-11-13', '2023-11-13'),
+('REQNO4', NULL, '', NULL, NULL, '', NULL, '', NULL, NULL),
+('REQNO5', NULL, '', NULL, NULL, '', NULL, '', NULL, NULL),
+('REQNO6', NULL, '', NULL, NULL, '', NULL, '', NULL, NULL),
+('REQNO7', '2023-11-13', 'Budget and Control', NULL, NULL, '', NULL, '', NULL, NULL),
+('REQNO8', '2023-11-13', 'Budget and Control', NULL, NULL, '', NULL, '', NULL, NULL),
+('REQNO9', '2023-11-13', 'Budget and Control', NULL, '2023-11-13', 'ICTC', NULL, '', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -132,13 +154,15 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`User_ID`, `Full_Name`, `Email`, `Department`, `Role`, `Password`, `Status`) VALUES
+(15778165, 'Ping Guerrero', 'pingguerrero@email.com', 'ICTC', 'Department Head', '$2y$15$GbHyMnA/9B3OKmg7i3X/yegwjgM63waQNLhl6VJVwYowxIqPUMPx6', 'Active'),
 (23859356, 'Jane Doe', 'doejane@email.com', 'Budget and Control', 'Department Head', '$2y$15$GoMUdBnLHmro8OPh/wIeV.tMGcGk0D6kiqtiXuiW4twQeFy2VK.RO', 'Active'),
+(25163716, 'Sarah Magpantay', 'magpantay.sarah@email.com', 'Senior High School Principal', 'Department Head', '$2y$15$DkpO/gpr4TSvMtxR4Tt4O.4mqazZAjg5q67rB0kcL2SU54im0sUOK', 'Active'),
+(26948221, 'Juan Dela Cruz', 'jd.cruz@email.com', 'High School Academics', 'Teaching Personnel', '$2y$15$sD/uMR5XK.xAp3LmknRHjutJMqpQaOGVKhXTfYsGTJRD06Le1jd9W', 'Active'),
 (32364651, 'Sarah Doe', 'd_sarah@email.com', 'College Faculty', 'Teaching Personnel', '$2y$15$zf9M9hO8Yo7PXMSACJ3PKOrh9qrAddOZO2pVn4Fl7F6R2H.gLV2ua', 'Active'),
 (32669997, 'John Deere', 'jd@email.com', 'ICTC', 'Admin', '$2y$15$47kW6PvGy5q/UTYXjPVOEewHog88.SxBQ.nmRzz.WbQwRqcn0dOG.', 'Active'),
-(49113465, 'Pedro Calungsod', 'calungsod@email.com', 'College Faculty', 'Teaching Personnel', '$2y$15$K8ThNXxcReUiHpO0xQP5h.AiupeykFkmlOgqPwlsRD7ZPRksFP6nG', 'Pending'),
 (58153965, 'Charles Baker', 'b_charles@email.com', 'Admin', 'Admin', '$2y$15$1pIGFn0bzRE622wxA1NydemTDZB0Fx.hPRI6D2rQrbZAIUTh4/Bmm', 'Active'),
 (95328448, 'Jenny Smith', 'jsmith@email.com', 'College Dean', 'Department Head', '$2y$15$NDUFCTOQK3A6j5XiGF2WSOMHom9if4IWhAqypIAqL.zzVCgxXbLB.', 'Active'),
-(97737112, 'Carla Crisostomo', 'CarlaCris@email.com', 'VPAA', 'Department Head', '$2y$15$Dj92X/JOJn0gWgxr2qbRwOFIs0lQ5CsnCAQ4xaRGOmp4XLvfbiFk.', 'Active');
+(97737112, 'Carla Crisostomo', 'carlacris@email.com', 'VPAA', 'Department Head', '$2y$15$Dj92X/JOJn0gWgxr2qbRwOFIs0lQ5CsnCAQ4xaRGOmp4XLvfbiFk.', 'Active');
 
 --
 -- Indexes for dumped tables
@@ -182,7 +206,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `archive`
 --
 ALTER TABLE `archive`
-  MODIFY `Requisition_No` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `Requisition_No` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `image`
