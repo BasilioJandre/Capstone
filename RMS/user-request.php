@@ -228,7 +228,7 @@ while($get_req = mysqli_fetch_assoc($req_query))
 	<td>'.$ReqType.'</td>
 	<td>'.$ReqServ.'</td>
 	<td>'.$ReqDesc.'</td>
-	<td width="50">'.$ReqDate.'</td>
+	<td>'.$ReqDate.'</td>
 	<td>'.$ReqNDate.'</td>
 	<td>'.$ReqStat.'</td>
 	<td>
@@ -430,7 +430,7 @@ if(isset($_POST['send_btn']))
 				while($countID >= 1)
 				{
 					$idx = 'REQNO'.$idno;
-					$checkforID = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Request_No` = '$idx'");
+					$checkforID = mysqli_query($conn, "SELECT * FROM `track` WHERE `Request_No` = '$idx'");
 					$countID = mysqli_num_rows($checkforID);
 					$idno += 1;
 				}
@@ -665,10 +665,10 @@ $check_picture = mysqli_num_rows($count_image);
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                  <tr>
-                                <th>Request No.</th>
+                                <th width="87">Request No.</th>
 								<th>Request Type</th>
 								<th>Product/Service</th>
-                                <th>Request Description</th>
+                                <th width="250">Request Description</th>
                                 <th>Request Date</th>
                                 <th>Date Needed</th>
                                 <th>Status</th>

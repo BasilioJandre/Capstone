@@ -43,10 +43,20 @@ while($users = mysqli_fetch_assoc($getuser))
 	}
 	elseif($user_stat == 'Active')
 	{
-		$buttons = '
-		<button type="" class="btn btn-primary" data-toggle="modal" data-target="#adminModal'.$id.'" name=""><i class="fas fa-user"></i></button>
-		<button type="" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal'.$id.'" name=""><i class="fas fa-trash"></i></button>
-		';
+		if($user_role == 'Admin')
+		{
+			$buttons = '
+			<button type="" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal'.$id.'" name=""><i class="fas fa-trash"></i></button>
+			';
+		}
+		
+		else
+		{
+			$buttons = '
+			<button type="" class="btn btn-primary" data-toggle="modal" data-target="#adminModal'.$id.'" name=""><i class="fas fa-user"></i></button>
+			<button type="" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal'.$id.'" name=""><i class="fas fa-trash"></i></button>
+			';
+		}
 	}
 	//List all users
 	$userlist .= '

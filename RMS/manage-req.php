@@ -779,10 +779,11 @@ if(isset($_POST['save_status']))
 	$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = '$Status', `Approved_By` = '$name($user_id)' WHERE `Requisition_No` = '$UpReq'");
 	$update_track = mysqli_query($conn, "UPDATE `track` SET `Handled_Date` = '$curr_date', `Request_Status` = '$Status' WHERE `Request_No` = '$UpReq'");
 	
-	if($Status = 'Declined' || $Status = 'Repaired')
+	if($Status == 'Declined' || $Status == 'Repaired')
 	{
 		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Active` = 'no' WHERE `Requisition_No` = '$UpReq'");
 	}
+	
 	if($update_req)
 	{
 		Header("Refresh:0");
