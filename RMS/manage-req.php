@@ -121,6 +121,11 @@ elseif($dept == 'Finance')
 	$Condition = "`Status` = 'Pending' AND (`Department` = 'Treasury' OR `Department` = 'Accounting' OR `Department` = 'Budget and Control' OR `Department` = 'Bookstore' OR `Department` = 'Canteen' OR `Department` = 'Printing' OR `Department` = 'Purchasing' OR `Department` = 'Stocks')";
 }
 
+elseif($dept == 'IOSA')
+{
+	$Condition = "`Department` = 'IOSA'";
+}
+
 elseif($dept == 'CFO')
 {
 	$Condition = "`Status` = 'Pending' AND (`Department` = 'Sister Quarter' OR `Department` = 'Security Office' OR `Department` = 'Campus Ministry' OR `Department` = 'Pastoral Ministry')";
@@ -282,6 +287,7 @@ if($dept == 'Budget and Control')
 								<option value="Finance">Finance</option>
 								<option value="HRMO">HRMO</option>
 								<option value="ICTC">ICTC</option>
+								<option value="Alumni">Alumni</option>
 								<option value="EVP Office">EVP Office</option>
 								<option value="VPAA Office">VPAA Office</option>
 								<option value="GSU">GSU</option>
@@ -433,6 +439,11 @@ elseif($dept == 'CFO')
 elseif($dept == 'HRMO')
 {
 	$I_Condition = "`Forward_To` = 'HRMO' AND `Active` = 'yes'";
+}
+
+elseif($dept == 'Alumni')
+{
+	$I_Condition = "`Forward_To` = 'Alumni'";
 }
 
 elseif($dept == 'Registrar')

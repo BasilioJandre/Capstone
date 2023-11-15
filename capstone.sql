@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 13, 2023 at 04:08 PM
+-- Generation Time: Nov 15, 2023 at 05:09 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.0.25
 
@@ -91,6 +91,7 @@ CREATE TABLE `requests` (
 --
 
 INSERT INTO `requests` (`Requisition_No`, `User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`, `Additional_Notes`, `Noted_By`, `Noted_By_Budget`, `Approved_By`, `Status`, `Forward_To`, `Active`) VALUES
+('REQNO10', 'Juan Dela Cruz', '26948221', 'High School Academics', '2023-11-15', '2023-11-20', 'Borrow', 'Furnishing/Appliance', 2, '2 large fans for gymnasium event', '', '', '', '', 'Pending', '', 'yes'),
 ('REQNO3', 'Juan Dela Cruz', '26948221', 'High School Academics', '2023-11-13', '2023-12-05', 'Purchase', 'Consumable', 2, '2 reams of bond paper for school supplies', '', 'Sarah Magpantay(25163716)', '', '', 'Item Delivered', 'Budget and Control', 'no'),
 ('REQNO4', 'Juan Dela Cruz', '26948221', 'High School Academics', '2023-11-13', '2023-12-18', 'Purchase', 'Equipment', 1, 'Projector for classroom', '', '', '', '', 'Pending', '', 'yes'),
 ('REQNO5', 'Juan Dela Cruz', '26948221', 'High School Academics', '2023-11-13', '2023-11-21', 'Repair', 'Furnishing/Appliance', 1, 'broken armchair', '', '', '', '', 'Pending', '', 'yes'),
@@ -124,6 +125,7 @@ CREATE TABLE `track` (
 
 INSERT INTO `track` (`Request_No`, `Forward_Head`, `Forward_Head_To`, `Forward_EVP/VPAA`, `Forward_Budget`, `Forward_Budget_To`, `Handled_Date`, `Request_Status`, `Purchase_Date`, `Deliver_Date`) VALUES
 ('REQNO1', '2023-11-12', 'VPAA Office', '2023-11-12', '2023-11-12', 'VPAA Office', '2023-11-12', 'Repaired', NULL, NULL),
+('REQNO10', NULL, '', NULL, NULL, '', NULL, '', NULL, NULL),
 ('REQNO2', NULL, '', NULL, NULL, '', NULL, '', NULL, NULL),
 ('REQNO3', '2023-11-13', 'Budget and Control', NULL, NULL, '', NULL, '', '2023-11-13', '2023-11-13'),
 ('REQNO4', NULL, '', NULL, NULL, '', NULL, '', NULL, NULL),
@@ -154,7 +156,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`User_ID`, `Full_Name`, `Email`, `Department`, `Role`, `Password`, `Status`) VALUES
-(15778165, 'Ping Guerrero', 'pingguerrero@email.com', 'ICTC', 'Department Head', '$2y$15$GbHyMnA/9B3OKmg7i3X/yegwjgM63waQNLhl6VJVwYowxIqPUMPx6', 'Active'),
+(15778165, 'Ping Guevarra', 'guevarra_p@email.com', 'ICTC', 'Department Head', '$2y$15$GbHyMnA/9B3OKmg7i3X/yegwjgM63waQNLhl6VJVwYowxIqPUMPx6', 'Active'),
 (23859356, 'Jane Doe', 'doejane@email.com', 'Budget and Control', 'Department Head', '$2y$15$GoMUdBnLHmro8OPh/wIeV.tMGcGk0D6kiqtiXuiW4twQeFy2VK.RO', 'Active'),
 (25163716, 'Sarah Magpantay', 'magpantay.sarah@email.com', 'Senior High School Principal', 'Department Head', '$2y$15$DkpO/gpr4TSvMtxR4Tt4O.4mqazZAjg5q67rB0kcL2SU54im0sUOK', 'Active'),
 (26948221, 'Juan Dela Cruz', 'jd.cruz@email.com', 'High School Academics', 'Teaching Personnel', '$2y$15$sD/uMR5XK.xAp3LmknRHjutJMqpQaOGVKhXTfYsGTJRD06Le1jd9W', 'Active'),
