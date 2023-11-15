@@ -26,46 +26,61 @@ else
 if($dept == 'College Dean')
 {
 	$Condition = "`Department`= 'College Faculty' OR `Department`= 'College Guidance' OR `Department`= 'College Library' OR `Department`= 'College O.S.A'";
+	$I_Condition = "`Forward_To`= 'College' AND `Active` = 'yes'";
 }
 
 elseif($dept == 'Junior High School Principal' || $dept == 'Senior High School Principal')
 {
 	$Condition = "`Department`= 'High School Faculty (BHS)' OR `Department`= 'High School Faculty (GHS)' OR `Department`= 'High School Academics' OR `Department`= 'High School Guidance' OR `Department`= 'High School Library' OR `Department`= 'High School Laboratory' OR `Department`= 'High School O.S.A'";
+	$I_Condition = "`Forward_To` = 'JHS' OR `Forward_To` = 'SHS' AND `Active` = 'yes'";
+}
+
+elseif($dept == 'IOSA')
+{
+	$Condition = "`Department` = 'IOSA'";
+	$I_Condition = "`Forward_To` = 'IOSA' AND `Active` = 'yes'";
 }
 
 elseif($dept == 'Grade School Principal')
 {
 	$Condition = "`Department` = 'Grade School Academics' OR `Department` = 'Grade School E.C.E' OR `Department` = 'Grade School Faculty' OR `Department` = 'Grade School Guidance' OR `Department` = 'Grade School Library' OR `Department` = 'Grade School O.S.A'";
+	$I_Condition = "`Forward_To` = 'Grade School' AND `Active` = 'yes'";
 }
 
 elseif($dept == 'Finance')
 {
 	$Condition = "`Department` = 'Treasury' OR `Department` = 'Accounting' OR `Department` = 'Budget and Control' OR `Department` = 'Bookstore' OR `Department` = 'Canteen' OR `Department` = 'Printing' OR `Department` = 'Purchasing' OR `Department` = 'Stocks'";
+	$I_Condition = "`Forward_To` = 'Finance' AND `Active` = 'yes'";
 }
 
 elseif($dept == 'CFO')
 {
 	$Condition = "`Department` = 'Sister Quarter' OR `Department` = 'Security Office' OR `Department` = 'Campus Ministry' OR `Department` = 'Pastoral Ministry'";
+	$I_Condition = "`Forward_To` = 'CFO' AND `Active` = 'yes' OR `Forward_To` = 'Admin $ Gen.Facilities' AND `Active` = 'yes'";
 }
 
 elseif($dept == 'ICTC')
 {
 	$Condition = "`Department` = 'ICTC'";
+	$I_Condition = "`Forward_To` = 'ICTC' AND `Active` = 'yes'";
 }
 
 elseif($dept == 'GSU')
 {
 	$Condition = "`Department` = 'GSU'";
+	$I_Condition = "`Forward_To` = 'GSU' AND `Active` = 'yes'";
 }
 
 elseif($dept == 'HRMO')
 {
 	$Condition = "`Department` = 'HRMO'";
+	$I_Condition = "`Forward_To` = 'HRMO' AND `Active` = 'yes'";
 }
 
 elseif($dept == 'Registrar')
 {
 	$Condition = "`Department` = 'Registrar'";
+	$I_Condition = "`Forward_To` = 'Registrar' AND `Active` = 'yes'";
 }
 
 elseif($dept == 'Aula')
@@ -81,6 +96,7 @@ elseif($dept == 'Alumni Office')
 elseif($dept == 'Medical-Dental')
 {
 	$Condition = "`Department` = 'Medical-Dental'";
+	$I_Condition = "`Forward_To` = 'Medical-Dental' AND `Active` = 'yes'";
 }
 
 elseif($dept == 'Mini Hotel')
@@ -93,24 +109,34 @@ elseif($dept == 'PAASCU')
 	$Condition = "`Department` = 'PAASCU'";
 }
 
+elseif($dept == 'School of Graduate Studies' || $dept == 'Research')
+{
+	$Condition = "`Status` = 'Pending' AND (`Department` = 'SGS Library' OR `Department` = 'School of Graduate Studies' OR `Department` = 'Research')";
+	$I_Condition = "(`Forward_To` = 'School of Graduate Studies' OR `Forward_To` = 'Research') AND `Active` = 'yes'";
+}
+
 elseif($dept == 'TVSD')
 {
 	$Condition = "`Department` = 'TVSD'";
+	$I_Condition = "`Forward_To` = 'TVSD' AND `Active` = 'yes'";
 }
 
 elseif($dept == 'Budget and Control')
 {
 	$Condition = "`Forward_To` = 'Budget and Control' OR `Request_Type` = 'Purchase'";
+	$I_Condition = "(`Status` = 'Requires Purchase' OR `Status` = 'Item Purchased' OR `Status` = 'Item Delivered') OR (`Request_Type` = 'Purchase' AND `Forward_To` = 'Budget and Control') AND `Active` = 'yes'";
 }
 
 elseif($dept == 'VPAA' || $dept == 'EVP' || $dept == 'Office of the President')
 {
 	$Condition = "`Forward_To` = 'VPAA Office' OR `Forward_To` = 'EVP Office' OR `Forward_To` = 'Office of the President' OR `Department` = 'EVP' OR `Department` = 'VPAA' OR `Department` = 'Office of the President'";
+	$I_Condition = "(`Forward_To` = 'VPAA Office' OR `Forward_To` = 'EVP Office' OR `Forward_To` = 'Office of the President') AND (`Noted_By_Budget` != '' AND `Active` = 'yes')";
 }
 
 else
 {
 	$Condition = "`Department` = 'NA'";
+	$I_Condition = "`Forward_To` = 'NA'";
 }
 
 //Get number of pending requests
@@ -118,7 +144,7 @@ $p_request_check = mysqli_query($conn, "SELECT * FROM `requests` WHERE (".$Condi
 $p_request_count = mysqli_num_rows($p_request_check);
 
 // Get total number of requests
-$n_request_check = mysqli_query($conn, "SELECT * FROM `requests` WHERE (".$Condition.") AND `Status` = 'Forwarded'");	
+$n_request_check = mysqli_query($conn, "SELECT * FROM `requests` WHERE (".$I_Condition.") AND `Status` = 'Forwarded'");	
 $n_request_count = mysqli_num_rows($n_request_check);
 
 // Get total number of completed requests
