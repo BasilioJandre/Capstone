@@ -478,7 +478,7 @@ elseif($dept == 'Finance')
 
 elseif($dept == 'Budget and Control')
 {
-	$I_Condition = "(`Status` = 'Requires Purchase' OR `Status` = 'Item Purchased' OR `Status` = 'Item Delivered') OR (`Request_Type` = 'Purchase' AND `Forward_To` = 'Budget and Control') AND `Active` = 'yes'";
+	$I_Condition = "(`Status` = 'Requires Purchase' OR `Status` = 'Item Purchased' OR `Status` = 'Item Delivered')  AND `Active` = 'yes' OR (`Request_Type` = 'Purchase' AND `Forward_To` = 'Budget and Control') AND `Active` = 'yes'";
 }
 elseif($dept == 'VPAA' || $dept == 'EVP' || $dept == 'Office of the President')
 {
@@ -537,7 +537,7 @@ if($I_ReqType == 'Repair' && $dept != 'Budget and Control')
 	<div class="modal fade" id="viewModal'.$I_ReqNo.'" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel" aria-hidden="true">
 		<form action="manage-req.php" method="POST">
 			<div class="modal-dialog" role="document">
-				<div class="modal-content">
+				<div class="modal-content" style="width:550px;">
 					<div class="modal-header">
 						<h5 class="modal-title" id="viewModalLabel">View Request</h5>
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -788,11 +788,16 @@ if(isset($_POST['save_status']))
 	$Status = $_POST['status'];
 	
 	$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = '$Status', `Approved_By` = '$name($user_id)' WHERE `Requisition_No` = '$UpReq'");
-	$update_track = mysqli_query($conn, "UPDATE `track` SET `Handled_Date` = '$curr_date', `Request_Status` = '$Status' WHERE `Request_No` = '$UpReq'");
 	
-	if($Status == 'Declined' || $Status == 'Repaired')
+	if($Status == 'Declined' || $Status == 'Repaired' || $Status == 'Approved')
 	{
 		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Active` = 'no' WHERE `Requisition_No` = '$UpReq'");
+		$update_track = mysqli_query($conn, "UPDATE `track` SET `Handled_Date` = '$curr_date' WHERE `Request_No` = '$UpReq'");
+	}
+
+	else
+	{
+		$update_track = mysqli_query($conn, "UPDATE `track` SET `Handled_Date` = '$curr_date', `Request_Status` = '$Status' WHERE `Request_No` = '$UpReq'");
 	}
 	
 	if($update_req)

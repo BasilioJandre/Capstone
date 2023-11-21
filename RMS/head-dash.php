@@ -124,7 +124,7 @@ elseif($dept == 'TVSD')
 elseif($dept == 'Budget and Control')
 {
 	$Condition = "`Forward_To` = 'Budget and Control' OR `Request_Type` = 'Purchase'";
-	$I_Condition = "(`Status` = 'Requires Purchase' OR `Status` = 'Item Purchased' OR `Status` = 'Item Delivered') OR (`Request_Type` = 'Purchase' AND `Forward_To` = 'Budget and Control') AND `Active` = 'yes'";
+	$I_Condition = "(`Status` = 'Requires Purchase' OR `Status` = 'Item Purchased' OR `Status` = 'Item Delivered') AND `Active` = 'yes' OR (`Request_Type` = 'Purchase' AND `Forward_To` = 'Budget and Control') AND `Active` = 'yes'";
 }
 
 elseif($dept == 'VPAA' || $dept == 'EVP' || $dept == 'Office of the President')
@@ -349,7 +349,7 @@ $check_picture = mysqli_num_rows($count_image);
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Forwarded Request</div>
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Incoming Request</div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $n_request_count;?></div>
                                         </div>
                                         <div class="col-auto">
