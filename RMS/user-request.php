@@ -220,6 +220,19 @@ while($get_req = mysqli_fetch_assoc($req_query))
 		
 		';
 	}
+
+	if($ReqStat == 'Repaired')
+	{
+		
+		$tracking_list .='
+		
+		<li>
+		<div class="status">('.$handled_date.') Item has been Repaired</div>
+		<div class="date"></div>
+		</li>
+		
+		';
+	}
 	
 	$ReqList .='
 	
