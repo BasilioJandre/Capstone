@@ -2,8 +2,6 @@
 include('database/php/conn.php');
 include('database/php/session.php');
 
-$dept = $_SESSION['dept'];
-
 // Checks if Logged In
 if ($sess != TRUE)
 {
@@ -12,7 +10,7 @@ if ($sess != TRUE)
 }
 
 // Checks for User type
-if ($role == 'Department Head' || $role == 'Academic Head')
+if ($role == 'Department Head')
 {
 //Do Nothing
 }

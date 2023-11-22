@@ -2,6 +2,20 @@
 include('database/php/conn.php');
 include('database/php/session.php');
 
+// Checks if Logged In
+if ($sess != TRUE)
+{
+    header("Location: logout.php");
+    exit;
+}
+
+// Checks for User type
+if ($role == 'Department Head' || $role == 'Admin')
+{
+    header("Location: logout.php");
+    exit;
+}
+
 // Update Profile
 if (isset($_POST['save_btn'])) {
     $tempname = $_FILES['profileImage']['tmp_name'];

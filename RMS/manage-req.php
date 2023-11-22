@@ -204,7 +204,7 @@ else
 $GetReq = mysqli_query($conn, "SELECT * FROM `requests` WHERE ".$Condition."");
 $ReqList = '';
 $ReqView = '';
-$ReqDel = '';
+$ReqDec = '';
 
 while($Req = mysqli_fetch_assoc($GetReq))
 {
@@ -220,8 +220,10 @@ while($Req = mysqli_fetch_assoc($GetReq))
 	$NeedDate_x = $Req['Date_Needed'];
 	$NeedDate = date("m/d/Y", strtotime($NeedDate_x));
 	$Status = $Req['Status'];
-	$AddNotes = $Req['Additional_Notes'];
 	$Active = $Req['Active'];
+	$Notes_DeptHead = $Req['Additional_Notes_DeptHead'];
+	$Notes_EVP = $Req['Additional_Notes_EVP'];
+	$Notes_Budget = $Req['Additional_Notes_Budget'];
 	
 	$ReqList .= '
 	
@@ -236,7 +238,6 @@ while($Req = mysqli_fetch_assoc($GetReq))
 	<td>'.$Status.'</td>
 	<td>
 	<button class="btn btn-primary view-btn" data-toggle="modal" data-target="#viewModal'.$ReqNo.'"><i class="fas fa-eye"></i></button>
-	<button class="btn btn-danger delete-btn" data-toggle="modal" data-target="#deleteModal'.$ReqNo.'"><i class="fas fa-trash"></i></button>
 	</td>
 	</tr>
 	
@@ -263,11 +264,14 @@ if($dept == 'Budget and Control')
 						<p>Requestor: '.$ReqName.'</p>
 						<p>Department: '.$ReqDept.'</p>
 						<p>Type of Request: '.$ReqType.' ('.$ReqServ.')</p>
-						<p>Description:</p>
-						<textarea rows="7" cols="49" disabled>'.$ReqDesc.'</textarea>
+						<p>Description: '.$ReqDesc.'</p>
 						<p>Request Date: '.$ReqDate.'</p>
 						<p>Date Needed: '.$NeedDate.'</p>
 						<p>Status: '.$Status.'</p>
+						<p>Remarks</p>
+						<p>Department Head: '.$Notes_DeptHead.'</p>
+						<p>EVP/VPAA: '.$Notes_EVP.'</p>
+						<p>Budget: '.$Notes_Budget.'</p>
 
 						<!-- Add a dropdown menu to select the request status -->
 						<div class="form-group">
@@ -297,7 +301,7 @@ if($dept == 'Budget and Control')
 						<div class="form-group">
 							<label for="requestStatus">Remarks:</label>
 						<div class="fixed-input-box">
-						<textarea rows="7" cols="49" name="note_area">'.$AddNotes.'</textarea>
+						<input type="text" name="note_area" required>
 						<input type="hidden" value="'.$ReqNo.'" name="up_req_id">
 						</div>
 						</div>
@@ -305,7 +309,7 @@ if($dept == 'Budget and Control')
 						<!-- Add more request details as needed -->
 					</div>
 					<div class="modal-footer">
-						<button type="submit" class="btn btn-danger save-status" name="decline_request">Decline Request</button>
+						<button type="button" class="btn btn-danger save-status" data-dismiss="modal" data-toggle="modal" data-target="#declineModal'.$ReqNo.'">Decline Request</button>
 						<button type="submit" class="btn btn-primary save-status" name="send_request">Send Request</button>
 					</div>
 				</div>
@@ -342,6 +346,10 @@ else
 						<p>Request Date: '.$ReqDate.'</p>
 						<p>Date Needed: '.$NeedDate.'</p>
 						<p>Status: '.$Status.'</p>
+						<p>Remarks</p>
+						<p>Department Head: '.$Notes_DeptHead.'</p>
+						<p>EVP/VPAA: '.$Notes_EVP.'</p>
+						<p>Budget: '.$Notes_Budget.'</p>
 
 						<!-- Add a dropdown menu to select the request status -->
 						<div class="form-group">
@@ -355,7 +363,7 @@ else
 						<div class="form-group">
 							<label for="requestStatus">Remarks:</label>
 						<div class="fixed-input-box">
-						<textarea rows="7" cols="49" name="note_area">'.$AddNotes.'</textarea>
+						<input type="text" name="note_area" required>
 						<input type="hidden" value="'.$ReqNo.'" name="up_req_id">
 						</div>
 						</div>
@@ -363,7 +371,7 @@ else
 						<!-- Add more request details as needed -->
 					</div>
 					<div class="modal-footer">
-						<button type="submit" class="btn btn-danger save-status" name="decline_request">Decline Request</button>
+						<button type="button" class="btn btn-danger save-status" data-dismiss="modal" data-toggle="modal" data-target="#declineModal'.$ReqNo.'">Decline Request</button>
 						<button type="submit" class="btn btn-primary save-status" name="send_request">Send Request</button>
 					</div>
 				</div>
@@ -374,26 +382,27 @@ else
 	';
 }
 
-	$ReqDel .= '
+	$ReqDec .= '
 	
-	<div class="modal fade" id="deleteModal'.$ReqNo.'" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+	<div class="modal fade" id="declineModal'.$ReqNo.'" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Delete Request</h5>
+                    <h5 class="modal-title" id="deleteModalLabel">Decline Request</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <!-- Add your delete confirmation message here -->
-                    <p>Are you sure you want to delete this request?</p>
+                    <p>Are you sure you want to decline this request?</p>
                 </div>
 				<form action="manage-req.php" method="POST">
                 <div class="modal-footer">
+					<label for="requestStatus">Reasons:</label>
+					<input type="text" name="decline_notes" required>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-danger delete-confirm" name="btn_del">Delete</button>
-					<input type="hidden" value="'.$ReqNo.'" name="del_req_id">
+                    <button type="submit" class="btn btn-danger delete-confirm" name="decline_request">Decline</button>
+					<input type="hidden" value="'.$ReqNo.'" name="dec_req_id">
                 </div>
 				</form>
             </div>
@@ -493,7 +502,7 @@ else
 $I_GetReq = mysqli_query($conn, "SELECT * FROM `requests` WHERE ".$I_Condition."");
 $I_ReqList = '';
 $I_ReqView = '';
-$I_ReqDel = '';
+$I_ReqDec = '';
 
 while($I_Req = mysqli_fetch_assoc($I_GetReq))
 {
@@ -509,7 +518,10 @@ while($I_Req = mysqli_fetch_assoc($I_GetReq))
 	$I_NeedDate_x = $I_Req['Date_Needed'];
 	$I_NeedDate = date("m/d/Y", strtotime($I_NeedDate_x));
 	$I_Status = $I_Req['Status'];
-	$I_AddNotes = $I_Req['Additional_Notes'];
+	$I_Notes_DeptHead = $I_Req['Additional_Notes_DeptHead'];
+	$I_Notes_EVP = $I_Req['Additional_Notes_EVP'];
+	$I_Notes_Budget = $I_Req['Additional_Notes_Budget'];
+	
 	
 	$I_ReqList .= '
 	
@@ -524,7 +536,6 @@ while($I_Req = mysqli_fetch_assoc($I_GetReq))
 	<td>'.$I_Status.'</td>
 	<td>
 	<button class="btn btn-primary view-btn" data-toggle="modal" data-target="#viewModal'.$I_ReqNo.'"><i class="fas fa-eye"></i></button>
-	<button class="btn btn-danger delete-btn" data-toggle="modal" data-target="#deleteModal'.$I_ReqNo.'"><i class="fas fa-trash"></i></button>
 	</td>
 	</tr>
 	
@@ -555,6 +566,10 @@ if($I_ReqType == 'Repair' && $dept != 'Budget and Control')
 						<p>Request Date: '.$I_ReqDate.'</p>
 						<p>Date Needed: '.$I_NeedDate.'</p>
 						<p>Status: '.$I_Status.'</p>
+						<p>Remarks</p>
+						<p>Department Head: '.$I_Notes_DeptHead.'</p>
+						<p>EVP/VPAA: '.$I_Notes_EVP.'</p>
+						<p>Budget: '.$I_Notes_Budget.'</p>
 
 						<!-- Add a dropdown menu to select the request status -->
 						<div class="form-group">
@@ -563,13 +578,19 @@ if($I_ReqType == 'Repair' && $dept != 'Budget and Control')
 								<option value="" selected disabled>Select Status</option>
 								<option value="Repaired">Repaired</option>
 								<option value="Requires Purchase">Requires Purchase</option>
-								<option value="Pending">Pending</option>
+								<option value="Repair Ongoing">Repair Ongoing</option>
 							</select>
+						</div>
+						<div class="form-group">
+							<label for="requestStatus">Fulfilled By:</label>
+						<div class="fixed-input-box">
+						<input type="text" name="fulfilled_by" required>
+						</div>
 						</div>
 						<div class="form-group">
 							<label for="requestStatus">Remarks:</label>
 						<div class="fixed-input-box">
-						<textarea rows="7" cols="49" name="note_area">'.$I_AddNotes.'</textarea>
+						<input type="text" name="note_area" required>
 						<input type="hidden" value="'.$I_ReqNo.'" name="up_req_id">
 						</div>
 						</div>
@@ -612,6 +633,10 @@ elseif($dept == 'Budget and Control' )
 						<p>Request Date: '.$I_ReqDate.'</p>
 						<p>Date Needed: '.$I_NeedDate.'</p>
 						<p>Status: '.$I_Status.'</p>
+						<p>Remarks</p>
+						<p>Department Head: '.$I_Notes_DeptHead.'</p>
+						<p>EVP/VPAA: '.$I_Notes_EVP.'</p>
+						<p>Budget: '.$I_Notes_Budget.'</p>
 
 						<!-- Add a dropdown menu to select the request status -->
 						<div class="form-group">
@@ -624,7 +649,7 @@ elseif($dept == 'Budget and Control' )
 						<div class="form-group">
 							<label for="requestStatus">Remarks:</label>
 						<div class="fixed-input-box">
-						<textarea rows="7" cols="49" name="note_area">'.$I_AddNotes.'</textarea>
+						<input type="text" name="note_area" required>
 						<input type="hidden" value="'.$I_ReqNo.'" name="up_req_id">
 						</div>
 						</div>
@@ -632,7 +657,7 @@ elseif($dept == 'Budget and Control' )
 						<!-- Add more request details as needed -->
 					</div>
 					<div class="modal-footer">
-						<button type="submit" class="btn btn-danger save-status" name="decline_request">Decline Request</button>
+						<button type="button" class="btn btn-danger save-status" data-dismiss="modal" data-toggle="modal" data-target="#declineModal'.$I_ReqNo.'">Decline Request</button>
 						<button type="submit" class="btn btn-primary save-status" name="item_purchase">Save Status</button>
 					</div>
 				</div>
@@ -668,6 +693,10 @@ else
 						<p>Request Date: '.$I_ReqDate.'</p>
 						<p>Date Needed: '.$I_NeedDate.'</p>
 						<p>Status: '.$I_Status.'</p>
+						<p>Remarks</p>
+						<p>Department Head: '.$I_Notes_DeptHead.'</p>
+						<p>EVP/VPAA: '.$I_Notes_EVP.'</p>
+						<p>Budget: '.$I_Notes_Budget.'</p>
 
 						<!-- Add a dropdown menu to select the request status -->
 						<div class="form-group">
@@ -680,9 +709,15 @@ else
 							</select>
 						</div>
 						<div class="form-group">
+							<label for="requestStatus">Fulfilled By:</label>
+						<div class="fixed-input-box">
+						<input type="text" name="fulfilled_by" required>
+						</div>
+						</div>
+						<div class="form-group">
 							<label for="requestStatus">Remarks:</label>
 						<div class="fixed-input-box">
-						<textarea rows="7" cols="49" name="note_area">'.$I_AddNotes.'</textarea>
+						<input type="text" name="note_area" required>
 						<input type="hidden" value="'.$I_ReqNo.'" name="up_req_id">
 						</div>
 						</div>
@@ -699,26 +734,27 @@ else
 		
 	';
 }
-	$I_ReqDel .= '
+	$I_ReqDec .= '
 	
-	<div class="modal fade" id="deleteModal'.$I_ReqNo.'" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+	<div class="modal fade" id="declineModal'.$I_ReqNo.'" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Delete Request</h5>
+                    <h5 class="modal-title" id="deleteModalLabel">Decline Request</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <!-- Add your delete confirmation message here -->
-                    <p>Are you sure you want to delete this request?</p>
+                    <p>Are you sure you want to decline this request?</p>
                 </div>
 				<form action="manage-req.php" method="POST">
                 <div class="modal-footer">
+					<label for="requestStatus">Reasons: </label>
+					<input type="text" name="decline_notes" required>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-danger delete-confirm" name="btn_del">Delete</button>
-					<input type="hidden" value="'.$I_ReqNo.'" name="del_req_id">
+                    <button type="submit" class="btn btn-danger delete-confirm" name="decline_request">Decline</button>
+					<input type="hidden" value="'.$I_ReqNo.'" name="dec_req_id">
                 </div>
 				</form>
             </div>
@@ -737,7 +773,7 @@ if(isset($_POST['send_request']))
 		$AddNotes = $_POST['note_area'];
 		$Forward = $_POST['forward'];
 		
-		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = 'Forwarded', `Forward_To` = '$Forward', `Noted_By_Budget` = '$name($user_id)' WHERE `Requisition_No` = '$UpReq'");
+		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes_Budget` = '$AddNotes',`Status` = 'Forwarded', `Forward_To` = '$Forward', `Noted_By_Budget` = '$name($user_id)' WHERE `Requisition_No` = '$UpReq'");
 		$update_track = mysqli_query($conn, "UPDATE `track` SET `Forward_Budget` = '$curr_date', `Forward_Budget_To` = '$Forward' WHERE `Request_No` = '$UpReq'");
 	}
 	
@@ -752,7 +788,7 @@ if(isset($_POST['send_request']))
 		
 		if(!empty($noted_by['Noted_By']))
 		{
-			$additional_noted = $name.'('.$user_id.') / '.$noted_by['Noted_By'];
+			$additional_noted = $noted_by['Noted_By'].' / '.$name.'('.$user_id.')';
 		}
 		
 		else
@@ -761,7 +797,7 @@ if(isset($_POST['send_request']))
 		}
 		
 		
-		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = 'Forwarded', `Forward_To` = '$Forward', `Noted_By` = '$additional_noted' WHERE `Requisition_No` = '$UpReq'");
+		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes_EVP` = '$AddNotes',`Status` = 'Forwarded', `Forward_To` = '$Forward', `Noted_By` = '$additional_noted' WHERE `Requisition_No` = '$UpReq'");
 		$update_track = mysqli_query($conn, "UPDATE `track` SET `Forward_EVP/VPAA` = '$curr_date' WHERE `Request_No` = '$UpReq'");
 	}
 	
@@ -771,7 +807,7 @@ if(isset($_POST['send_request']))
 		$AddNotes = $_POST['note_area'];
 		$Forward = $_POST['forward'];
 		
-		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = 'Forwarded', `Forward_To` = '$Forward', `Noted_By` = '$name($user_id)' WHERE `Requisition_No` = '$UpReq'");
+		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes_DeptHead` = '$AddNotes', `Status` = 'Forwarded', `Forward_To` = '$Forward', `Noted_By` = '$name($user_id)' WHERE `Requisition_No` = '$UpReq'");
 		$update_track = mysqli_query($conn, "UPDATE `track` SET `Forward_Head` = '$curr_date', `Forward_Head_To` = '$Forward' WHERE `Request_No` = '$UpReq'");
 	}
 	if($update_req)
@@ -786,18 +822,65 @@ if(isset($_POST['save_status']))
 	$UpReq = $_POST['up_req_id'];
 	$AddNotes = $_POST['note_area'];
 	$Status = $_POST['status'];
+	$Fulfilled_By = $_POST['fulfilled_by'];
 	
-	$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = '$Status', `Approved_By` = '$name($user_id)' WHERE `Requisition_No` = '$UpReq'");
+	$update_req = mysqli_query($conn, "UPDATE `requests` SET `Status` = '$Status', `Approved_By` = '$name($user_id)' WHERE `Requisition_No` = '$UpReq'");
 	
 	if($Status == 'Declined' || $Status == 'Repaired' || $Status == 'Approved')
 	{
 		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Active` = 'no' WHERE `Requisition_No` = '$UpReq'");
-		$update_track = mysqli_query($conn, "UPDATE `track` SET `Handled_Date` = '$curr_date' WHERE `Request_No` = '$UpReq'");
+		$update_track = mysqli_query($conn, "UPDATE `track` SET `Fulfill_Date` = '$curr_date', `Fulfilled_By` = '$Fulfilled_By' ,`End_Status` = '$Status' WHERE `Request_No` = '$UpReq'");
 	}
 
 	else
 	{
 		$update_track = mysqli_query($conn, "UPDATE `track` SET `Handled_Date` = '$curr_date', `Request_Status` = '$Status' WHERE `Request_No` = '$UpReq'");
+	}
+	
+	$checknotes = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Requisition_No` = '$UpReq'");
+	$request_notes = mysqli_fetch_assoc($checknotes);
+	
+	$dept_head_notes = $request_notes['Additional_Notes_DeptHead'];
+	$evp_notes = $request_notes['Additional_Notes_EVP'];
+	$budget_notes = $request_notes['Additional_Notes_budget'];
+	
+	if($dept == 'Budget and Control')
+	{
+		if(!empty($budget_notes))
+		{
+			$add_budget_notes = $budget_notes.' / '.$AddNotes;
+		}
+		else
+		{
+			$add_budget_notes = $AddNotes;
+		}
+		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes_Budget` = '$add_budget_notes' WHERE `Requisition_No` = '$UpReq'");
+	}
+	
+	elseif($dept == 'EVP' || $dept == 'VPAA' || $dept == 'Office of the President')
+	{
+		if(!empty($evp_notes))
+		{
+			$add_evp_notes = $evp_notes.' / '.$AddNotes;
+		}
+		else
+		{
+			$add_evp_notes = $AddNotes;
+		}
+		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes_EVP` = '$add_evp_notes' WHERE `Requisition_No` = '$UpReq'");
+	}
+	
+	else
+	{
+		if(!empty($dept_head_notes))
+		{
+			$add_depthead_notes = $dept_head_notes.' / '.$AddNotes;
+		}
+		else
+		{
+			$add_depthead_notes = $AddNotes;
+		}
+		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes_DeptHead` = '$add_depthead_notes' WHERE `Requisition_No` = '$UpReq'");
 	}
 	
 	if($update_req)
@@ -815,12 +898,58 @@ if(isset($_POST['item_purchase']))
 	if($purchase_status == 'Item Purchased')
 	{
 		$update_track = mysqli_query($conn, "UPDATE `track` SET `Purchase_Date` = '$curr_date' WHERE `Request_No` = '$UpReq'");
-		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = '$purchase_status' WHERE `Requisition_No` = '$UpReq'");
+		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Status` = '$purchase_status' WHERE `Requisition_No` = '$UpReq'");
 	}
 	if($purchase_status == 'Item Delivered')
 	{
 		$update_track = mysqli_query($conn, "UPDATE `track` SET `Deliver_Date` = '$curr_date' WHERE `Request_No` = '$UpReq'");
-		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes` = '$AddNotes',`Status` = '$purchase_status', `Approved_By` = '$name($user_id)' WHERE `Requisition_No` = '$UpReq'");
+		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Status` = '$purchase_status', `Approved_By` = '$name($user_id)' WHERE `Requisition_No` = '$UpReq'");
+	}
+	
+	$checknotes = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Requisition_No` = '$UpReq'");
+	$request_notes = mysqli_fetch_assoc($checknotes);
+	
+	$dept_head_notes = $request_notes['Additional_Notes_DeptHead'];
+	$evp_notes = $request_notes['Additional_Notes_EVP'];
+	$budget_notes = $request_notes['Additional_Notes_budget'];
+	
+	if($dept == 'Budget and Control')
+	{
+		if(!empty($budget_notes))
+		{
+			$add_budget_notes = $budget_notes.' / '.$AddNotes;
+		}
+		else
+		{
+			$add_budget_notes = $AddNotes;
+		}
+		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes_Budget` = '$add_budget_notes' WHERE `Requisition_No` = '$UpReq'");
+	}
+	
+	elseif($dept == 'EVP' || $dept == 'VPAA' || $dept == 'Office of the President')
+	{
+		if(!empty($evp_notes))
+		{
+			$add_evp_notes = $evp_notes.' / '.$AddNotes;
+		}
+		else
+		{
+			$add_evp_notes = $AddNotes;
+		}
+		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes_EVP` = '$add_evp_notes' WHERE `Requisition_No` = '$UpReq'");
+	}
+	
+	else
+	{
+		if(!empty($dept_head_notes))
+		{
+			$add_depthead_notes = $dept_head_notes.' / '.$AddNotes;
+		}
+		else
+		{
+			$add_depthead_notes = $AddNotes;
+		}
+		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes_DeptHead` = '$add_depthead_notes' WHERE `Requisition_No` = '$UpReq'");
 	}
 	
 	if($update_req)
@@ -829,42 +958,60 @@ if(isset($_POST['item_purchase']))
 	}
 }
 
-//Delete
-if(isset($_POST['btn_del']))
-{
-	$DelReqID = $_POST['del_req_id'];
-	$query = mysqli_query($conn,"SELECT * FROM `requests` WHERE `Requisition_No` = '$DelReqID'");
-	$assign_value = mysqli_fetch_assoc($query);
-	
-	$a_req_id = $assign_value['Requisition_No'];
-	$a_req_user = $assign_value['User_Name'];
-	$a_req_uid = $assign_value['User_ID'];
-	$a_req_dept = $assign_value['Department'];
-	$a_req_rdate = $assign_value['Date_Requested'];
-	$a_req_ndate = $assign_value['Date_Needed'];
-	$a_req_type = $assign_value['Request_Type'];
-	$a_req_serv = $assign_value['Product/Service'];
-	$a_req_qty = $assign_value['Quantity'];
-	$a_req_desc = $assign_value['Description'];
-	$a_req_notes = $assign_value['Additional_Notes'];
-	
-	$archive = mysqli_query($conn, "INSERT INTO `archive`(`Requisition_No`, `User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`, `Additional_Notes`) VALUES ('$a_req_id','$a_req_user','$a_req_uid','$a_req_dept','$a_req_rdate','$a_req_ndate','$a_req_type','$a_req_serv','$a_req_qty','$a_req_desc','$a_req_notes')");
-	
-	if($archive)
-	{
-		$delete = mysqli_query($conn, "DELETE FROM `requests` WHERE `Requisition_No` = '$DelReqID'");
-		Header("Refresh:0");
-	}
-}
-
 //Decline
 if(isset($_POST['decline_request']))
 {
-	$UpReq = $_POST['up_req_id'];
-	$AddNotes = $_POST['note_area'];
+	$UpReq = $_POST['dec_req_id'];
+	$AddNotes = $_POST['decline_notes'];
 	
 	$update_request = mysqli_query($conn, "UPDATE `requests` SET `Approved_By` = '$name($user_id)', `Status` = 'Declined', `Active` = 'no' WHERE `Requisition_No` = '$UpReq'");
-	$update_track = mysqli_query($conn, "UPDATE `track` SET `Handled_Date` = '$curr_date', `Request_Status` = 'Declined' WHERE `Request_No` = '$UpReq'");
+	$update_track = mysqli_query($conn, "UPDATE `track` SET `Fulfill_Date` = '$curr_date', `End_Status` = 'Declined', `Fulfilled_By` = '$name($user_id)' WHERE `Request_No` = '$UpReq'");
+	
+	$checknotes = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Requisition_No` = '$UpReq'");
+	$request_notes = mysqli_fetch_assoc($checknotes);
+	
+	$dept_head_notes = $request_notes['Additional_Notes_DeptHead'];
+	$evp_notes = $request_notes['Additional_Notes_EVP'];
+	$budget_notes = $request_notes['Additional_Notes_budget'];
+	
+	if($dept == 'Budget and Control')
+	{
+		if(!empty($budget_notes))
+		{
+			$add_budget_notes = $budget_notes.' / '.$AddNotes;
+		}
+		else
+		{
+			$add_budget_notes = $AddNotes;
+		}
+		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes_Budget` = '$add_budget_notes' WHERE `Requisition_No` = '$UpReq'");
+	}
+	
+	elseif($dept == 'EVP' || $dept == 'VPAA' || $dept == 'Office of the President')
+	{
+		if(!empty($evp_notes))
+		{
+			$add_evp_notes = $evp_notes.' / '.$AddNotes;
+		}
+		else
+		{
+			$add_evp_notes = $AddNotes;
+		}
+		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes_EVP` = '$add_evp_notes' WHERE `Requisition_No` = '$UpReq'");
+	}
+	
+	else
+	{
+		if(!empty($dept_head_notes))
+		{
+			$add_depthead_notes = $dept_head_notes.' / '.$AddNotes;
+		}
+		else
+		{
+			$add_depthead_notes = $AddNotes;
+		}
+		$update_req = mysqli_query($conn, "UPDATE `requests` SET `Additional_Notes_DeptHead` = '$add_depthead_notes' WHERE `Requisition_No` = '$UpReq'");
+	}
 	
 	if($update_track)
 	{
@@ -1128,8 +1275,8 @@ if(isset($_POST['decline_request']))
 	<?php echo $I_ReqView; ?>
 
     <!-- Delete Modal -->
-    <?php echo $ReqDel; ?>
-	<?php echo $I_ReqDel; ?>
+    <?php echo $ReqDec; ?>
+	<?php echo $I_ReqDec; ?>
 
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>

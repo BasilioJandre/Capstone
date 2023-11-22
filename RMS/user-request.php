@@ -9,6 +9,20 @@ $curr_date = date("Y-m-d", strtotime($curr_date_s));
 
 $date = date('Y-m-d');
 
+// Checks if Logged In
+if ($sess != TRUE)
+{
+    header("Location: logout.php");
+    exit;
+}
+
+// Checks for User type
+if ($role == 'Department Head' || $role == 'Admin')
+{
+    header("Location: logout.php");
+    exit;
+}
+
 
 //Tracking and Request History
 $req_query = mysqli_query($conn,"SELECT * FROM `requests` WHERE `User_ID` = '$user_id'");
@@ -28,13 +42,15 @@ while($get_req = mysqli_fetch_assoc($req_query))
 	$ReqNDate_x = $get_req['Date_Needed'];
 	$ReqNDate = date("m/d/Y", strtotime($ReqNDate_x));
 	$ReqDesc = $get_req['Description'];
-	$ReqNotes = $get_req['Additional_Notes'];
 	$ReqStat = $get_req['Status'];
 	$Req_Forward = $get_req['Forward_To'];
 	$ReqEnd = $get_req['Noted_By'];
 	$ReqNoted = $get_req['Noted_By_Budget'];
 	$ReqSigned = $get_req['Approved_By'];
 	$Req_Active = $get_req['Active'];
+	$Req_Note_DeptHead = $get_req['Additional_Notes_DeptHead'];
+	$Req_Note_EVP = $get_req['Additional_Notes_EVP'];
+	$Req_Note_Budget = $get_req['Additional_Notes_Budget'];
 	
 	if($Req_Active == 'yes')
 	{
@@ -76,6 +92,9 @@ while($get_req = mysqli_fetch_assoc($req_query))
 	$request_status = '';
 	$p_date = '';
 	$d_date = '';
+	$f_date = '';
+	$end_status = '';
+	$fulfilled_by = '';
 	
 	if(!empty($tracking['Forward_Head']))
 	{
@@ -126,6 +145,22 @@ while($get_req = mysqli_fetch_assoc($req_query))
 	{
 	$d_date_x = $tracking['Deliver_Date'];
 	$d_date = date("m/d/Y", strtotime($d_date_x));
+	}
+	
+	if(!empty($tracking['Fulfill_Date']))
+	{
+	$f_date_x = $tracking['Fulfill_Date'];
+	$f_date = date("m/d/Y", strtotime($f_date_x));
+	}
+	
+	if(!empty($tracking['End_Status']))
+	{
+	$end_status = $tracking['End_Status'];
+	}
+	
+	if(!empty($tracking['Fulfilled_By']))
+	{
+	$fulfilled_by = $tracking['Fulfilled_By'];
 	}
 	
 	$tracking_list = '';
@@ -210,28 +245,56 @@ while($get_req = mysqli_fetch_assoc($req_query))
 	
 	if(!empty($d_date))
 	{
+		if($ReqType == 'Purchase')
+		{
+			$tracking_list .='
 		
-		$tracking_list .='
+			<li>
+			<div class="status">('.$d_date.') Item has been Delivered</div>
+			<div class="location">Request Fulfilled By '.$fulfilled_by.'</div>
+			</li>
+			
+			';
+		}
 		
-		<li>
-		<div class="status">('.$d_date.') Item has been Delivered</div>
-		<div class="date"></div>
-		</li>
+		else
+		{
+			$tracking_list .='
 		
-		';
+			<li>
+			<div class="status">('.$d_date.') Item has been Delivered</div>
+			</li>
+			
+			';
+		}
+		
 	}
 
-	if($ReqStat == 'Repaired')
+	if(!empty($f_date))
 	{
+		if($end_status == 'Repaired')
+		{
+			$tracking_list .='
 		
-		$tracking_list .='
+			<li>
+			<div class="status">('.$f_date.') Item has been Repaired</div>
+			<div class="location">Request Fulfilled By '.$fulfilled_by.'</div>
+			</li>
+			
+			';
+		}
 		
-		<li>
-		<div class="status">('.$handled_date.') Item has been Repaired</div>
-		<div class="date"></div>
-		</li>
+		else
+		{
+			$tracking_list .='
 		
-		';
+			<li>
+			<div class="status">('.$f_date.') Request '.$end_status.'</div>
+			<div class="location">Request '.$end_status.' By '.$fulfilled_by.'</div>
+			</li>
+			
+			';
+		}
 	}
 	
 	$ReqList .='
@@ -357,14 +420,15 @@ while($get_req = mysqli_fetch_assoc($req_query))
 						<p>Type of Request: '.$ReqType.' ('.$ReqServ.')</p>
 						<p>Endorsed By: '.$ReqEnd.'</p>
 						<p>Noted By: '.$ReqNoted.'</p>
-						<p>Description:</p>
-						<textarea rows="7" cols="49" disabled>'.$ReqDesc.'</textarea>
+						<p>Description: '.$ReqDesc.'</p>
 						<p>Status: '.$ReqStat.'</p>
 						<p>Signed: '.$ReqSigned.'</p>
 						<div class="form-group">
 							<label for="requestStatus">Remarks:</label>
 							<div class="fixed-input-box">
-								<textarea rows="7" cols="49" name="note_area" disabled>'.$ReqNotes.'</textarea>
+								<input type="text" value="Department Head: '.$Req_Note_DeptHead.'" disabled>
+								<input type="text" value="EVP/VPAA: '.$Req_Note_EVP.'" disabled>
+								<input type="text" value="Budget: '.$Req_Note_Budget.'" disabled>
 							</div>
 						</div>
 					</div>

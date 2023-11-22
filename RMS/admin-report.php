@@ -119,7 +119,9 @@ while($reports = mysqli_fetch_assoc($getreport))
 	$service = $reports['Product/Service'];
 	$req_dept = $reports['Department'];
 	$req_status = $reports['Status'];
-	$req_notes = $reports['Additional_Notes'];
+	$req_notes_depthead = $reports['Additional_Notes_DeptHead'];
+	$req_notes_evp = $reports['Additional_Notes_EVP'];
+	$req_notes_budget = $reports['Additional_Notes_Budget'];
 	
 	$reportlist .= '
 	
@@ -154,7 +156,10 @@ while($reports = mysqli_fetch_assoc($getreport))
 						<p>Department: '.$req_dept.'</p>
 						<p>Request: '.$req_type.' ('.$service.')</p>
 						<p>Description: '.$req_desc.'</p>
-						<p>Notes: '.$req_notes.'</p>
+						<p>Notes:</p>
+						<p>Department Head: '.$req_notes_depthead.'</p>
+						<p>EVP/VPAA: '.$req_notes_evp.'</p>
+						<p>Budget: '.$req_notes_budget.'</p>
 						<p>Status: '.$req_status.'</p>
 					</div>
 					</div>

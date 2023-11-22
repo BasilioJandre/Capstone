@@ -57,9 +57,10 @@ $get_department = mysqli_query($conn, "SELECT DISTINCT `Department` FROM `reques
 while($departments = mysqli_fetch_assoc($get_department))
 {
 	$dept_report = $departments['Department'];
-	$get_request = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Department` = '$dept_report' AND (`Date_Requested` BETWEEN '$first_date' AND '$last_date')");
+	$get_request = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Department` = '$dept_report' AND `Active` = 'no' AND (`Date_Requested` BETWEEN '$first_date' AND '$last_date')");
 	$count_report = mysqli_num_rows($get_request);
-
+	
+	$pdf->SetFont('Arial', 'B', 9);
 	$pdf->Ln(10);
 	$pdf->Cell(80, 10, 'Department: '.$dept_report.'');
 	$pdf->Ln(5);
@@ -68,32 +69,39 @@ while($departments = mysqli_fetch_assoc($get_department))
 	$pdf->Cell(160, 10, 'Total Requests: '.$count_report.'');
 	$pdf->Ln(10);
 
-	$pdf->SetFont('Arial', 'B', 12);
-	$pdf->Cell(40, 10, 'Date', 1);
-	$pdf->Cell(40, 10, 'Request Type', 1);
-	$pdf->Cell(110, 10, 'Description', 1);
-	$pdf->Ln();
-
-	$pdf->SetFont('Arial', '', 12);
-	
+	$pdf->SetFont('Arial', 'B', 9);
+	$pdf->Cell(17, 5, 'Date', 1);
+	$pdf->Cell(23, 5, 'Request Type', 1);
+	$pdf->Cell(97, 5, 'Description', 1);
+	$pdf->Cell(21, 5, 'Status', 1);
+	$pdf->Cell(33, 5, 'Fulfilled By', 1);
+	$pdf->Ln();	
 	
 	while($request = mysqli_fetch_assoc($get_request))
 	{
+		$req_id = $request['Requisition_No'];
+		$get_fulfill = mysqli_query($conn, "SELECT * FROM `track` WHERE `Request_No` = '$req_id'");
+		$fulfilled_by_x = mysqli_fetch_assoc($get_fulfill);
+		$fulfilled_by = $fulfilled_by_x['Fulfilled_By'];
+		
 		$date_x = $request['Date_Requested'];
 		$date = date("m/d/Y", strtotime($date_x));
 		$department = $request['Department'];
 		$reqtype = $request['Request_Type'];
 		$description = $request['Description'];
+		$status = $request['Status'];
 		
-		$pdf->Cell(40, 10, $date, 1);
-
-		$pdf->Cell(40, 10, $reqtype, 1);
-		$pdf->Cell(110, 10, $description, 1);
+		$pdf->SetFont('Arial', '', 8);
+		$pdf->Cell(17, 5, $date, 1);
+		$pdf->Cell(23, 5, $reqtype, 1);
+		$pdf->Cell(97, 5, $description, 1);
+		$pdf->Cell(21, 5, $status, 1);
+		$pdf->Cell(33, 5, $fulfilled_by, 1);
 		$pdf->Ln();
 	}
 
 }
-$get_all_request = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Date_Requested` BETWEEN '$first_date' AND '$last_date'");
+$get_all_request = mysqli_query($conn, "SELECT * FROM `requests` WHERE `Active` = 'no' AND (`Date_Requested` BETWEEN '$first_date' AND '$last_date')");
 $count_request = mysqli_num_rows($get_all_request);
 
 $pdf->Ln(5);
