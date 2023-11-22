@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 15, 2023 at 05:09 AM
+-- Generation Time: Nov 22, 2023 at 08:59 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.0.25
 
@@ -77,7 +77,9 @@ CREATE TABLE `requests` (
   `Product/Service` varchar(50) NOT NULL,
   `Quantity` int(50) NOT NULL,
   `Description` mediumtext NOT NULL,
-  `Additional_Notes` mediumtext NOT NULL,
+  `Additional_Notes_DeptHead` mediumtext NOT NULL,
+  `Additional_Notes_EVP` mediumtext NOT NULL,
+  `Additional_Notes_Budget` mediumtext NOT NULL,
   `Noted_By` varchar(50) NOT NULL,
   `Noted_By_Budget` varchar(50) NOT NULL,
   `Approved_By` varchar(50) NOT NULL,
@@ -90,15 +92,21 @@ CREATE TABLE `requests` (
 -- Dumping data for table `requests`
 --
 
-INSERT INTO `requests` (`Requisition_No`, `User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`, `Additional_Notes`, `Noted_By`, `Noted_By_Budget`, `Approved_By`, `Status`, `Forward_To`, `Active`) VALUES
-('REQNO10', 'Juan Dela Cruz', '26948221', 'High School Academics', '2023-11-15', '2023-11-20', 'Borrow', 'Furnishing/Appliance', 2, '2 large fans for gymnasium event', '', '', '', '', 'Pending', '', 'yes'),
-('REQNO3', 'Juan Dela Cruz', '26948221', 'High School Academics', '2023-11-13', '2023-12-05', 'Purchase', 'Consumable', 2, '2 reams of bond paper for school supplies', '', 'Sarah Magpantay(25163716)', '', '', 'Item Delivered', 'Budget and Control', 'no'),
-('REQNO4', 'Juan Dela Cruz', '26948221', 'High School Academics', '2023-11-13', '2023-12-18', 'Purchase', 'Equipment', 1, 'Projector for classroom', '', '', '', '', 'Pending', '', 'yes'),
-('REQNO5', 'Juan Dela Cruz', '26948221', 'High School Academics', '2023-11-13', '2023-11-21', 'Repair', 'Furnishing/Appliance', 1, 'broken armchair', '', '', '', '', 'Pending', '', 'yes'),
-('REQNO6', 'Juan Dela Cruz', '26948221', 'High School Academics', '2023-11-13', '2023-11-16', 'Transfer', 'Equipment', 1, 'transfer projector from room 1 to room 2 please :)', '', '', '', '', 'Pending', '', 'yes'),
-('REQNO7', 'Sarah Doe', '32364651', 'College Faculty', '2023-11-13', '2023-11-14', 'Repair', 'Equipment', 1, 'Broken monitor on lab 401', '', 'Jenny Smith(95328448)', '', '', 'Forwarded', 'Budget and Control', 'yes'),
-('REQNO8', 'Sarah Doe', '32364651', 'College Faculty', '2023-11-13', '2023-11-15', 'Borrow', 'Furnishing/Appliance', 15, 'chairs for grounds event', '', 'Jenny Smith(95328448)', '', '', 'Forwarded', 'Budget and Control', 'yes'),
-('REQNO9', 'Sarah Doe', '32364651', 'College Faculty', '2023-11-13', '2023-11-22', 'Borrow', 'Equipment', 2, 'borrow 2 monitors', '', 'Jenny Smith(95328448)', 'Jane Doe(23859356)', '', 'Forwarded', 'ICTC', 'yes');
+INSERT INTO `requests` (`Requisition_No`, `User_Name`, `User_ID`, `Department`, `Date_Requested`, `Date_Needed`, `Request_Type`, `Product/Service`, `Quantity`, `Description`, `Additional_Notes_DeptHead`, `Additional_Notes_EVP`, `Additional_Notes_Budget`, `Noted_By`, `Noted_By_Budget`, `Approved_By`, `Status`, `Forward_To`, `Active`) VALUES
+('REQNO10', 'Juan Dela Cruz', '26948221', 'High School Academics', '2023-11-15', '2023-11-20', 'Borrow', 'Furnishing/Appliance', 2, '2 large fans for gymnasium event', '', '', '', '', '', '', 'Pending', '', 'yes'),
+('REQNO11', 'Juan Dela Cruz', '26948221', 'High School Academics', '2023-11-15', '2023-11-29', 'Repair', 'Equipment', 1, 'broken projector', '', '', '', 'Carla Crisostomo(97737112) / Sarah Magpantay(25163', 'Jane Doe(23859356)', 'Jane Doe(23859356)', 'Item Delivered', 'ICTC', 'no'),
+('REQNO12', 'Sarah Doe', '32364651', 'College Faculty', '2023-11-21', '2023-11-30', 'Purchase', 'Equipment', 1, 'test', '', '', '', 'Jenny Smith(95328448)', '', 'Jane Doe(23859356)', 'Declined', 'Budget and Control', 'no'),
+('REQNO13', 'Sarah Doe', '32364651', 'College Faculty', '2023-11-21', '2023-11-29', 'Transfer', 'Equipment', 1, 'Transfer pc from room 1 to room 2', 'Approved by Dept Head\r\nNoted By Budget and Control / ok', '', '', 'Jenny Smith(95328448)', 'Jane Doe(23859356)', 'Ping Guevarra(15778165)', 'Approved', 'ICTC', 'no'),
+('REQNO14', 'Sarah Doe', '32364651', 'College Faculty', '2023-11-21', '2023-11-30', 'Purchase', 'Equipment', 6, 'test2', '', '', '', 'Jenny Smith(95328448) / Carla Crisostomo(97737112)', '', 'Jane Doe(23859356)', 'Item Delivered', 'Budget and Control', 'no'),
+('REQNO15', 'Sarah Doe', '32364651', 'College Faculty', '2023-11-22', '2023-11-30', 'Purchase', 'Consumable', 3, 'testagain', 'test note dept head woooo', '', 'decline notes test', 'Jenny Smith(95328448)', '', 'Jane Doe(23859356)', 'Declined', 'Budget and Control', 'no'),
+('REQNO16', 'Sarah Doe', '32364651', 'College Faculty', '2023-11-22', '2023-11-23', 'Borrow', 'Furnishing/Appliance', 32, 'test for fulfillment', 'more notes test / done', '', 'note test lmao', 'Jenny Smith(95328448)', 'Jane Doe(23859356)', 'Ping Guevarra(15778165)', 'Approved', 'ICTC', 'no'),
+('REQNO3', 'Juan Dela Cruz', '26948221', 'High School Academics', '2023-11-13', '2023-12-05', 'Purchase', 'Consumable', 2, '2 reams of bond paper for school supplies', '', '', '', 'Sarah Magpantay(25163716)', '', '', 'Item Delivered', 'Budget and Control', 'no'),
+('REQNO4', 'Juan Dela Cruz', '26948221', 'High School Academics', '2023-11-13', '2023-12-18', 'Purchase', 'Equipment', 1, 'Projector for classroom', '', '', '', '', '', '', 'Pending', '', 'yes'),
+('REQNO5', 'Juan Dela Cruz', '26948221', 'High School Academics', '2023-11-13', '2023-11-21', 'Repair', 'Furnishing/Appliance', 1, 'broken armchair', 'note dept head test 2  test dept head notes', 'test note evp', 'test note budget', 'Sarah Magpantay(25163716) / Carla Crisostomo(97737', 'Jane Doe(23859356)', 'gsuhead(91714179)', 'Repaired', 'GSU', 'no'),
+('REQNO6', 'Juan Dela Cruz', '26948221', 'High School Academics', '2023-11-13', '2023-11-16', 'Transfer', 'Equipment', 1, 'transfer projector from room 1 to room 2 please :)', '', '', '', '', '', '', 'Pending', '', 'yes'),
+('REQNO7', 'Sarah Doe', '32364651', 'College Faculty', '2023-11-13', '2023-11-14', 'Repair', 'Equipment', 1, 'Broken monitor on lab 401', '', '', '', 'Jenny Smith(95328448)', '', 'Jane Doe(23859356)', 'Declined', 'Budget and Control', 'no'),
+('REQNO8', 'Sarah Doe', '32364651', 'College Faculty', '2023-11-13', '2023-11-15', 'Borrow', 'Furnishing/Appliance', 15, 'chairs for grounds event', '', '', '', 'Jenny Smith(95328448)', '', 'Jane Doe(23859356)', 'Declined', 'Budget and Control', 'no'),
+('REQNO9', 'Sarah Doe', '32364651', 'College Faculty', '2023-11-13', '2023-11-22', 'Borrow', 'Equipment', 2, 'borrow 2 monitors', '', '', '', 'Jenny Smith(95328448)', 'Jane Doe(23859356)', 'Ping Guevarra(15778165)', 'Approved', 'ICTC', 'no');
 
 -- --------------------------------------------------------
 
@@ -116,24 +124,33 @@ CREATE TABLE `track` (
   `Handled_Date` date DEFAULT NULL,
   `Request_Status` varchar(50) NOT NULL,
   `Purchase_Date` date DEFAULT NULL,
-  `Deliver_Date` date DEFAULT NULL
+  `Deliver_Date` date DEFAULT NULL,
+  `Fulfill_Date` date DEFAULT NULL,
+  `End_Status` varchar(50) NOT NULL,
+  `Fulfilled_By` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `track`
 --
 
-INSERT INTO `track` (`Request_No`, `Forward_Head`, `Forward_Head_To`, `Forward_EVP/VPAA`, `Forward_Budget`, `Forward_Budget_To`, `Handled_Date`, `Request_Status`, `Purchase_Date`, `Deliver_Date`) VALUES
-('REQNO1', '2023-11-12', 'VPAA Office', '2023-11-12', '2023-11-12', 'VPAA Office', '2023-11-12', 'Repaired', NULL, NULL),
-('REQNO10', NULL, '', NULL, NULL, '', NULL, '', NULL, NULL),
-('REQNO2', NULL, '', NULL, NULL, '', NULL, '', NULL, NULL),
-('REQNO3', '2023-11-13', 'Budget and Control', NULL, NULL, '', NULL, '', '2023-11-13', '2023-11-13'),
-('REQNO4', NULL, '', NULL, NULL, '', NULL, '', NULL, NULL),
-('REQNO5', NULL, '', NULL, NULL, '', NULL, '', NULL, NULL),
-('REQNO6', NULL, '', NULL, NULL, '', NULL, '', NULL, NULL),
-('REQNO7', '2023-11-13', 'Budget and Control', NULL, NULL, '', NULL, '', NULL, NULL),
-('REQNO8', '2023-11-13', 'Budget and Control', NULL, NULL, '', NULL, '', NULL, NULL),
-('REQNO9', '2023-11-13', 'Budget and Control', NULL, '2023-11-13', 'ICTC', NULL, '', NULL, NULL);
+INSERT INTO `track` (`Request_No`, `Forward_Head`, `Forward_Head_To`, `Forward_EVP/VPAA`, `Forward_Budget`, `Forward_Budget_To`, `Handled_Date`, `Request_Status`, `Purchase_Date`, `Deliver_Date`, `Fulfill_Date`, `End_Status`, `Fulfilled_By`) VALUES
+('REQNO1', '2023-11-12', 'VPAA Office', '2023-11-12', '2023-11-12', 'VPAA Office', '2023-11-12', 'Repaired', NULL, NULL, NULL, '', ''),
+('REQNO10', NULL, '', NULL, NULL, '', NULL, '', NULL, NULL, NULL, '', ''),
+('REQNO11', '2023-11-15', 'VPAA Office', '2023-11-15', '2023-11-15', 'ICTC', '2023-11-15', 'Requires Purchase', '2023-11-15', '2023-11-15', NULL, '', ''),
+('REQNO12', '2023-11-21', 'Budget and Control', NULL, NULL, '', NULL, '', NULL, NULL, '2023-11-21', 'Declined', 'Jane Doe(23859356)'),
+('REQNO13', '2023-11-21', 'Budget and Control', NULL, '2023-11-21', 'ICTC', NULL, '', NULL, NULL, '2023-11-22', 'Approved', ''),
+('REQNO14', '2023-11-21', 'EVP Office', '2023-11-21', NULL, '', NULL, '', '2023-11-21', '2023-11-21', NULL, '', 'Jane Doe(23859356)'),
+('REQNO15', '2023-11-22', 'Budget and Control', NULL, NULL, '', NULL, '', NULL, NULL, '2023-11-22', 'Declined', 'Jane Doe(23859356)'),
+('REQNO16', '2023-11-22', 'Budget and Control', NULL, '2023-11-22', 'ICTC', NULL, '', NULL, NULL, '2023-11-22', 'Approved', 'June Charanguero'),
+('REQNO2', NULL, '', NULL, NULL, '', NULL, '', NULL, NULL, NULL, '', ''),
+('REQNO3', '2023-11-13', 'Budget and Control', NULL, NULL, '', NULL, '', '2023-11-13', '2023-11-13', NULL, '', ''),
+('REQNO4', NULL, '', NULL, NULL, '', NULL, '', NULL, NULL, NULL, '', ''),
+('REQNO5', '2023-11-22', 'EVP Office', '2023-11-22', '2023-11-22', 'GSU', NULL, '', NULL, NULL, '2023-11-22', 'Repaired', ''),
+('REQNO6', NULL, '', NULL, NULL, '', NULL, '', NULL, NULL, NULL, '', ''),
+('REQNO7', '2023-11-13', 'Budget and Control', NULL, NULL, '', '2023-11-21', 'Declined', NULL, NULL, NULL, '', ''),
+('REQNO8', '2023-11-13', 'Budget and Control', NULL, NULL, '', NULL, '', NULL, NULL, '2023-11-21', 'Declined', 'Jane Doe(23859356)'),
+('REQNO9', '2023-11-13', 'Budget and Control', NULL, '2023-11-13', 'ICTC', '2023-11-21', 'Requires Purchase', '2023-11-21', '2023-11-21', '2023-11-21', 'Approved', '');
 
 -- --------------------------------------------------------
 
@@ -163,6 +180,7 @@ INSERT INTO `users` (`User_ID`, `Full_Name`, `Email`, `Department`, `Role`, `Pas
 (32364651, 'Sarah Doe', 'd_sarah@email.com', 'College Faculty', 'Teaching Personnel', '$2y$15$zf9M9hO8Yo7PXMSACJ3PKOrh9qrAddOZO2pVn4Fl7F6R2H.gLV2ua', 'Active'),
 (32669997, 'John Deere', 'jd@email.com', 'ICTC', 'Admin', '$2y$15$47kW6PvGy5q/UTYXjPVOEewHog88.SxBQ.nmRzz.WbQwRqcn0dOG.', 'Active'),
 (58153965, 'Charles Baker', 'b_charles@email.com', 'Admin', 'Admin', '$2y$15$1pIGFn0bzRE622wxA1NydemTDZB0Fx.hPRI6D2rQrbZAIUTh4/Bmm', 'Active'),
+(91714179, 'gsuhead', 'gsu@email.com', 'GSU', 'Department Head', '$2y$15$probgQQxxb4Ch3ZWWEiQq.ToidIjDFDLlu0HHZZFfqrZeeWVQCfju', 'Active'),
 (95328448, 'Jenny Smith', 'jsmith@email.com', 'College Dean', 'Department Head', '$2y$15$NDUFCTOQK3A6j5XiGF2WSOMHom9if4IWhAqypIAqL.zzVCgxXbLB.', 'Active'),
 (97737112, 'Carla Crisostomo', 'carlacris@email.com', 'VPAA', 'Department Head', '$2y$15$Dj92X/JOJn0gWgxr2qbRwOFIs0lQ5CsnCAQ4xaRGOmp4XLvfbiFk.', 'Active');
 
