@@ -838,7 +838,7 @@ $check_picture = mysqli_num_rows($count_image);
                         </div>
                         <div id="formContainer" class="customClass">
 			<div class="form-row">
-					<label for="padding">Field 1</label>
+					<label for="padding">Request 1</label>
 					<input type="hidden" id="padding">
 			</div>
         <div class="form-row">
@@ -920,7 +920,7 @@ $check_picture = mysqli_num_rows($count_image);
                 $('.customClass').append('\
 				<div id="extraFields['+count+']">\
 				<div class="form-row">\
-					<label for="padding">Field '+count+'</label>\
+					<label for="padding">Request '+count+'</label>\
 					<input type="hidden" id="padding" value="extra" name="indicator[]">\
 				</div>\
 				<div class="form-row">\
